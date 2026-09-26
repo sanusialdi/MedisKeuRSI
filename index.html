@@ -15,7 +15,7 @@
     .prose th, .prose td { border: 1px solid #334155; padding: 0.5rem; text-align: left; }
     .prose th { background-color: #1e293b; color: #f97316; font-weight: 600; }
 
-    /* CSS Khusus Cetak Nota Thermal Printer Bluetooth */
+    /* CSS Khusus Cetak Thermal Printer Bluetooth */
     @media print {
       body * { visibility: hidden; }
       #nota-print-area, #nota-print-area * { visibility: visible; }
@@ -23,9 +23,9 @@
         position: absolute;
         left: 0;
         top: 0;
-        width: 58mm; /* Ukuran Kertas Thermal Printer Standar */
+        width: 58mm; /* Ukuran Kertas Thermal Standar POS Bluetooth */
         font-family: monospace;
-        font-size: 10pt;
+        font-size: 9pt;
         color: #000;
         background: #fff;
         padding: 5px;
@@ -43,15 +43,15 @@
         <i class="fa-solid fa-notes-medical text-2xl text-orange-500"></i>
         <div>
           <h1 class="font-bold text-lg leading-tight text-orange-400">Rumah Sehat Insani (RSI)</h1>
-          <p class="text-xs text-zinc-400">Rekam Medik TCM, Stok Herbal & Akuntansi (DeepSeek AI + GDrive Connected)</p>
+          <p class="text-xs text-zinc-400">Jl. Raya Sungai Lareh, Perum Wahana C-2 Lumin, Padang</p>
         </div>
       </div>
       <div class="flex items-center gap-2">
         <span class="text-xs bg-zinc-800 px-3 py-1 rounded-full text-orange-400 border border-orange-500/40 flex items-center">
-          <i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> DeepSeek Engine
+          <i class="fa-solid fa-circle-check text-emerald-400 mr-1.5"></i> DeepSeek AI
         </span>
         <span class="text-xs bg-zinc-800 px-3 py-1 rounded-full text-orange-400 border border-orange-500/40 flex items-center">
-          <i class="fa-brands fa-google-drive text-blue-400 mr-1.5"></i> GDrive Active
+          <i class="fa-brands fa-google-drive text-blue-400 mr-1.5"></i> GDrive Sync
         </span>
       </div>
     </div>
@@ -68,7 +68,7 @@
         <i class="fa-solid fa-boxes-stacked"></i> Stok Herbal RSI
       </button>
       <button onclick="switchTab('keuangan')" id="tab-keuangan" class="tab-btn px-6 py-3 font-semibold text-zinc-400 hover:text-orange-400 flex items-center gap-2 whitespace-nowrap">
-        <i class="fa-solid fa-calculator"></i> Keuangan & Akuntansi AI
+        <i class="fa-solid fa-calculator"></i> Keuangan (Masuk & Keluar)
       </button>
     </div>
 
@@ -78,8 +78,6 @@
         
         <!-- Form Input Pemeriksaan -->
         <div class="lg:col-span-7 space-y-6">
-          
-          <!-- Identitas Pasien & Pencarian Kunjungan Ulang -->
           <div class="bg-zinc-900 p-6 rounded-xl shadow-md border border-zinc-800">
             <div class="flex justify-between items-center mb-4 pb-2 border-b border-zinc-800">
               <h2 class="text-lg font-bold text-orange-400 flex items-center gap-2">
@@ -124,9 +122,9 @@
                 <textarea id="p-keluhan" rows="2" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Perut kembung, begah, pinggang pegal, dingin di anggota gerak..."></textarea>
               </div>
 
-              <!-- Input Foto Fisik / Wajah Pasien -->
+              <!-- Upload Foto Fisik -->
               <div class="md:col-span-2 pt-2 border-t border-zinc-800">
-                <label class="block text-orange-400 font-semibold mb-1"><i class="fa-solid fa-camera text-orange-500 mr-1"></i> Upload / Tangkap Foto Pasien (Visual Fisik / Keluhan):</label>
+                <label class="block text-orange-400 font-semibold mb-1"><i class="fa-solid fa-camera text-orange-500 mr-1"></i> Upload / Tangkap Foto Pasien (Visual Fisik):</label>
                 <input type="file" id="pasien-img-input" accept="image/*" capture="environment" onchange="previewPasienImage(event)" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-950 file:text-orange-400 border border-zinc-800 rounded-md w-full hover:file:bg-orange-900 cursor-pointer">
                 <div id="pasien-preview-container" class="mt-2 hidden">
                   <img id="pasien-img-preview" src="" alt="Preview Foto Pasien" class="h-32 object-cover rounded-md border border-orange-500/40">
@@ -203,12 +201,12 @@
             </div>
 
             <button onclick="prosesAITCM()" class="mt-6 w-full bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold py-3 px-4 rounded-lg shadow-lg transition flex items-center justify-center gap-2">
-              <i class="fa-solid fa-wand-magic-sparkles text-lg"></i> Olah Diagnosa Patologis AI & Generasi Nota
+              <i class="fa-solid fa-wand-magic-sparkles text-lg"></i> Olah Diagnosa Patologis AI & Generasi Struk
             </button>
           </div>
         </div>
 
-        <!-- Output Analisis TCM & Nota Pembayaran -->
+        <!-- Output Analisis TCM & Struk Pembayaran -->
         <div class="lg:col-span-5 space-y-6">
           <div class="bg-zinc-900 p-6 rounded-xl shadow-md border border-zinc-800 sticky top-20">
             <h2 class="text-lg font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800 flex items-center justify-between">
@@ -216,25 +214,25 @@
               <span id="ai-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin"></i> Mengolah...</span>
             </h2>
 
-            <!-- Box Nota Pembayaran & Action Buttons -->
+            <!-- Modul Struk Pembayaran -->
             <div id="nota-box" class="hidden mb-4 p-4 bg-zinc-950 border border-orange-500/40 rounded-lg space-y-3">
               <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
                 <span class="font-bold text-xs text-orange-400 flex items-center gap-1.5">
-                  <i class="fa-solid fa-receipt text-orange-500"></i> Nota Pembayaran Kasir RSI
+                  <i class="fa-solid fa-receipt text-orange-500"></i> Struk Transaksi RSI
                 </span>
                 <span id="nota-total-badge" class="text-xs font-bold bg-orange-950 text-orange-400 px-2 py-0.5 rounded border border-orange-500/30">Rp 0</span>
               </div>
 
-              <!-- Rincian Nota Teks Ringkas -->
+              <!-- Content Struk -->
               <div id="nota-details-content" class="text-xs text-zinc-300 font-mono space-y-1"></div>
 
-              <!-- Action Buttons Cetak Bluetooth & Share WA -->
+              <!-- Action Buttons -->
               <div class="grid grid-cols-2 gap-2 pt-2 border-t border-zinc-800">
                 <button onclick="cetakNotaBluetooth()" class="bg-zinc-800 hover:bg-zinc-700 text-orange-400 border border-orange-500/40 text-xs font-bold py-2 px-3 rounded-md transition flex items-center justify-center gap-1.5">
-                  <i class="fa-solid fa-print"></i> Print Bluetooth
+                  <i class="fa-solid fa-print"></i> Print Struk (Bluetooth)
                 </button>
                 <button onclick="shareNotaWA()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2 px-3 rounded-md transition flex items-center justify-center gap-1.5">
-                  <i class="fa-brands fa-whatsapp"></i> Share Nota WA
+                  <i class="fa-brands fa-whatsapp"></i> Share Struk WA
                 </button>
               </div>
             </div>
@@ -255,7 +253,7 @@
             <div id="ai-output-tcm" class="text-sm text-zinc-300 space-y-4 max-h-[50vh] overflow-y-auto pr-1">
               <div class="text-center py-12 text-zinc-500">
                 <i class="fa-solid fa-stethoscope text-4xl mb-3 block text-zinc-700"></i>
-                Isi data rekam medik lalu klik <strong>"Olah Diagnosa Patologis AI & Generasi Nota"</strong>.
+                Isi data rekam medik lalu klik <strong>"Olah Diagnosa Patologis AI & Generasi Struk"</strong>.
               </div>
             </div>
           </div>
@@ -303,45 +301,77 @@
       </div>
     </div>
 
-    <!-- TAB 3: KEUANGAN & AKUNTANSI AI -->
+    <!-- TAB 3: KEUANGAN 2 KOLOM (UANG MASUK & UANG KELUAR) -->
     <div id="section-keuangan" class="tab-content hidden">
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
-        <!-- Input Transaksi Keuangan -->
-        <div class="lg:col-span-6 space-y-6">
-          <div class="bg-zinc-900 p-6 rounded-xl shadow-md border border-zinc-800">
-            <h2 class="text-lg font-bold text-orange-400 mb-2 flex items-center gap-2">
-              <i class="fa-solid fa-receipt text-orange-500"></i> Input Transaksi Keuangan & Operasional
+        <!-- KOLOM 1: UANG MASUK -->
+        <div class="bg-zinc-900 p-6 rounded-xl shadow-md border border-emerald-500/30 space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-zinc-800">
+            <h2 class="text-lg font-bold text-emerald-400 flex items-center gap-2">
+              <i class="fa-solid fa-circle-arrow-down text-emerald-500"></i> Catatan Uang Masuk (Penerimaan Kas)
             </h2>
-            <p class="text-xs text-zinc-400 mb-4">Tuliskan transaksi bebas. AI mendeteksi mutasi herbal (pembelian/penjualan) dan mengubah stok otomatis di Tab 2.</p>
+            <span class="text-xs bg-emerald-950 text-emerald-400 px-2 py-1 rounded border border-emerald-500/30">Pemasukan</span>
+          </div>
 
-            <div class="space-y-4 text-sm">
-              <div>
-                <label class="block text-zinc-300 font-medium mb-1">Catatan Transaksi (Teks Bebas)</label>
-                <textarea id="fin-teks" rows="5" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Contoh: Beli Huang Qi 500 gram HPP 300 per gram total Rp 150.000, terima pembayaran terapi akupuntur Pak Ahmad Rp 150.000, penyerahan racikan herbal 50g Huang Qi..."></textarea>
-              </div>
-
-              <button onclick="prosesAIKeuangan()" class="w-full bg-orange-600 hover:bg-orange-500 text-zinc-950 font-bold py-3 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-calculator"></i> Proses Akuntansi & Auto-Update Stok
-              </button>
+          <div class="space-y-3 text-sm">
+            <div>
+              <label class="block text-zinc-300 font-medium mb-1">Nama Pasien / Pembayar *</label>
+              <input type="text" id="masuk-nama" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Contoh: Bpk. Ahmad">
             </div>
+            <div>
+              <label class="block text-zinc-300 font-medium mb-1">Nomor WhatsApp Pasien *</label>
+              <input type="text" id="masuk-wa" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="08123456789">
+            </div>
+            <div>
+              <label class="block text-zinc-300 font-medium mb-1">Keterangan Transaksi / Layanan</label>
+              <textarea id="masuk-ket" rows="2" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Pemasukan terapi akupuntur dan racikan herbal..."></textarea>
+            </div>
+            <div>
+              <label class="block text-zinc-300 font-medium mb-1">Jumlah Nominal Uang Masuk (Rp) *</label>
+              <input type="number" id="masuk-nominal" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="150000">
+            </div>
+            <div>
+              <label class="block text-emerald-400 font-semibold mb-1"><i class="fa-solid fa-camera mr-1"></i> Upload Foto Bukti Transfer / Nota (Opsional):</label>
+              <input type="file" accept="image/*" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-emerald-950 file:text-emerald-400 border border-zinc-800 rounded-md w-full cursor-pointer">
+            </div>
+
+            <button onclick="prosesUangMasuk()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold py-3 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-check-circle"></i> Simpan Uang Masuk & Buat Struk Transaksi
+            </button>
           </div>
         </div>
 
-        <!-- Output Laporan Akuntansi AI -->
-        <div class="lg:col-span-6 space-y-6">
-          <div class="bg-zinc-900 p-6 rounded-xl shadow-md border border-zinc-800">
-            <h2 class="text-lg font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800 flex items-center justify-between">
-              <span><i class="fa-solid fa-file-invoice-dollar text-orange-500"></i> Laporan Akuntansi Standar</span>
-              <span id="ai-fin-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin"></i> Mengolah...</span>
+        <!-- KOLOM 2: UANG KELUAR -->
+        <div class="bg-zinc-900 p-6 rounded-xl shadow-md border border-rose-500/30 space-y-4">
+          <div class="flex items-center justify-between pb-2 border-b border-zinc-800">
+            <h2 class="text-lg font-bold text-rose-400 flex items-center gap-2">
+              <i class="fa-solid fa-circle-arrow-up text-rose-500"></i> Catatan Uang Keluar (Pengeluaran Kas)
             </h2>
+            <span class="text-xs bg-rose-950 text-rose-400 px-2 py-1 rounded border border-rose-500/30">Pengeluaran</span>
+          </div>
 
-            <div id="ai-output-keuangan" class="text-sm text-zinc-300 space-y-4 max-h-[75vh] overflow-y-auto pr-1">
-              <div class="text-center py-12 text-zinc-500">
-                <i class="fa-solid fa-chart-line text-4xl mb-3 block text-zinc-700"></i>
-                Input catatan transaksi untuk menyusun <strong>Jurnal Umum, Buku Besar, Laporan Laba Rugi</strong>, dan memperbarui stok herbal.
-              </div>
+          <div class="space-y-3 text-sm">
+            <div>
+              <label class="block text-zinc-300 font-medium mb-1">Penerima / Supplier / Keperluan *</label>
+              <input type="text" id="keluar-keperluan" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Contoh: Belanja Stok Huang Qi 500g">
             </div>
+            <div>
+              <label class="block text-zinc-300 font-medium mb-1">Keterangan Rincian Pengeluaran</label>
+              <textarea id="keluar-ket" rows="2" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Pembelian bahan herbal/operasional klinik..."></textarea>
+            </div>
+            <div>
+              <label class="block text-zinc-300 font-medium mb-1">Jumlah Nominal Uang Keluar (Rp) *</label>
+              <input type="number" id="keluar-nominal" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-rose-500 outline-none" placeholder="100000">
+            </div>
+            <div>
+              <label class="block text-rose-400 font-semibold mb-1"><i class="fa-solid fa-camera mr-1"></i> Upload Foto Struk / Nota Belanja (Opsional):</label>
+              <input type="file" accept="image/*" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-rose-950 file:text-rose-400 border border-zinc-800 rounded-md w-full cursor-pointer">
+            </div>
+
+            <button onclick="prosesUangKeluar()" class="w-full bg-rose-600 hover:bg-rose-500 text-slate-950 font-bold py-3 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-save"></i> Simpan Catatan Uang Keluar
+            </button>
           </div>
         </div>
 
@@ -354,7 +384,7 @@
   <div id="nota-print-area" class="hidden">
     <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 5px;">
       <strong style="font-size: 11pt;">RUMAH SEHAT INSANI</strong><br>
-      <span style="font-size: 8pt;">Klinik Terapi TCM & Herbal</span><br>
+      <span style="font-size: 7.5pt;">Jl. Raya Sungai Lareh, Perum Wahana C-2 Lumin, Padang</span><br>
       <span style="font-size: 8pt;" id="print-nota-tgl"></span>
     </div>
     <div style="font-size: 8pt; margin-bottom: 5px;">
@@ -378,7 +408,7 @@
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwtSXTQMzSukzpdlG1Jdgqza61eY_ohK1HJC-ZUMg_9ttEfDZZpGAtCNFDgv7l2WxBo/exec";
 
     // Storage Database lokal
-    let stokHerbal = JSON.parse(localStorage.getItem('rsi_stok_v6')) || [
+    let stokHerbal = JSON.parse(localStorage.getItem('rsi_stok_v7')) || [
       { nama: "Huang Qi (Astragalus)", jumlah: 500, hpp: 300 },
       { nama: "Dang Shen (Codonopsis)", jumlah: 350, hpp: 400 },
       { nama: "Bai Zhu (Atractylodes)", jumlah: 400, hpp: 350 },
@@ -386,7 +416,7 @@
       { nama: "Jahe Merah Powder", jumlah: 1000, hpp: 100 }
     ];
 
-    let dbPasien = JSON.parse(localStorage.getItem('rsi_pasien_v6')) || {};
+    let dbPasien = JSON.parse(localStorage.getItem('rsi_pasien_v7')) || {};
     let base64TongueImg = "";
     let base64PasienImg = "";
     let currentNotaData = null;
@@ -406,12 +436,12 @@
     }
 
     function saveStokToStorage() {
-      localStorage.setItem('rsi_stok_v6', JSON.stringify(stokHerbal));
+      localStorage.setItem('rsi_stok_v7', JSON.stringify(stokHerbal));
       syncToGDrive();
     }
 
     function savePasienToStorage() {
-      localStorage.setItem('rsi_pasien_v6', JSON.stringify(dbPasien));
+      localStorage.setItem('rsi_pasien_v7', JSON.stringify(dbPasien));
       renderPasienDropdown();
     }
 
@@ -560,7 +590,7 @@
         body: JSON.stringify({
           model: "deepseek-chat",
           messages: [
-            { role: "system", content: "Anda adalah Pakar Senior Traditional Chinese Medicine (TCM) & Akuntan Publik Profesional RSI." },
+            { role: "system", content: "Anda adalah Pakar Senior Traditional Chinese Medicine (TCM) RSI Padang." },
             { role: "user", content: promptText }
           ],
           temperature: 0.1
@@ -576,7 +606,7 @@
       return data.choices[0].message.content;
     }
 
-    // Olah Diagnosa Patologis & Hitung Nota Pembayaran
+    // Olah Diagnosa Patologis & Hitung Struk Pembayaran
     async function prosesAITCM() {
       const nama = document.getElementById('p-nama').value.trim();
       const wa = document.getElementById('p-wa').value.trim();
@@ -597,11 +627,11 @@
 
       let listStokTxt = stokHerbal.map(s => `${s.nama} (Stok: ${s.jumlah}g, HPP: Rp${s.hpp}/g, Harga Jual: Rp${Math.round(s.hpp*2.5)}/g)`).join('; ');
 
-      let fotoPasienNote = base64PasienImg ? "Tersedia foto fisik/wajah pasien untuk bahan pengamatan." : "Tidak ada foto fisik tambahan.";
+      let fotoPasienNote = base64PasienImg ? "Tersedia foto fisik/wajah pasien untuk pengamatan." : "Tidak ada foto fisik.";
       let fotoLidahNote = base64TongueImg ? "Tersedia foto lidah pasien." : "Tidak ada foto lidah.";
 
       const prompt = `
-        Olah Diagnosa Patologis TCM Lengkap untuk Rumah Sehat Insani (RSI):
+        Olah Diagnosa Patologis TCM Lengkap untuk Rumah Sehat Insani (RSI) Padang:
         Pasien: ${nama} (${usia}), WA: ${wa}
         Keluhan Utama: ${keluhan}
         Catatan Foto Visual: ${fotoPasienNote}, ${fotoLidahNote}
@@ -635,7 +665,7 @@
       const loadingEl = document.getElementById('ai-loading');
 
       loadingEl.classList.remove('hidden');
-      outputEl.innerHTML = `<div class="p-4 bg-orange-950/60 text-orange-400 border border-orange-500/30 rounded"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memproses Diagnosa & Menyusun Nota Kasir...</div>`;
+      outputEl.innerHTML = `<div class="p-4 bg-orange-950/60 text-orange-400 border border-orange-500/30 rounded"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memproses Diagnosa & Menyusun Struk...</div>`;
 
       try {
         const result = await callDeepSeekAPI(prompt);
@@ -655,7 +685,7 @@
 
         outputEl.innerHTML = `<div class="prose text-sm leading-relaxed">${htmlReport}</div>`;
 
-        // Generasi Nota Pembayaran
+        // Generasi Data Struk
         let totalHerbal = 0;
         let itemsNotaHtml = `<div>• Jasa Terapi & Tindakan TCM: ${formatRp(biayaTerapi)}</div>`;
         let itemsNotaWA = `• Jasa Terapi TCM: ${formatRp(biayaTerapi)}\n`;
@@ -673,11 +703,12 @@
         });
 
         let grandTotal = biayaTerapi + totalHerbal;
+        let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
         currentNotaData = {
           pasien: nama,
           wa: wa,
-          tanggal: new Date().toLocaleDateString('id-ID') + " " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}),
+          tanggal: wktStr,
           biayaTerapi: biayaTerapi,
           totalHerbal: totalHerbal,
           grandTotal: grandTotal,
@@ -685,7 +716,7 @@
           itemsWA: itemsNotaWA
         };
 
-        // Render UI Nota
+        // Render UI Struk
         document.getElementById('nota-details-content').innerHTML = itemsNotaHtml;
         document.getElementById('nota-total-badge').innerText = "TOTAL: " + formatRp(grandTotal);
         document.getElementById('nota-box').classList.remove('hidden');
@@ -695,7 +726,7 @@
           dbPasien[nama] = { nama, wa, usia, kunjungan: [] };
         }
         dbPasien[nama].kunjungan.push({
-          tanggal: new Date().toLocaleDateString('id-ID'),
+          tanggal: wktStr,
           keluhan,
           totalBiaya: grandTotal,
           jadwalBerikutnya: jadwal || "Belum dijadwalkan",
@@ -705,7 +736,7 @@
 
         // Setup WA Pengingat
         let tglJadwalStr = jadwal ? new Date(jadwal).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' }) : "sesuai kesepakatan";
-        let waMsg = `Assalamu'alaikum Wr. Wb. Bpk/Ibu *${nama}*,\n\nTerima kasih telah melakukan terapi di *Rumah Sehat Insani (RSI)*.\n\n*Jadwal Terapi Lanjutan Anda:* \n📅 ${tglJadwalStr}\n\n*Catatan Pemeliharaan Kesehatan:* Mohon konsumsi racikan herbal secara teratur dan istirahat yang cukup.\n\nSemoga lekas sehat & afiat. Salam, *Coach Aldi - RSI*.`;
+        let waMsg = `Assalamu'alaikum Wr. Wb. Bpk/Ibu *${nama}*,\n\nTerima kasih telah melakukan terapi di *Rumah Sehat Insani (RSI) Padang*.\n\n*Jadwal Terapi Lanjutan Anda:* \n📅 ${tglJadwalStr}\n\n*Catatan Pemeliharaan Kesehatan:* Mohon konsumsi racikan herbal secara teratur dan istirahat yang cukup.\n\nSemoga lekas sehat & afiat. Salam, *Coach Aldi - RSI*.`;
         document.getElementById('wa-text-template').value = waMsg;
         document.getElementById('wa-reminder-box').classList.remove('hidden');
 
@@ -716,10 +747,10 @@
       }
     }
 
-    // Fungsi Cetak Nota via Bluetooth Printer
+    // Fungsi Cetak Struk via Bluetooth Printer
     function cetakNotaBluetooth() {
       if (!currentNotaData) {
-        alert("Belum ada data nota yang siap dicetak.");
+        alert("Belum ada data struk yang siap dicetak.");
         return;
       }
 
@@ -734,90 +765,76 @@
       document.getElementById('nota-print-area').classList.add('hidden');
     }
 
-    // Fungsi Share Nota Pembayaran ke WA
+    // Fungsi Share Struk ke WA
     function shareNotaWA() {
       if (!currentNotaData) {
-        alert("Belum ada nota yang siap dibagikan.");
+        alert("Belum ada struk yang siap dibagikan.");
         return;
       }
 
       let waNum = currentNotaData.wa.replace(/[^0-9]/g, '');
       if (waNum.startsWith('0')) waNum = '62' + waNum.slice(1);
 
-      let textNota = `*RUMAH SEHAT INSANI (RSI)*\n_Bukti Pembayaran / Nota Digital_\n----------------------------------------\n*Tanggal:* ${currentNotaData.tanggal}\n*Pasien:* ${currentNotaData.pasien}\n\n*Rincian Transaksi:*\n${currentNotaData.itemsWA}----------------------------------------\n*TOTAL BAYAR:* *${formatRp(currentNotaData.grandTotal)}*\n----------------------------------------\n_Semoga lekas sehat & afiat._\nSalam, *Coach Aldi - RSI*`;
+      let textNota = `*RUMAH SEHAT INSANI (RSI)*\nAlamat: Jl. Raya Sungai Lareh, Perum Wahana C-2 Lumin, Padang\n_Bukti Pembayaran / Struk Digital_\n----------------------------------------\n*Waktu:* ${currentNotaData.tanggal}\n*Pasien:* ${currentNotaData.pasien}\n\n*Rincian Transaksi:*\n${currentNotaData.itemsWA}----------------------------------------\n*TOTAL BAYAR:* *${formatRp(currentNotaData.grandTotal)}*\n----------------------------------------\n_Semoga lekas sehat & afiat._\nSalam, *Coach Aldi - RSI Padang*`;
 
       window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(textNota)}`, '_blank');
+    }
+
+    // Eksekusi Uang Masuk dari Tab Keuangan
+    function prosesUangMasuk() {
+      const nama = document.getElementById('masuk-nama').value.trim();
+      const wa = document.getElementById('masuk-wa').value.trim();
+      const ket = document.getElementById('masuk-ket').value.trim() || "Penerimaan Terapi / Herbal";
+      const nominal = parseFloat(document.getElementById('masuk-nominal').value) || 0;
+
+      if (!nama || !wa || nominal <= 0) {
+        alert("Nama Pembayar, Nomor WA, dan Nominal Uang Masuk wajib diisi!");
+        return;
+      }
+
+      let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
+
+      currentNotaData = {
+        pasien: nama,
+        wa: wa,
+        tanggal: wktStr,
+        grandTotal: nominal,
+        itemsHtml: `<div>• ${ket}: ${formatRp(nominal)}</div>`,
+        itemsWA: `• ${ket}: ${formatRp(nominal)}\n`
+      };
+
+      // Tampilkan Struk di UI
+      switchTab('tcm');
+      document.getElementById('nota-details-content').innerHTML = currentNotaData.itemsHtml;
+      document.getElementById('nota-total-badge').innerText = "TOTAL: " + formatRp(nominal);
+      document.getElementById('nota-box').classList.remove('hidden');
+
+      alert("Pencatatan Uang Masuk Berhasil! Struk transaksi siap dicetak atau dikirim via WA.");
+    }
+
+    // Eksekusi Uang Keluar dari Tab Keuangan
+    function prosesUangKeluar() {
+      const keperluan = document.getElementById('keluar-keperluan').value.trim();
+      const nominal = parseFloat(document.getElementById('keluar-nominal').value) || 0;
+
+      if (!keperluan || nominal <= 0) {
+        alert("Keperluan dan Nominal Uang Keluar wajib diisi!");
+        return;
+      }
+
+      alert("Catatan Pengeluaran Kas sebesar " + formatRp(nominal) + " berhasil disimpan!");
+      document.getElementById('keluar-keperluan').value = '';
+      document.getElementById('keluar-ket').value = '';
+      document.getElementById('keluar-nominal').value = '';
     }
 
     function kirimPesanWA() {
       const waNum = document.getElementById('p-wa').value.replace(/[^0-9]/g, '');
       const msg = encodeURIComponent(document.getElementById('wa-text-template').value);
       let formattedNum = waNum;
-      if (waNum.startsWith('0')) formattedNum = '62' + waNum.slice(1); me
+      if (waNum.startsWith('0')) formattedNum = '62' + waNum.slice(1);
       
       window.open(`https://wa.me/${formattedNum}?text=${msg}`, '_blank');
-    }
-
-    async function prosesAIKeuangan() {
-      const teksKeuangan = document.getElementById('fin-teks').value;
-
-      if (!teksKeuangan) {
-        alert("Silakan tuliskan catatan transaksi keuangan terlebih dahulu.");
-        return;
-      }
-
-      let listStokTxt = stokHerbal.map(s => `${s.nama} (HPP: Rp${s.hpp}/g, Harga Jual: Rp${Math.round(s.hpp*2.5)}/g)`).join('; ');
-
-      const prompt = `
-        Sebagai Akuntan Senior RSI, olah catatan transaksi keuangan berikut:
-        Catatan Transaksi: "${teksKeuangan}"
-        Data Referensi Stok Herbal RSI: ${listStokTxt}
-
-        Respon WAJIB dalam format terstruktur:
-        ---MUTASI_STOK---
-        [
-          {"namaHerbal": "Nama Herbal", "jumlahGram": 500, "tipe": "beli", "hppPerGram": 300},
-          {"namaHerbal": "Nama Herbal", "jumlahGram": 50, "tipe": "jual", "hppPerGram": 300}
-        ]
-        ---AKHIR_MUTASI---
-
-        ---LAPORAN_HTML---
-        <h3>1. Jurnal Umum (General Journal)</h3>
-        <p>Tabel Jurnal Umum Debet dan Kredit.</p>
-        <h3>2. Ringkasan Buku Besar</h3>
-        <p>Tabel Buku Besar per akun.</p>
-        <h3>3. Laporan Laba Rugi (Income Statement)</h3>
-        <p>Rincian Pendapatan, HPP, Beban, Laba Bersih.</p>
-        ---AKHIR_LAPORAN---
-      `;
-
-      const outputEl = document.getElementById('ai-output-keuangan');
-      const loadingEl = document.getElementById('ai-fin-loading');
-
-      loadingEl.classList.remove('hidden');
-      outputEl.innerHTML = `<div class="p-4 bg-orange-950/60 text-orange-400 border border-orange-500/30 rounded"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Menyusun Akuntansi & Mengubah Stok Herbal...</div>`;
-
-      try {
-        const result = await callDeepSeekAPI(prompt);
-
-        const mutasiMatch = result.match(/---MUTASI_STOK---([\s\S]*?)---AKHIR_MUTASI---/);
-        if (mutasiMatch && mutasiMatch[1]) {
-          try {
-            const mutasiData = JSON.parse(mutasiMatch[1].trim());
-            applyMutasiStok(mutasiData);
-          } catch(e) { console.error("Error parsing JSON stok keuangan:", e); }
-        }
-
-        let htmlReport = result;
-        const htmlMatch = result.match(/---LAPORAN_HTML---([\s\S]*?)---AKHIR_LAPORAN---/);
-        if (htmlMatch && htmlMatch[1]) htmlReport = htmlMatch[1].trim();
-
-        outputEl.innerHTML = `<div class="prose text-sm leading-relaxed">${htmlReport}</div>`;
-      } catch (err) {
-        outputEl.innerHTML = `<div class="p-4 bg-red-950/60 text-red-400 border border-red-500/30 rounded mb-3"><i class="fa-solid fa-circle-exclamation mr-1"></i> Error: ${err.message}</div>`;
-      } finally {
-        loadingEl.classList.add('hidden');
-      }
     }
 
     window.onload = function() {
