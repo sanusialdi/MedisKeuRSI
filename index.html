@@ -488,6 +488,7 @@
       localStorage.setItem('rsi_jurnal_v9', JSON.stringify(dbJurnalKas));
     }
 
+    // Fungsi Sync Stok ke Google Drive
     async function syncToGDrive() {
       if (!GAS_WEBAPP_URL) return;
       try {
@@ -497,6 +498,24 @@
           body: JSON.stringify({ action: "saveStok", stok: stokHerbal })
         });
       } catch (err) { console.error("Gagal sync GDrive:", err); }
+    }
+
+    // Fungsi Sync Transaksi Keuangan ke Google Drive
+    async function syncTransaksiToGDrive(transaksiObj) {
+      if (!GAS_WEBAPP_URL) return;
+      try {
+        await fetch(GAS_WEBAPP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({
+            action: "saveTransaksi",
+            transaksi: transaksiObj
+          })
+        });
+        console.log("Transaksi berhasil dikirim ke Drive");
+      } catch (err) {
+        console.error("Gagal sync transaksi ke Drive:", err);
+      }
     }
 
     // Pindaian Foto Struk dengan Tesseract OCR Engine
@@ -799,6 +818,15 @@
           itemsWA: itemsNotaWA
         };
 
+        let trxData = {
+          waktu: wktStr,
+          jenis: "MASUK",
+          subjek: nama,
+          wa: wa,
+          keterangan: `Penerimaan Terapi & Herbal Pasien: ${nama}`,
+          nominal: grandTotal
+        };
+
         dbJurnalKas.push({
           tanggal: wktStr,
           jenis: "MASUK",
@@ -806,6 +834,9 @@
           nominal: grandTotal
         });
         saveJurnalToStorage();
+        
+        // Kirim transaksi ke Google Drive
+        syncTransaksiToGDrive(trxData);
 
         document.getElementById('nota-details-content').innerHTML = itemsNotaHtml;
         document.getElementById('nota-total-badge').innerText = "TOTAL: " + formatRp(grandTotal);
@@ -888,6 +919,15 @@
         itemsWA: `• ${ket}: ${formatRp(nominal)}\n`
       };
 
+      let trxData = {
+        waktu: wktStr,
+        jenis: "MASUK",
+        subjek: nama,
+        wa: wa,
+        keterangan: ket,
+        nominal: nominal
+      };
+
       dbJurnalKas.push({
         tanggal: wktStr,
         jenis: "MASUK",
@@ -895,6 +935,9 @@
         nominal: nominal
       });
       saveJurnalToStorage();
+
+      // Kirim transaksi ke Google Drive
+      syncTransaksiToGDrive(trxData);
 
       await olahSingleJurnalAI("UANG MASUK", nama, ket, nominal);
 
@@ -914,6 +957,15 @@
 
       let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
+      let trxData = {
+        waktu: wktStr,
+        jenis: "KELUAR",
+        subjek: "Operasional",
+        wa: "-",
+        keterangan: teksBebas,
+        nominal: 0
+      };
+
       dbJurnalKas.push({
         tanggal: wktStr,
         jenis: "KELUAR",
@@ -921,6 +973,9 @@
         nominal: 0
       });
       saveJurnalToStorage();
+
+      // Kirim transaksi ke Google Drive
+      syncTransaksiToGDrive(trxData);
 
       await olahSingleJurnalAI("UANG KELUAR", "Operational", teksBebas, 0);
       document.getElementById('keluar-teks-bebas').value = '';
