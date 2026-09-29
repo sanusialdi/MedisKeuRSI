@@ -43,7 +43,7 @@
     <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-3">
         <!-- Logo Yin-Yang -->
-        <i class="fa-solid fa-yin-yang text-3xl text-orange-500 animate-spin-slow"></i>
+        <i class="fa-solid fa-yin-yang text-3xl text-orange-500"></i>
         <div>
           <h1 class="font-bold text-lg leading-tight text-orange-400">Rumah Sehat Insani (RSI)</h1>
           <p class="text-xs text-zinc-400">Jl. Raya Sungai Lareh, Perum Wahana C-2 Lumin, Padang</p>
@@ -75,8 +75,59 @@
     <!-- TAB 1: REKAM MEDIK TCM & PASIEN -->
     <div id="section-tcm" class="tab-content block space-y-6">
       
+      <!-- NAVIGASI PILIHAN PASIEN BARU vs PASIEN LAMA -->
+      <div class="bg-zinc-900 p-4 rounded-xl border border-orange-500/30 flex flex-col sm:flex-row gap-3 justify-between items-center">
+        <div>
+          <h2 class="font-bold text-orange-400 text-sm"><i class="fa-solid fa-users mr-1"></i> Data Pasien Terapi</h2>
+          <p class="text-xs text-zinc-400">Pilih registrasi pasien baru atau cari data riwayat pasien lama.</p>
+        </div>
+        <div class="flex gap-2 w-full sm:w-auto">
+          <button onclick="setJenisPasien('baru')" id="btn-p-baru" class="flex-1 sm:flex-none bg-orange-600 text-zinc-950 font-extrabold px-4 py-2 rounded-lg text-xs transition border border-orange-500">
+            <i class="fa-solid fa-user-plus mr-1"></i> Pasien Baru
+          </button>
+          <button onclick="setJenisPasien('lama')" id="btn-p-lama" class="flex-1 sm:flex-none bg-zinc-800 text-zinc-300 hover:text-orange-400 font-extrabold px-4 py-2 rounded-lg text-xs transition border border-zinc-700">
+            <i class="fa-solid fa-user-clock mr-1"></i> Pasien Lama
+          </button>
+        </div>
+      </div>
+
+      <!-- AREA PENCARIAN & RIWAYAT PASIEN LAMA -->
+      <div id="area-pasien-lama" class="hidden bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4">
+        <h3 class="text-sm font-bold text-orange-400"><i class="fa-solid fa-magnifying-glass mr-1"></i> Cari Data Pasien Lama</h3>
+        <div class="relative">
+          <input type="text" id="input-cari-pasien" onkeyup="cariPasienLama()" placeholder="Ketik Nama atau Nomor WA Pasien..." class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none">
+        </div>
+        
+        <!-- Hasil Daftar Pasien -->
+        <div id="list-hasil-pasien" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1"></div>
+
+        <!-- TAMPILAN RINGKASAN REKAM MEDIK TERAKHIR PASIEN LAMA -->
+        <div id="card-riwayat-pasien" class="hidden p-4 bg-zinc-950 border border-orange-500/40 rounded-lg space-y-3">
+          <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+            <div>
+              <h4 id="rw-nama" class="font-bold text-base text-orange-400"></h4>
+              <p id="rw-meta" class="text-xs text-zinc-400"></p>
+            </div>
+            <span id="rw-kunjungan-count" class="text-xs bg-orange-950 text-orange-400 font-bold px-2.5 py-1 rounded border border-orange-500/30"></span>
+          </div>
+
+          <!-- Ringkasan Kunjungan Terakhir -->
+          <div class="space-y-2 text-xs">
+            <div class="font-bold text-zinc-300"><i class="fa-solid fa-clock-rotate-left mr-1 text-orange-500"></i> Ringkasan Rekam Medik Kunjungan Terakhir:</div>
+            <div id="rw-syndrom" class="p-2 bg-zinc-900 rounded border border-zinc-800 text-zinc-300"></div>
+            <div id="rw-akupuntur" class="p-2 bg-zinc-900 rounded border border-zinc-800 text-zinc-300"></div>
+            <div id="rw-herbal" class="p-2 bg-zinc-900 rounded border border-zinc-800 text-zinc-300"></div>
+          </div>
+
+          <!-- Tombol Tambah Diagnosa Kunjungan Hari Ini -->
+          <button onclick="bukaDiagnosaKunjunganHariIni()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-extrabold py-2.5 px-4 rounded-lg transition flex items-center justify-center gap-2 text-xs">
+            <i class="fa-solid fa-calendar-plus text-sm"></i> + Tambah Diagnosa Kunjungan Hari Ini
+          </button>
+        </div>
+      </div>
+
       <!-- Tombol Accordion Input Data Pasien -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+      <div id="accordion-form-wrapper" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <button onclick="toggleFormSection('sec-identitas')" class="bg-zinc-900 hover:bg-zinc-800 border border-orange-500/30 p-4 rounded-xl text-left flex items-center justify-between transition group">
           <span class="font-bold text-sm text-orange-400 group-hover:text-orange-300"><i class="fa-solid fa-id-card mr-2"></i> 1. Identitas & Kontak</span>
           <i class="fa-solid fa-chevron-down text-xs text-zinc-500"></i>
@@ -99,12 +150,6 @@
       <!-- A. Identitas dan Kontak Pasien -->
       <div id="sec-identitas" class="form-accordion-content hidden bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-md">
         <h3 class="text-md font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800"><i class="fa-solid fa-id-card mr-2"></i> Identitas & Kontak Pasien</h3>
-        <div class="mb-4 bg-zinc-800/60 p-3 rounded-lg border border-zinc-700">
-          <label class="block text-xs font-bold text-orange-400 mb-1"><i class="fa-solid fa-magnifying-glass mr-1"></i> Cari / Pilih Pasien Terdaftar (Kunjungan Ulang):</label>
-          <select id="select-pasien" onchange="loadSelectedPasien()" class="w-full p-2 border border-zinc-700 rounded-md text-sm bg-zinc-900 text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none">
-            <option value="new">-- Pasien Baru --</option>
-          </select>
-        </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div>
             <label class="block text-zinc-300 font-medium mb-1">Nama Pasien *</label>
@@ -186,23 +231,106 @@
         </div>
       </div>
 
-      <!-- D. Pemeriksaan Nadi -->
+      <!-- D. Pemeriksaan Nadi (Dibagi Kiri/Kanan & Cun-Guan-Chi) -->
       <div id="sec-nadi" class="form-accordion-content hidden bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-md">
         <h3 class="text-md font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800"><i class="fa-solid fa-hand-holding-medical mr-2"></i> Pemeriksaan Nadi (Mai Zhen)</h3>
-        <div class="space-y-4 text-sm">
-          <div>
-            <span class="font-semibold text-orange-300 block mb-2">Kedalaman & Karakter Nadi:</span>
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <label class="flex items-center gap-2"><input type="checkbox" name="nadi_tipe" value="Fu (Mengambang)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Fu (Mengambang)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="nadi_tipe" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Chen (Tenggelam)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="nadi_tipe" value="Chi (Lambat)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Chi (Lambat)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="nadi_tipe" value="Shuo (Cepat)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Shuo (Cepat)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="nadi_tipe" value="Xu (Lemah)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Xu (Lemah)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="nadi_tipe" value="Shi (Kuat)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Shi (Kuat)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="nadi_tipe" value="Xian (Tegang)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Xian (Tegang)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="nadi_tipe" value="Hua (Licin)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Hua (Licin)</label>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm">
+          
+          <!-- NADI TANGAN KANAN -->
+          <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-4">
+            <div class="font-bold text-orange-400 text-sm border-b border-zinc-800 pb-2 flex items-center justify-between">
+              <span><i class="fa-solid fa-hand-back-fist mr-1 text-orange-500"></i> Nadi Tangan Kanan (Right Pulse)</span>
+              <span class="text-[10px] text-zinc-500">Paru, Limpa, Ginjal Mingmen</span>
+            </div>
+
+            <!-- Cun Kanan -->
+            <div class="space-y-1">
+              <span class="text-xs font-bold text-orange-300">1. Cun (寸) - Paru-Paru (Fei):</span>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Fu (Mengambang)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Fu (Mengambang)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Xu (Lemah)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Shi (Kuat)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shi (Kuat)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Hua (Licin)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Hua (Licin)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Shuo (Cepat)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shuo (Cepat)</label>
+              </div>
+            </div>
+
+            <!-- Guan Kanan -->
+            <div class="space-y-1 pt-2 border-t border-zinc-900">
+              <span class="text-xs font-bold text-orange-300">2. Guan (关) - Limpa & Lambung (Pi/Wei):</span>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Fu (Mengambang)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Fu (Mengambang)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Xu (Lemah)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Huan (Lambat/Sederhana)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Huan (Sederhana)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Hua (Licin/Lembab)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Hua (Licin)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Ru (Lembur/Tipis)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Ru (Lembut)</label>
+              </div>
+            </div>
+
+            <!-- Chi Kanan -->
+            <div class="space-y-1 pt-2 border-t border-zinc-900">
+              <span class="text-xs font-bold text-orange-300">3. Chi (尺) - Ginjal Yang / Mingmen (Shen Yang):</span>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Chi (Lambat/Dingin)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chi (Lambat)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Xu (Lemah/Kosong)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Wei (Sangat Kecil)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Wei (Halus/Kecil)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Fu (Mengambang)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Fu (Mengambang)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Shi (Kuat)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shi (Kuat)</label>
+              </div>
             </div>
           </div>
+
+          <!-- NADI TANGAN KIRI -->
+          <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-4">
+            <div class="font-bold text-orange-400 text-sm border-b border-zinc-800 pb-2 flex items-center justify-between">
+              <span><i class="fa-solid fa-hand-back-fist mr-1 text-orange-500"></i> Nadi Tangan Kiri (Left Pulse)</span>
+              <span class="text-[10px] text-zinc-500">Jantung, Hati, Ginjal Yin</span>
+            </div>
+
+            <!-- Cun Kiri -->
+            <div class="space-y-1">
+              <span class="text-xs font-bold text-orange-300">1. Cun (寸) - Jantung (Xin):</span>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Fu (Mengambang)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Fu (Mengambang)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Xi (Halus/Kecil)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xi (Halus)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Shuo (Cepat/Panas)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shuo (Cepat)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Se (Kasar/Stagnasi)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Se (Kasar)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Xu (Lemah)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
+              </div>
+            </div>
+
+            <!-- Guan Kiri -->
+            <div class="space-y-1 pt-2 border-t border-zinc-900">
+              <span class="text-xs font-bold text-orange-300">2. Guan (关) - Hati & Empedu (Gan/Dan):</span>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Xian (Tegang/Senar)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xian (Tegang)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Shi (Kuat)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shi (Kuat)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Hua (Licin)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Hua (Licin)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Se (Kasar)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Se (Kasar)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Xu (Lemah)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
+              </div>
+            </div>
+
+            <!-- Chi Kiri -->
+            <div class="space-y-1 pt-2 border-t border-zinc-900">
+              <span class="text-xs font-bold text-orange-300">3. Chi (尺) - Ginjal Yin / Kandung Kemih (Shen Yin):</span>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Xi (Halus/Tipis)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xi (Halus)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Shuo (Cepat/Defis.Yin)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shuo (Cepat)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Xu (Lemah)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Wei (Sangat Halus)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Wei (Sangat Halus)</label>
+                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Fu (Mengambang)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Fu (Mengambang)</label>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -239,7 +367,8 @@
           <div id="diag-stok" class="diag-tab-content hidden prose"></div>
           <div id="diag-preparasi" class="diag-tab-content hidden space-y-4">
             <div id="preparasi-text" class="prose"></div>
-            <!-- Modul Struk & Tombol Transaksi -->
+            
+            <!-- Modul Struk & Tombol Murni Cetak/Share (Tanpa Otomatis Jurnal) -->
             <div class="p-4 bg-zinc-900 border border-orange-500/40 rounded-lg space-y-3">
               <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
                 <span class="font-bold text-xs text-orange-400"><i class="fa-solid fa-receipt mr-1"></i> Struk Transaksi Terapi & Herbal Pasien</span>
@@ -247,13 +376,13 @@
               </div>
               <div id="nota-details-content" class="text-xs text-zinc-300 font-mono space-y-1"></div>
               
-              <!-- Tombol Eksekusi Transaksi -->
+              <!-- Tombol Eksekusi Cetak & Share (Murni tanpa Jurnal Otomatis) -->
               <div class="grid grid-cols-2 gap-2 pt-2 border-t border-zinc-800">
-                <button onclick="eksekusiTransaksiTCM('print')" class="bg-zinc-800 hover:bg-zinc-700 text-orange-400 border border-orange-500/40 text-xs font-bold py-2.5 px-3 rounded-md transition flex items-center justify-center gap-1.5">
-                  <i class="fa-solid fa-print"></i> Print Struk Bluetooth & Masuk Kas
+                <button onclick="cetakNotaBluetooth()" class="bg-zinc-800 hover:bg-zinc-700 text-orange-400 border border-orange-500/40 text-xs font-bold py-2.5 px-3 rounded-md transition flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-print"></i> Print Struk Bluetooth
                 </button>
-                <button onclick="eksekusiTransaksiTCM('wa')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 px-3 rounded-md transition flex items-center justify-center gap-1.5">
-                  <i class="fa-brands fa-whatsapp"></i> Share WA Struk & Masuk Kas
+                <button onclick="shareNotaWA()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold py-2.5 px-3 rounded-md transition flex items-center justify-center gap-1.5">
+                  <i class="fa-brands fa-whatsapp"></i> Share Struk ke WA Pasien
                 </button>
               </div>
             </div>
@@ -442,7 +571,7 @@
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzqchGuNSv4FIFFdIbuXpDJvUURhBa_VmUhoq71VfudPiG85ZS4V6-ZxcxUoWwtokHl/exec";
 
     // Storage Database lokal
-    let stokHerbal = JSON.parse(localStorage.getItem('rsi_stok_v10')) || [
+    let stokHerbal = JSON.parse(localStorage.getItem('rsi_stok_v11')) || [
       { nama: "Huang Qi (Astragalus)", jumlah: 500, hpp: 300 },
       { nama: "Dang Shen (Codonopsis)", jumlah: 350, hpp: 400 },
       { nama: "Bai Zhu (Atractylodes)", jumlah: 400, hpp: 350 },
@@ -450,9 +579,10 @@
       { nama: "Jahe Merah Powder", jumlah: 1000, hpp: 100 }
     ];
 
-    let dbPasien = JSON.parse(localStorage.getItem('rsi_pasien_v10')) || {};
-    let dbJurnalKas = JSON.parse(localStorage.getItem('rsi_jurnal_v10')) || [];
+    let dbPasien = JSON.parse(localStorage.getItem('rsi_pasien_v11')) || {};
+    let dbJurnalKas = JSON.parse(localStorage.getItem('rsi_jurnal_v11')) || [];
     
+    let selectedPasienLamaKey = null;
     let base64TongueImg = "";
     let base64PasienImg = "";
     let currentNotaData = null;
@@ -470,6 +600,86 @@
 
       if(tabName === 'stok') renderStokTable();
       if(tabName === 'keuangan') renderKeuanganDropdownPasien();
+    }
+
+    function setJenisPasien(tipe) {
+      const btnBaru = document.getElementById('btn-p-baru');
+      const btnLama = document.getElementById('btn-p-lama');
+      const areaLama = document.getElementById('area-pasien-lama');
+
+      if (tipe === 'baru') {
+        btnBaru.className = "flex-1 sm:flex-none bg-orange-600 text-zinc-950 font-extrabold px-4 py-2 rounded-lg text-xs transition border border-orange-500";
+        btnLama.className = "flex-1 sm:flex-none bg-zinc-800 text-zinc-300 hover:text-orange-400 font-extrabold px-4 py-2 rounded-lg text-xs transition border border-zinc-700";
+        areaLama.classList.add('hidden');
+        resetFormPasien();
+        toggleFormSection('sec-identitas');
+      } else {
+        btnLama.className = "flex-1 sm:flex-none bg-orange-600 text-zinc-950 font-extrabold px-4 py-2 rounded-lg text-xs transition border border-orange-500";
+        btnBaru.className = "flex-1 sm:flex-none bg-zinc-800 text-zinc-300 hover:text-orange-400 font-extrabold px-4 py-2 rounded-lg text-xs transition border border-zinc-700";
+        areaLama.classList.remove('hidden');
+        cariPasienLama();
+      }
+    }
+
+    function cariPasienLama() {
+      const q = document.getElementById('input-cari-pasien').value.toLowerCase();
+      const container = document.getElementById('list-hasil-pasien');
+      container.innerHTML = '';
+
+      Object.keys(dbPasien).forEach(key => {
+        const p = dbPasien[key];
+        if (p.nama.toLowerCase().includes(q) || p.wa.includes(q)) {
+          container.innerHTML += `
+            <div onclick="pilihPasienLama('${key}')" class="p-3 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 hover:border-orange-500 rounded-lg cursor-pointer transition">
+              <div class="font-bold text-xs text-orange-400">${p.nama}</div>
+              <div class="text-[11px] text-zinc-400">${p.wa} •${p.kunjungan ? p.kunjungan.length : 0} Kunjungan</div>
+            </div>
+          `;
+        }
+      });
+    }
+
+    function pilihPasienLama(key) {
+      selectedPasienLamaKey = key;
+      const p = dbPasien[key];
+      const card = document.getElementById('card-riwayat-pasien');
+
+      document.getElementById('rw-nama').innerText = p.nama;
+      document.getElementById('rw-meta').innerText = `${p.wa} (${p.usia || '-'})`;
+      document.getElementById('rw-kunjungan-count').innerText = `${p.kunjungan ? p.kunjungan.length : 0} Kunjungan`;
+
+      if (p.kunjungan && p.kunjungan.length > 0) {
+        const last = p.kunjungan[p.kunjungan.length - 1];
+        document.getElementById('rw-syndrom').innerHTML = `<strong>• Sindrom:</strong> ${last.syndrom || 'Belum ada data'}`;
+        document.getElementById('rw-akupuntur').innerHTML = `<strong>• Akupuntur:</strong> ${last.akupuntur || 'Belum ada data'}`;
+        document.getElementById('rw-herbal').innerHTML = `<strong>• Herbal:</strong> ${last.herbal || 'Belum ada data'}`;
+      } else {
+        document.getElementById('rw-syndrom').innerHTML = `<em>Belum ada riwayat kunjungan.</em>`;
+        document.getElementById('rw-akupuntur').innerHTML = ``;
+        document.getElementById('rw-herbal').innerHTML = ``;
+      }
+
+      card.classList.remove('hidden');
+    }
+
+    function bukaDiagnosaKunjunganHariIni() {
+      if (!selectedPasienLamaKey || !dbPasien[selectedPasienLamaKey]) return;
+      const p = dbPasien[selectedPasienLamaKey];
+      
+      document.getElementById('p-nama').value = p.nama;
+      document.getElementById('p-wa').value = p.wa;
+      document.getElementById('p-usia').value = p.usia || '';
+
+      toggleFormSection('sec-identitas');
+    }
+
+    function resetFormPasien() {
+      selectedPasienLamaKey = null;
+      document.getElementById('p-nama').value = '';
+      document.getElementById('p-wa').value = '';
+      document.getElementById('p-usia').value = '';
+      document.getElementById('p-keluhan').value = '';
+      document.getElementById('card-riwayat-pasien').classList.add('hidden');
     }
 
     function toggleFormSection(secId) {
@@ -499,18 +709,17 @@
     }
 
     function saveStokToStorage() {
-      localStorage.setItem('rsi_stok_v10', JSON.stringify(stokHerbal));
+      localStorage.setItem('rsi_stok_v11', JSON.stringify(stokHerbal));
       syncToGDrive();
     }
 
     function savePasienToStorage() {
-      localStorage.setItem('rsi_pasien_v10', JSON.stringify(dbPasien));
-      renderPasienDropdown();
+      localStorage.setItem('rsi_pasien_v11', JSON.stringify(dbPasien));
       renderKeuanganDropdownPasien();
     }
 
     function saveJurnalToStorage() {
-      localStorage.setItem('rsi_jurnal_v10', JSON.stringify(dbJurnalKas));
+      localStorage.setItem('rsi_jurnal_v11', JSON.stringify(dbJurnalKas));
     }
 
     async function syncToGDrive() {
@@ -617,46 +826,6 @@
       });
     }
 
-    function applyMutasiStok(mutasiList) {
-      if (!Array.isArray(mutasiList) || mutasiList.length === 0) return;
-
-      mutasiList.forEach(m => {
-        if (!m.namaHerbal || !m.jumlahGram) return;
-        let targetName = m.namaHerbal.toLowerCase();
-        let index = stokHerbal.findIndex(s => s.nama.toLowerCase().includes(targetName) || targetName.includes(s.nama.toLowerCase()));
-
-        if (m.tipe === "beli") {
-          if (index !== -1) {
-            stokHerbal[index].jumlah += Math.abs(parseInt(m.jumlahGram));
-            if (m.hppPerGram) stokHerbal[index].hpp = parseFloat(m.hppPerGram);
-          } else {
-            stokHerbal.push({
-              nama: m.namaHerbal,
-              jumlah: Math.abs(parseInt(m.jumlahGram)),
-              hpp: parseFloat(m.hppPerGram || 200)
-            });
-          }
-        } else if (m.tipe === "jual" || m.tipe === "pakai") {
-          if (index !== -1) {
-            stokHerbal[index].jumlah = Math.max(0, stokHerbal[index].jumlah - Math.abs(parseInt(m.jumlahGram)));
-          }
-        }
-      });
-
-      saveStokToStorage();
-      renderStokTable();
-    }
-
-    function renderPasienDropdown() {
-      const select = document.getElementById('select-pasien');
-      if(!select) return;
-      select.innerHTML = '<option value="new">-- Pasien Baru --</option>';
-      Object.keys(dbPasien).forEach(nama => {
-        const p = dbPasien[nama];
-        select.innerHTML += `<option value="${nama}">${p.nama} (${p.wa}) - ${p.kunjungan.length} Kunjungan</option>`;
-      });
-    }
-
     function renderKeuanganDropdownPasien() {
       const select = document.getElementById('masuk-select-pasien');
       if(!select) return;
@@ -672,20 +841,6 @@
       if (selected && dbPasien[selected]) {
         document.getElementById('masuk-nama').value = dbPasien[selected].nama;
         document.getElementById('masuk-wa').value = dbPasien[selected].wa;
-      }
-    }
-
-    function loadSelectedPasien() {
-      const selected = document.getElementById('select-pasien').value;
-      if (selected === "new") {
-        document.getElementById('p-nama').value = '';
-        document.getElementById('p-wa').value = '';
-        document.getElementById('p-usia').value = '';
-      } else {
-        const p = dbPasien[selected];
-        document.getElementById('p-nama').value = p.nama;
-        document.getElementById('p-wa').value = p.wa;
-        document.getElementById('p-usia').value = p.usia;
       }
     }
 
@@ -720,7 +875,6 @@
       const wa = document.getElementById('p-wa').value.trim();
       const usia = document.getElementById('p-usia').value || "-";
       const keluhan = document.getElementById('p-keluhan').value || "Tidak ada keluhan";
-      const jadwal = document.getElementById('p-jadwal').value;
 
       if (!nama || !wa) {
         alert("Nama Pasien dan Nomor WA wajib diisi di bagian Identitas Pasien!");
@@ -731,7 +885,17 @@
       let warnaLidah = Array.from(document.querySelectorAll('input[name="lidah_warna"]:checked')).map(e => e.value);
       let bentukLidah = Array.from(document.querySelectorAll('input[name="lidah_bentuk"]:checked')).map(e => e.value);
       let taiLidah = Array.from(document.querySelectorAll('input[name="lidah_tai"]:checked')).map(e => e.value);
-      let nadiTipe = Array.from(document.querySelectorAll('input[name="nadi_tipe"]:checked')).map(e => e.value);
+
+      // Pengumpulan Data Nadi Kiri & Kanan (Cun, Guan, Chi)
+      let nadiKananCun = Array.from(document.querySelectorAll('input[name="nadi_kanan_cun"]:checked')).map(e => e.value);
+      let nadiKananGuan = Array.from(document.querySelectorAll('input[name="nadi_kanan_guan"]:checked')).map(e => e.value);
+      let nadiKananChi = Array.from(document.querySelectorAll('input[name="nadi_kanan_chi"]:checked')).map(e => e.value);
+
+      let nadiKiriCun = Array.from(document.querySelectorAll('input[name="nadi_kiri_cun"]:checked')).map(e => e.value);
+      let nadiKiriGuan = Array.from(document.querySelectorAll('input[name="nadi_kiri_guan"]:checked')).map(e => e.value);
+      let nadiKiriChi = Array.from(document.querySelectorAll('input[name="nadi_kiri_chi"]:checked')).map(e => e.value);
+
+      let strNadiLengkap = `Tangan Kanan [Cun: ${nadiKananCun.join(', ') || '-'}, Guan: ${nadiKananGuan.join(', ') || '-'}, Chi: ${nadiKananChi.join(', ') || '-'}], Tangan Kiri [Cun: ${nadiKiriCun.join(', ') || '-'}, Guan: ${nadiKiriGuan.join(', ') || '-'}, Chi: ${nadiKiriChi.join(', ') || '-'}]`;
 
       let listStokTxt = stokHerbal.map(s => `${s.nama} (Stok: ${s.jumlah}g, HPP: Rp${s.hpp}/g)`).join('; ');
 
@@ -740,7 +904,7 @@
         Pasien: ${nama} (${usia}), WA: ${wa}
         Keluhan Utama: ${keluhan}
         Pemeriksaan Lidah: Warna [${warnaLidah.join(', ')}], Bentuk [${bentukLidah.join(', ')}], Selaput [${taiLidah.join(', ')}]
-        Pemeriksaan Nadi: [${nadiTipe.join(', ')}]
+        Pemeriksaan Nadi Lengkap: ${strNadiLengkap}
         Ketersediaan Stok Herbal RSI: ${listStokTxt}
 
         Sajikan respon WAJIB terpisah per tag berikut secara rinci:
@@ -750,7 +914,7 @@
 
         ---TAB_SYNDROM---
         3. <h3>Analisis Patologi Sindrom (Bian Zheng)</h3>
-        <p>Penjelasan mendalam perjalanan penyakit, mekanisme Zang-Fu, Qi, Blood, Yin-Yang, dan patogen.</p>
+        <p>Penjelasan mendalam perjalanan penyakit, mekanisme Zang-Fu, Qi, Blood, Yin-Yang, dan patogen berdasarkan keluhan, lidah, dan nadi Cun Guan Chi.</p>
         ---AKHIR_TAB---
 
         ---TAB_AKUPUNTUR---
@@ -799,11 +963,15 @@
           return m && m[1] ? m[1].trim() : "<p>Data tidak tersedia.</p>";
         };
 
-        document.getElementById('diag-syndrom').innerHTML = parseSection('TAB_SYNDROM');
-        document.getElementById('diag-akupuntur').innerHTML = parseSection('TAB_AKUPUNTUR');
+        const strSyndrom = parseSection('TAB_SYNDROM');
+        const strAkupuntur = parseSection('TAB_AKUPUNTUR');
+        const strStok = parseSection('TAB_STOK');
+
+        document.getElementById('diag-syndrom').innerHTML = strSyndrom;
+        document.getElementById('diag-akupuntur').innerHTML = strAkupuntur;
         document.getElementById('diag-moksi').innerHTML = parseSection('TAB_MOKSI');
         document.getElementById('diag-klasik').innerHTML = parseSection('TAB_KLASIK');
-        document.getElementById('diag-stok').innerHTML = parseSection('TAB_STOK');
+        document.getElementById('diag-stok').innerHTML = strStok;
         document.getElementById('preparasi-text').innerHTML = parseSection('TAB_PREPARASI');
 
         let totalHerbal = 0;
@@ -835,6 +1003,18 @@
           mutasiData: mutasiData
         };
 
+        // Simpan ke Database Pasien (Rekam Medik)
+        if (!dbPasien[nama]) {
+          dbPasien[nama] = { nama, wa, usia, kunjungan: [] };
+        }
+        dbPasien[nama].kunjungan.push({
+          tanggal: wktStr,
+          syndrom: strSyndrom.replace(/<[^>]*>?/gm, '').slice(0, 150) + '...',
+          akupuntur: strAkupuntur.replace(/<[^>]*>?/gm, '').slice(0, 150) + '...',
+          herbal: strStok.replace(/<[^>]*>?/gm, '').slice(0, 150) + '...'
+        });
+        savePasienToStorage();
+
         document.getElementById('nota-details-content').innerHTML = itemsNotaHtml;
         document.getElementById('nota-total-badge').innerText = "TOTAL: " + formatRp(grandTotal);
 
@@ -842,39 +1022,6 @@
         alert("Error AI: " + err.message);
       } finally {
         loadingEl.classList.add('hidden');
-      }
-    }
-
-    function eksekusiTransaksiTCM(mode) {
-      if(!currentNotaData) return;
-
-      // 1. Catat ke Jurnal lokal & Sync Drive
-      let trxData = {
-        waktu: currentNotaData.tanggal,
-        jenis: "MASUK",
-        subjek: currentNotaData.pasien,
-        wa: currentNotaData.wa,
-        keterangan: `Penerimaan Pasien TCM: ${currentNotaData.pasien}`,
-        nominal: currentNotaData.grandTotal
-      };
-
-      dbJurnalKas.push({
-        tanggal: currentNotaData.tanggal,
-        jenis: "MASUK",
-        ket: `Penerimaan Pasien TCM: ${currentNotaData.pasien}`,
-        nominal: currentNotaData.grandTotal
-      });
-      saveJurnalToStorage();
-      syncTransaksiToGDrive(trxData);
-
-      // Mutasi Stok
-      if(currentNotaData.mutasiData) applyMutasiStok(currentNotaData.mutasiData);
-
-      // Mode Cetak atau Share WA
-      if(mode === 'print') {
-        cetakNotaBluetooth();
-      } else if(mode === 'wa') {
-        shareNotaWA();
       }
     }
 
@@ -1036,7 +1183,6 @@
 
     window.onload = function() {
       renderStokTable();
-      renderPasienDropdown();
       renderKeuanganDropdownPasien();
     };
   </script>
