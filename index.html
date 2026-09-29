@@ -4,6 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistem Rekam Medik TCM, Stok & Akuntansi RSI</title>
+  
+  <!-- Configuration PWA (Progressive Web App) -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f97316">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RSI Padang">
+  <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3004/3004416.png">
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
@@ -11,6 +20,11 @@
   <!-- Tesseract OCR JS Engine for Reading Struk Image -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
+    /* Prevent Pull-To-Refresh On Mobile Devices */
+    html, body {
+      overscroll-behavior-y: contain;
+    }
+
     .prose h3 { font-size: 1.1rem; font-weight: 700; color: #f97316; margin-top: 1rem; margin-bottom: 0.5rem; }
     .prose ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.75rem; }
     .prose table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; margin-bottom: 0.75rem; }
@@ -50,6 +64,9 @@
         </div>
       </div>
       <div class="flex items-center gap-2">
+        <button id="btn-install-pwa" onclick="installPWA()" class="hidden text-xs bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition shadow">
+          <i class="fa-solid fa-download"></i> Install App
+        </button>
         <span class="text-xs bg-zinc-800 px-3 py-1 rounded-full text-orange-400 border border-orange-500/40 flex items-center">
           <i class="fa-brands fa-google-drive text-blue-400 mr-1.5"></i> GDrive Sync
         </span>
@@ -75,8 +92,19 @@
     <!-- TAB 1: REKAM MEDIK TCM & PASIEN -->
     <div id="section-tcm" class="tab-content block space-y-6">
       
+      <!-- HEADER TAB + TOMBOL DISKUSI CHAT -->
+      <div class="flex justify-between items-center bg-zinc-900 p-4 rounded-xl border border-orange-500/30">
+        <div>
+          <h2 class="font-bold text-orange-400 text-sm"><i class="fa-solid fa-user-doctor mr-1"></i> Modul Diagnosa Biometrik & Rekam Medik Pasien</h2>
+          <p class="text-xs text-zinc-400">Pemeriksaan fisik, lidah, nadi, dan rekam medis klinis pasien RSI.</p>
+        </div>
+        <button onclick="bukaChatModal('tcm')" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3.5 py-2 rounded-lg text-xs transition flex items-center gap-2 shadow">
+          <i class="fa-solid fa-comments text-sm"></i> Diskusi Diagnosa
+        </button>
+      </div>
+
       <!-- NAVIGASI PILIHAN PASIEN BARU vs PASIEN LAMA -->
-      <div class="bg-zinc-900 p-4 rounded-xl border border-orange-500/30 flex flex-col sm:flex-row gap-3 justify-between items-center">
+      <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex flex-col sm:flex-row gap-3 justify-between items-center">
         <div>
           <h2 class="font-bold text-orange-400 text-sm"><i class="fa-solid fa-users mr-1"></i> Data Pasien Terapi</h2>
           <p class="text-xs text-zinc-400">Pilih registrasi pasien baru atau cari data riwayat pasien lama.</p>
@@ -119,10 +147,15 @@
             <div id="rw-herbal" class="p-2 bg-zinc-900 rounded border border-zinc-800 text-zinc-300"></div>
           </div>
 
-          <!-- Tombol Tambah Diagnosa Kunjungan Hari Ini -->
-          <button onclick="bukaDiagnosaKunjunganHariIni()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-extrabold py-2.5 px-4 rounded-lg transition flex items-center justify-center gap-2 text-xs">
-            <i class="fa-solid fa-calendar-plus text-sm"></i> + Tambah Diagnosa Kunjungan Hari Ini
-          </button>
+          <!-- Tombol Aksi Kunjungan & Riwayat Lengkap -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            <button onclick="bukaModalRiwayatLengkap()" class="bg-zinc-800 hover:bg-zinc-700 text-orange-400 font-bold py-2.5 px-4 rounded-lg transition border border-orange-500/40 flex items-center justify-center gap-2 text-xs">
+              <i class="fa-solid fa-folder-open text-sm"></i> Lihat Riwayat Kunjungan Lengkap
+            </button>
+            <button onclick="bukaDiagnosaKunjunganHariIni()" class="bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-extrabold py-2.5 px-4 rounded-lg transition flex items-center justify-center gap-2 text-xs">
+              <i class="fa-solid fa-calendar-plus text-sm"></i> + Diagnosa Kunjungan Hari Ini
+            </button>
+          </div>
         </div>
       </div>
 
@@ -343,7 +376,7 @@
           <h2 class="text-lg font-bold text-orange-400 flex items-center gap-2">
             <i class="fa-solid fa-brain text-orange-500"></i> Hasil Diagnosa Medis Holistik TCM
           </h2>
-          <span id="ai-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Sistem Sedang Menganalisis Biometrik...</span>
+          <span id="ai-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Menganalisis Biometrik...</span>
         </div>
 
         <!-- Tombol Pilihan Menu Hasil Diagnosa -->
@@ -388,11 +421,16 @@
         <div class="flex justify-between items-center">
           <div>
             <h2 class="text-lg font-bold text-orange-400"><i class="fa-solid fa-warehouse text-orange-500"></i> Inventaris Stok Herbal RSI</h2>
-            <p class="text-xs text-zinc-400">Pencarian ketersediaan stok herbal. Penambahan stok dilakukan saat transaksi pembelian di Tab Keuangan.</p>
+            <p class="text-xs text-zinc-400">Pencarian ketersediaan dan manajemen bahan stok herbal RSI.</p>
           </div>
-          <button onclick="syncToGDrive()" class="text-xs bg-zinc-800 text-orange-400 hover:bg-zinc-700 border border-orange-500/40 font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
-            <i class="fa-brands fa-google-drive"></i> Sync GDrive Manual
-          </button>
+          <div class="flex gap-2">
+            <button onclick="bukaChatModal('stok')" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
+              <i class="fa-solid fa-comments"></i> Diskusi Stok
+            </button>
+            <button onclick="syncToGDrive()" class="text-xs bg-zinc-800 text-orange-400 hover:bg-zinc-700 border border-orange-500/40 font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
+              <i class="fa-brands fa-google-drive"></i> Sync GDrive
+            </button>
+          </div>
         </div>
 
         <!-- Tombol Pencarian Stok Herbal -->
@@ -408,7 +446,7 @@
                 <th class="p-3">Nama Bahan Herbal</th>
                 <th class="p-3">Sisa Stok (Gram)</th>
                 <th class="p-3">HPP / Gram</th>
-                <th class="p-3">Harga Jual / Gram (Up 250%)</th>
+                <th class="p-3 text-center">Aksi</th>
               </tr>
             </thead>
             <tbody id="tabel-stok-body">
@@ -422,15 +460,20 @@
     <!-- TAB 3: KEUANGAN (PEMASUKAN & PENGELUARAN) -->
     <div id="section-keuangan" class="tab-content hidden space-y-6">
       
-      <!-- Trigger Laporan Lengkap -->
+      <!-- Trigger Laporan Lengkap + TOMBOL DISKUSI -->
       <div class="flex justify-between items-center bg-zinc-900 p-4 rounded-xl border border-orange-500/30">
         <div>
           <h2 class="font-bold text-orange-400 text-sm">Pencatatan Kas & Akuntansi Komputerisasi RSI</h2>
-          <p class="text-xs text-zinc-400">Pilih menu pencatatan kas masuk atau uang keluar operasional RSI.</p>
+          <p class="text-xs text-zinc-400">Pencatatan kas masuk, belanja stok, dan jurnal laporan keuangan RSI.</p>
         </div>
-        <button onclick="generasiLaporanLengkapAI()" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-bold px-4 py-2 rounded-lg text-xs transition flex items-center gap-2">
-          <i class="fa-solid fa-file-invoice-dollar text-sm"></i> Laporan Keuangan Lengkap RSI
-        </button>
+        <div class="flex gap-2">
+          <button onclick="bukaChatModal('keuangan')" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-2 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-comments"></i> Diskusi Keuangan
+          </button>
+          <button onclick="generasiLaporanLengkapAI()" class="bg-zinc-800 hover:bg-zinc-700 text-orange-400 border border-orange-500/50 font-bold px-3 py-2 rounded-lg text-xs transition flex items-center gap-1.5">
+            <i class="fa-solid fa-file-invoice-dollar"></i> Laporan Keuangan
+          </button>
+        </div>
       </div>
 
       <!-- TOMBOL INTERAKSI TRANSAKSI KEUANGAN -->
@@ -567,6 +610,52 @@
 
   </main>
 
+  <!-- MODAL POPUP CHAT INTERAKTIF PER TAB -->
+  <div id="modal-chat-tab" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 no-print">
+    <div class="bg-zinc-900 border border-orange-500/40 rounded-xl w-full max-w-2xl h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <!-- Header Chat -->
+      <div class="p-4 bg-zinc-950 border-b border-zinc-800 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <i id="chat-header-icon" class="fa-solid fa-comments text-orange-500 text-lg"></i>
+          <div>
+            <h3 id="chat-header-title" class="font-bold text-sm text-orange-400">Diskusi & Konsultasi Sistem</h3>
+            <p id="chat-header-subtitle" class="text-[11px] text-zinc-400">Diskusi langsung terkait data pada tab aktif.</p>
+          </div>
+        </div>
+        <button onclick="tutupChatModal()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <!-- Content Area Chat -->
+      <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs text-zinc-300">
+        <!-- Pesan Chat -->
+      </div>
+
+      <!-- Footer Input Chat -->
+      <div class="p-3 bg-zinc-950 border-t border-zinc-800 flex gap-2">
+        <input type="text" id="chat-input-text" onkeypress="handleChatKeyPress(event)" placeholder="Ketik pertanyaan atau instruksi..." class="flex-1 p-2.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none">
+        <button onclick="kirimPesanChatTab()" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-bold px-4 py-2.5 rounded-lg text-xs transition flex items-center gap-1.5">
+          <i class="fa-solid fa-paper-plane"></i> Kirim
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL POPUP RIWAYAT KUNJUNGAN LENGKAP PASIEN -->
+  <div id="modal-riwayat-lengkap" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 no-print">
+    <div class="bg-zinc-900 border border-orange-500/40 rounded-xl w-full max-w-3xl h-[85vh] flex flex-col shadow-2xl overflow-hidden">
+      <div class="p-4 bg-zinc-950 border-b border-zinc-800 flex justify-between items-center">
+        <div>
+          <h3 id="modal-rw-nama" class="font-bold text-base text-orange-400">Riwayat Kunjungan Pasien</h3>
+          <p id="modal-rw-meta" class="text-xs text-zinc-400"></p>
+        </div>
+        <button onclick="tutupModalRiwayatLengkap()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div id="modal-rw-list-container" class="flex-1 p-4 overflow-y-auto space-y-4 text-xs">
+        <!-- List Kunjungan Pasien -->
+      </div>
+    </div>
+  </div>
+
   <!-- AREA CETAK THERMAL PRINTER BLUETOOTH -->
   <div id="nota-print-area" class="hidden">
     <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 5px;">
@@ -589,7 +678,7 @@
     </div>
   </div>
 
-  <!-- Script Application Logic -->
+  <!-- Script Application Logic & PWA Installer -->
   <script>
     const DEEPSEEK_ENDPOINT = "https://api.deepseek.com/chat/completions";
     const DEEPSEEK_API_KEY = "sk-305f13e9313d4fc6b03c3e49dc9e1ce2";
@@ -611,9 +700,40 @@
     let base64TongueImg = "";
     let base64PasienImg = "";
     
-    // Transaksi Sistem Terkini
+    // Transaksi & Chat State
     let lastAIFormulasiStok = [];
     let lastAITotalHerbalCost = 0;
+    let currentActiveChatTab = "tcm";
+    let chatHistories = {
+      tcm: [],
+      stok: [],
+      keuangan: []
+    };
+
+    // Registrasi PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Fail', err));
+    }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const btnInstall = document.getElementById('btn-install-pwa');
+      if (btnInstall) btnInstall.classList.remove('hidden');
+    });
+
+    function installPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            document.getElementById('btn-install-pwa').classList.add('hidden');
+          }
+          deferredPrompt = null;
+        });
+      }
+    }
 
     function switchTab(tabName) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -678,9 +798,9 @@
 
       if (p.kunjungan && p.kunjungan.length > 0) {
         const last = p.kunjungan[p.kunjungan.length - 1];
-        document.getElementById('rw-syndrom').innerHTML = `<strong>• Sindrom:</strong> ${last.syndrom || 'Belum ada data'}`;
-        document.getElementById('rw-akupuntur').innerHTML = `<strong>• Akupuntur:</strong> ${last.akupuntur || 'Belum ada data'}`;
-        document.getElementById('rw-herbal').innerHTML = `<strong>• Herbal:</strong> ${last.herbal || 'Belum ada data'}`;
+        document.getElementById('rw-syndrom').innerHTML = `<strong>• Sindrom:</strong> ${last.syndrom ? last.syndrom.replace(/<[^>]*>?/gm, '').slice(0, 120) + '...' : 'Belum ada data'}`;
+        document.getElementById('rw-akupuntur').innerHTML = `<strong>• Akupuntur:</strong> ${last.akupuntur ? last.akupuntur.replace(/<[^>]*>?/gm, '').slice(0, 120) + '...' : 'Belum ada data'}`;
+        document.getElementById('rw-herbal').innerHTML = `<strong>• Herbal RSI:</strong> ${last.stok ? last.stok.replace(/<[^>]*>?/gm, '').slice(0, 120) + '...' : 'Belum ada data'}`;
       } else {
         document.getElementById('rw-syndrom').innerHTML = `<em>Belum ada riwayat kunjungan.</em>`;
         document.getElementById('rw-akupuntur').innerHTML = ``;
@@ -688,6 +808,71 @@
       }
 
       card.classList.remove('hidden');
+    }
+
+    function bukaModalRiwayatLengkap() {
+      if (!selectedPasienLamaKey || !dbPasien[selectedPasienLamaKey]) return;
+      const p = dbPasien[selectedPasienLamaKey];
+      
+      document.getElementById('modal-rw-nama').innerText = "Riwayat Kunjungan: " + p.nama;
+      document.getElementById('modal-rw-meta').innerText = `No. WA: ${p.wa} | Usia/JK: ${p.usia || '-'}`;
+      
+      const container = document.getElementById('modal-rw-list-container');
+      container.innerHTML = '';
+
+      if (!p.kunjungan || p.kunjungan.length === 0) {
+        container.innerHTML = `<div class="text-center py-8 text-zinc-500">Belum ada riwayat kunjungan medis untuk pasien ini.</div>`;
+      } else {
+        p.kunjungan.slice().reverse().forEach((k, idx) => {
+          let numKunjungan = p.kunjungan.length - idx;
+          container.innerHTML += `
+            <div class="bg-zinc-950 border border-zinc-800 rounded-lg p-4 space-y-3">
+              <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+                <span class="font-bold text-orange-400 text-sm"><i class="fa-solid fa-calendar-check mr-1"></i> Kunjungan ke-${numKunjungan} (${k.tanggal})</span>
+                <span class="text-[11px] bg-orange-950 text-orange-300 px-2 py-0.5 rounded border border-orange-500/30">Rekam Medis Tersimpan</span>
+              </div>
+              
+              <div class="space-y-2 prose max-w-none text-zinc-300">
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
+                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">a. Patologi Sindrom & Biometrik</summary>
+                  <div class="mt-2 text-xs">${k.syndrom || 'Tidak ada data.'}</div>
+                </details>
+                
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
+                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">b. Rekomendasi Titik Akupuntur & Akupresur</summary>
+                  <div class="mt-2 text-xs">${k.akupuntur || 'Tidak ada data.'}</div>
+                </details>
+
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
+                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">c. Rekomendasi Titik Moksibusi</summary>
+                  <div class="mt-2 text-xs">${k.moksi || 'Tidak ada data.'}</div>
+                </details>
+
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
+                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">d. Formulasi Ramuan Klasik</summary>
+                  <div class="mt-2 text-xs">${k.klasik || 'Tidak ada data.'}</div>
+                </details>
+
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
+                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">e. Formulasi Modifikasi Stok RSI</summary>
+                  <div class="mt-2 text-xs">${k.stok || 'Tidak ada data.'}</div>
+                </details>
+
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
+                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">f. Cara Mengolah & Rebusan Herba</summary>
+                  <div class="mt-2 text-xs">${k.preparasi || 'Tidak ada data.'}</div>
+                </details>
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      document.getElementById('modal-riwayat-lengkap').classList.remove('hidden');
+    }
+
+    function tutupModalRiwayatLengkap() {
+      document.getElementById('modal-riwayat-lengkap').classList.add('hidden');
     }
 
     function bukaDiagnosaKunjunganHariIni() {
@@ -832,17 +1017,28 @@
       const tbody = document.getElementById('tabel-stok-body');
       if(!tbody) return;
       tbody.innerHTML = '';
-      stokHerbal.forEach((item) => {
-        const hargaJual = Math.round(item.hpp * 2.5);
+      stokHerbal.forEach((item, index) => {
         tbody.innerHTML += `
           <tr class="border-b border-zinc-800 hover:bg-zinc-800/50">
             <td class="p-3 font-medium text-slate-200">${item.nama}</td>
             <td class="p-3"><span class="px-2 py-1 bg-orange-950 text-orange-400 border border-orange-500/30 rounded font-bold">${item.jumlah} Gram</span></td>
             <td class="p-3 text-zinc-300">${formatRp(item.hpp)}</td>
-            <td class="p-3 text-emerald-400 font-semibold">${formatRp(hargaJual)}</td>
+            <td class="p-3 text-center">
+              <button onclick="hapusStokHerbal(${index})" class="bg-rose-950 hover:bg-rose-900 text-rose-400 border border-rose-500/30 px-2.5 py-1 rounded text-xs transition">
+                <i class="fa-solid fa-trash-can"></i> Hapus
+              </button>
+            </td>
           </tr>
         `;
       });
+    }
+
+    function hapusStokHerbal(index) {
+      if (confirm(`Apakah Anda yakin ingin menghapus "${stokHerbal[index].nama}" dari daftar stok?`)) {
+        stokHerbal.splice(index, 1);
+        saveStokToStorage();
+        renderStokTable();
+      }
     }
 
     function filterStokTable() {
@@ -891,7 +1087,9 @@
       renderStokTable();
     }
 
-    async function callDeepSeekAPI(promptText) {
+    async function callDeepSeekAPI(promptText, customSystemPrompt = null) {
+      const systemMsg = customSystemPrompt || "Anda adalah Pakar Senior Traditional Chinese Medicine (TCM), Ahli Diagnosa Biometrik Visual Lidah & Wajah (She Zhen & Wang Zhen), serta Akuntan Publik Profesional RSI Padang.";
+      
       const res = await fetch(DEEPSEEK_ENDPOINT, {
         method: 'POST',
         headers: {
@@ -901,10 +1099,10 @@
         body: JSON.stringify({
           model: "deepseek-chat",
           messages: [
-            { role: "system", content: "Anda adalah Pakar Senior Traditional Chinese Medicine (TCM), Ahli Diagnosa Biometrik Visual Lidah & Wajah (She Zhen & Wang Zhen), serta Akuntan Publik Profesional RSI Padang." },
+            { role: "system", content: systemMsg },
             { role: "user", content: promptText }
           ],
-          temperature: 0.1
+          temperature: 0.2
         })
       });
 
@@ -1042,14 +1240,17 @@
 
         const strSyndrom = parseSection('TAB_SYNDROM');
         const strAkupuntur = parseSection('TAB_AKUPUNTUR');
+        const strMoksi = parseSection('TAB_MOKSI');
+        const strKlasik = parseSection('TAB_KLASIK');
         const strStok = parseSection('TAB_STOK');
+        const strPreparasi = parseSection('TAB_PREPARASI');
 
         document.getElementById('diag-syndrom').innerHTML = strSyndrom;
         document.getElementById('diag-akupuntur').innerHTML = strAkupuntur;
-        document.getElementById('diag-moksi').innerHTML = parseSection('TAB_MOKSI');
-        document.getElementById('diag-klasik').innerHTML = parseSection('TAB_KLASIK');
+        document.getElementById('diag-moksi').innerHTML = strMoksi;
+        document.getElementById('diag-klasik').innerHTML = strKlasik;
         document.getElementById('diag-stok').innerHTML = strStok;
-        document.getElementById('preparasi-text').innerHTML = parseSection('TAB_PREPARASI');
+        document.getElementById('preparasi-text').innerHTML = strPreparasi;
 
         lastAIFormulasiStok = mutasiData;
         lastAITotalHerbalCost = 0;
@@ -1070,15 +1271,18 @@
         let grandTotal = 150000 + lastAITotalHerbalCost;
         let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
-        // Simpan ke Database Pasien (Rekam Medik)
+        // SIMPAN LENGKAP HASIL DIAGNOSA KE DATABASE REKAM MEDIK PASIEN
         if (!dbPasien[nama]) {
           dbPasien[nama] = { nama, wa, usia, kunjungan: [] };
         }
         dbPasien[nama].kunjungan.push({
           tanggal: wktStr,
-          syndrom: strSyndrom.replace(/<[^>]*>?/gm, '').slice(0, 150) + '...',
-          akupuntur: strAkupuntur.replace(/<[^>]*>?/gm, '').slice(0, 150) + '...',
-          herbal: strStok.replace(/<[^>]*>?/gm, '').slice(0, 150) + '...'
+          syndrom: strSyndrom,
+          akupuntur: strAkupuntur,
+          moksi: strMoksi,
+          klasik: strKlasik,
+          stok: strStok,
+          preparasi: strPreparasi
         });
         savePasienToStorage();
 
@@ -1304,6 +1508,131 @@
         outputEl.innerHTML = `<div class="p-4 bg-red-950/60 text-red-400 border border-red-500/30 rounded mb-3"><i class="fa-solid fa-circle-exclamation mr-1"></i> Error: ${err.message}</div>`;
       } finally {
         loadingEl.classList.add('hidden');
+      }
+    }
+
+    // LOGIKA MODUL DISKUSI CHAT INTERAKTIF PER TAB
+    function bukaChatModal(tabKey) {
+      currentActiveChatTab = tabKey;
+      const titleEl = document.getElementById('chat-header-title');
+      const subtitleEl = document.getElementById('chat-header-subtitle');
+      const iconEl = document.getElementById('chat-header-icon');
+
+      if (tabKey === 'tcm') {
+        titleEl.innerText = "Diskusi Klinis & Diagnosa Rekam Medik";
+        subtitleEl.innerText = "Konsultasi diagnosis patologi TCM, diagnosis banding, serta modifikasi herbal/titik.";
+        iconEl.className = "fa-solid fa-user-doctor text-orange-500 text-lg";
+      } else if (tabKey === 'stok') {
+        titleEl.innerText = "Diskusi Inventaris & Formulasi Stok RSI";
+        subtitleEl.innerText = "Diskusi perancangan stok, herbal penganti, serta rekomendasi pengadaan.";
+        iconEl.className = "fa-solid fa-boxes-stacked text-orange-500 text-lg";
+      } else if (tabKey === 'keuangan') {
+        titleEl.innerText = "Diskusi & Konsultasi Akuntansi RSI";
+        subtitleEl.innerText = "Konsultasi pencatatan kas, proyeksi laba-rugi, dan neraca keuangan.";
+        iconEl.className = "fa-solid fa-calculator text-orange-500 text-lg";
+      }
+
+      renderChatMessages();
+      document.getElementById('modal-chat-tab').classList.remove('hidden');
+    }
+
+    function tutupChatModal() {
+      document.getElementById('modal-chat-tab').classList.add('hidden');
+    }
+
+    function renderChatMessages() {
+      const container = document.getElementById('chat-messages-container');
+      container.innerHTML = '';
+
+      const history = chatHistories[currentActiveChatTab];
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-10 text-zinc-500">
+            <i class="fa-solid fa-comments text-3xl mb-2 text-zinc-700 block"></i>
+            Silakan ketik pertanyaan atau instruksi terkait data pada tab ini.
+          </div>
+        `;
+        return;
+      }
+
+      history.forEach(msg => {
+        if (msg.role === 'user') {
+          container.innerHTML += `
+            <div class="flex justify-end">
+              <div class="bg-orange-600 text-zinc-950 font-medium p-3 rounded-xl rounded-tr-none max-w-[80%] shadow">
+                ${msg.content}
+              </div>
+            </div>
+          `;
+        } else {
+          container.innerHTML += `
+            <div class="flex justify-start">
+              <div class="bg-zinc-800 text-zinc-200 border border-zinc-700 p-3 rounded-xl rounded-tl-none max-w-[85%] prose prose-invert text-xs shadow">
+                ${msg.content}
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function handleChatKeyPress(event) {
+      if (event.key === 'Enter') {
+        kirimPesanChatTab();
+      }
+    }
+
+    async function kirimPesanChatTab() {
+      const inputEl = document.getElementById('chat-input-text');
+      const text = inputEl.value.trim();
+      if (!text) return;
+
+      inputEl.value = '';
+      chatHistories[currentActiveChatTab].push({ role: 'user', content: text });
+      renderChatMessages();
+
+      const container = document.getElementById('chat-messages-container');
+      container.innerHTML += `
+        <div id="chat-typing-indicator" class="flex justify-start">
+          <div class="bg-zinc-800 text-amber-400 p-2.5 rounded-xl text-xs italic">
+            <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Sedang memproses tanggapan...
+          </div>
+        </div>
+      `;
+      container.scrollTop = container.scrollHeight;
+
+      let customSysPrompt = "";
+      let contextData = "";
+
+      if (currentActiveChatTab === 'tcm') {
+        customSysPrompt = "Anda adalah Pakar Senior TCM (Traditional Chinese Medicine) & Konsultan Klinis RSI Padang.";
+        contextData = `Data Pasien Terakhir: ${JSON.stringify(dbPasien)}`;
+      } else if (currentActiveChatTab === 'stok') {
+        customSysPrompt = "Anda adalah Pakar Inventaris Herbal TCM & Formulasi Stok RSI Padang.";
+        contextData = `Stok Herbal RSI Terkini: ${JSON.stringify(stokHerbal)}`;
+      } else if (currentActiveChatTab === 'keuangan') {
+        customSysPrompt = "Anda adalah Akuntan Publik Profesional & Konsultan Keuangan RSI Padang.";
+        contextData = `Riwayat Jurnal Kas RSI: ${JSON.stringify(dbJurnalKas)}`;
+      }
+
+      const promptToAI = `
+        Konteks Data Modul (${currentActiveChatTab.toUpperCase()}):
+        ${contextData}
+
+        Pertanyaan / Diskusi Pengguna: "${text}"
+        
+        Berikan jawaban klinis/operasional yang tepat, praktis, dan profesional dalam format ringkas HTML.
+      `;
+
+      try {
+        const responseText = await callDeepSeekAPI(promptToAI, customSysPrompt);
+        chatHistories[currentActiveChatTab].push({ role: 'assistant', content: responseText });
+      } catch (err) {
+        chatHistories[currentActiveChatTab].push({ role: 'assistant', content: `<span class="text-rose-400">Gagal terhubung dengan sistem: ${err.message}</span>` });
+      } finally {
+        renderChatMessages();
       }
     }
 
