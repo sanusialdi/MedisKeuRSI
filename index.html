@@ -421,7 +421,7 @@
         <div class="flex justify-between items-center">
           <div>
             <h2 class="text-lg font-bold text-orange-400"><i class="fa-solid fa-warehouse text-orange-500"></i> Inventaris Stok Herbal RSI</h2>
-            <p class="text-xs text-zinc-400">Pencarian ketersediaan dan manajemen bahan stok herbal RSI (Tersinkronisasi Otomatis dengan Keuangan).</p>
+            <p class="text-xs text-zinc-400">Pencarian ketersediaan dan manajemen bahan stok herbal RSI (Tersinkronisasi Otomatis HPP/Gram).</p>
           </div>
           <div class="flex gap-2">
             <button onclick="bukaChatModal('stok')" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
@@ -489,7 +489,7 @@
         <button onclick="toggleKeuanganModal('modal-uang-keluar')" class="bg-rose-950/60 hover:bg-rose-900/80 border border-rose-500/40 p-5 rounded-xl text-left flex items-center justify-between transition shadow-lg group">
           <div>
             <span class="block font-extrabold text-base text-rose-400 group-hover:text-rose-300"><i class="fa-solid fa-circle-arrow-up mr-2"></i> - Catat Uang Keluar / Belanja Stok</span>
-            <span class="text-xs text-zinc-400">Pengeluaran operasional & foto OCR struk (Stok Bertambah Otomatis)</span>
+            <span class="text-xs text-zinc-400">Pengeluaran operasional & foto OCR struk (Stok Bertambah Otomatis & HPP Diperbarui)</span>
           </div>
           <i class="fa-solid fa-minus-circle text-2xl text-rose-500"></i>
         </button>
@@ -583,7 +583,7 @@
           </div>
           <div>
             <label class="block text-zinc-300 font-medium mb-1">Hasil Pembacaan / Catatan Transaksi Uang Keluar *</label>
-            <textarea id="keluar-teks-bebas" rows="4" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Tulis narasi pengeluaran. Contoh: Beli Huang Qi 500 gram HPP 300 total Rp 150.000..."></textarea>
+            <textarea id="keluar-teks-bebas" rows="4" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Tulis narasi pengeluaran. Contoh: Beli Huang Qi 100 gram harga 60.000..."></textarea>
           </div>
           <button onclick="prosesUangKeluar()" class="w-full bg-rose-600 hover:bg-rose-500 text-slate-950 font-bold py-3 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-save"></i> Simpan Transaksi & Tambah Stok Otomatis
@@ -1068,10 +1068,7 @@
       }
     }
 
-    // FUNGSI UTAMA SINKRONISASI AI:
-    // Menerima array mutasi stok hasil olahan AI DeepSeek
-    // Tipe "jual" / "pakai" -> STOK BERKURANG
-    // Tipe "beli" / "tambah" -> STOK BERTAMBAH
+    // LOGIKA SINKRONISASI MUTASI STOK KEUANGAN DENGAN PERHITUNGAN HPP PER GRAM PRESHIS
     function applyMutasiStok(mutasiList) {
       if (!Array.isArray(mutasiList) || mutasiList.length === 0) return [];
 
@@ -1081,7 +1078,15 @@
         if (!m.namaHerbal || !m.jumlahGram) return;
         let targetName = m.namaHerbal.toLowerCase().trim();
         let qty = Math.abs(parseInt(m.jumlahGram));
-        let hppVal = m.hpp ? parseInt(m.hpp) : 200;
+        let rawHpp = m.hpp ? parseInt(m.hpp) : 200;
+
+        // Formula Perhitungan HPP per Gram: Total Pembelian / Jumlah Gram
+        let hppVal = rawHpp;
+        if (m.totalHarga && qty > 0) {
+          hppVal = Math.round(parseInt(m.totalHarga) / qty);
+        } else if (rawHpp > 2000 && qty > 10) {
+          hppVal = Math.round(rawHpp / qty);
+        }
 
         let index = stokHerbal.findIndex(s => s.nama.toLowerCase().includes(targetName) || targetName.includes(s.nama.toLowerCase()));
 
@@ -1092,19 +1097,19 @@
             logMutasi.push(`- ${stokHerbal[index].nama}: Berkurang ${qty}g (Sisa: ${stokHerbal[index].jumlah}g)`);
           }
         } else if (m.tipe === "beli" || m.tipe === "tambah") {
-          // BELANJA HERBA: BERTAMBAH SESUAI GRAM
+          // BELANJA HERBA: BERTAMBAH SESUAI GRAM & PERBAIKAN HPP/GRAM
           if (index !== -1) {
             stokHerbal[index].jumlah += qty;
-            if (m.hpp) stokHerbal[index].hpp = hppVal;
-            logMutasi.push(`+ ${stokHerbal[index].nama}: Bertambah ${qty}g (Total: ${stokHerbal[index].jumlah}g)`);
+            if (hppVal > 0) stokHerbal[index].hpp = hppVal;
+            logMutasi.push(`+ ${stokHerbal[index].nama}: Bertambah ${qty}g (Total: ${stokHerbal[index].jumlah}g, HPP: Rp${hppVal}/g)`);
           } else {
-            // Jika herba belum ada di inventaris stok
+            // Jika Herba Belum Terdaftar di Tabel
             stokHerbal.push({
               nama: m.namaHerbal,
               jumlah: qty,
               hpp: hppVal
             });
-            logMutasi.push(`+ ${m.namaHerbal} (Baru): Bertambah ${qty}g (Total: ${qty}g)`);
+            logMutasi.push(`+ ${m.namaHerbal} (Baru): Bertambah ${qty}g (Total: ${qty}g, HPP: Rp${hppVal}/g)`);
           }
         }
       });
@@ -1405,7 +1410,7 @@
       saveJurnalToStorage();
       syncTransaksiToGDrive(trxData);
 
-      // 2. SINKRONISASI AI: STOK HERBAL DENGAN KEUANGAN (TERJUAL -> STOK BERKURANG)
+      // 2. SINKRONISASI AI: STOK HERBAL BERKURANG KARENA TERJUAL
       let logPengurangan = [];
       if (lastAIFormulasiStok && lastAIFormulasiStok.length > 0) {
         logPengurangan = applyMutasiStok(lastAIFormulasiStok);
@@ -1451,13 +1456,15 @@
 
       let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
-      // 1. SINKRONISASI AI: KERJA AI MEMINDAI TEKS BELANJA DAN MENAMBAHKAN STOK HERBA LOKAL
+      // PROMPT AI UNTUK MENGHITUNG HPP PER GRAM DENGAN FORMULA: TOTAL HARGA / JUMLAH GRAM
       const promptBelanjaStok = `
-        Analisis narasi belanja/pengeluaran kas berikut: "${teksBebas}".
-        Jika transaksi ini merupakan pembelian/belanja bahan stok herbal, ekstraksi gramasi dan HPP-nya ke dalam format JSON.
+        Analisis narasi pengeluaran kas/belanja berikut: "${teksBebas}".
+        Jika transaksi ini merupakan pembelian/belanja bahan stok herbal, hitung HPP PER GRAM (Total Harga Pembelian dibagi Jumlah Gram).
+        Contoh: Beli Huang Qi 100 gram harga 60.000 -> totalHarga: 60000, jumlahGram: 100, hpp: 600 (karena 60000 / 100 = 600).
+        
         Sajikan output JSON mutasi SAJA di dalam tag:
         ---MUTASI_BELI---
-        [{"namaHerbal": "Nama Herbal", "jumlahGram": 500, "hpp": 300, "tipe": "beli"}]
+        [{"namaHerbal": "Huang Qi", "jumlahGram": 100, "totalHarga": 60000, "hpp": 600, "tipe": "beli"}]
         ---AKHIR_MUTASI_BELI---
       `;
 
@@ -1496,7 +1503,7 @@
       toggleKeuanganModal('modal-uang-keluar');
 
       if (logPenambahan.length > 0) {
-        alert(`Transaksi Pengeluaran Berhasil Disimpan!\n\nMutasi Penambahan Stok Herba AI:\n${logPenambahan.join('\n')}`);
+        alert(`Pengeluaran Berhasil Dicatat!\n\nStok Herba Otomatis Bertambah & HPP/Gram Diperbarui:\n${logPenambahan.join('\n')}`);
       } else {
         alert("Pengeluaran operasional berhasil dicatat.");
       }
