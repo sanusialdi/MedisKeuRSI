@@ -489,7 +489,7 @@
         <button onclick="toggleKeuanganModal('modal-uang-keluar')" class="bg-rose-950/60 hover:bg-rose-900/80 border border-rose-500/40 p-5 rounded-xl text-left flex items-center justify-between transition shadow-lg group">
           <div>
             <span class="block font-extrabold text-base text-rose-400 group-hover:text-rose-300"><i class="fa-solid fa-circle-arrow-up mr-2"></i> - Catat Uang Keluar / Belanja Stok</span>
-            <span class="text-xs text-zinc-400">Pengeluaran operasional & foto OCR struk</span>
+            <span class="text-xs text-zinc-400">Pengeluaran operasional & foto OCR struk (Stok Bertambah Otomatis)</span>
           </div>
           <i class="fa-solid fa-minus-circle text-2xl text-rose-500"></i>
         </button>
@@ -570,7 +570,7 @@
       <!-- FORM POPUP / ACCORDION UANG KELUAR -->
       <div id="modal-uang-keluar" class="keuangan-form-container hidden bg-zinc-900 p-6 rounded-xl shadow-md border border-rose-500/30 space-y-4">
         <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
-          <h3 class="text-md font-bold text-rose-400"><i class="fa-solid fa-circle-arrow-up mr-2"></i> Form Uang Keluar (Pengeluaran Operasional & Stok)</h3>
+          <h3 class="text-md font-bold text-rose-400"><i class="fa-solid fa-circle-arrow-up mr-2"></i> Form Uang Keluar (Pengeluaran Operasional & Belanja Stok Herbal)</h3>
           <button onclick="toggleKeuanganModal('modal-uang-keluar')" class="text-xs text-zinc-500 hover:text-zinc-300"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
         <div class="space-y-3 text-sm">
@@ -583,10 +583,10 @@
           </div>
           <div>
             <label class="block text-zinc-300 font-medium mb-1">Hasil Pembacaan / Catatan Transaksi Uang Keluar *</label>
-            <textarea id="keluar-teks-bebas" rows="4" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Tulis bebas narasi pengeluaran. Contoh: Beli Huang Qi 500 gram HPP 300 total Rp 150.000..."></textarea>
+            <textarea id="keluar-teks-bebas" rows="4" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Tulis narasi pengeluaran. Contoh: Beli Huang Qi 500 gram HPP 300 total Rp 150.000..."></textarea>
           </div>
           <button onclick="prosesUangKeluar()" class="w-full bg-rose-600 hover:bg-rose-500 text-slate-950 font-bold py-3 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-save"></i> Simpan & Olah Uang Keluar Sistem
+            <i class="fa-solid fa-save"></i> Simpan Transaksi & Tambah Stok Otomatis
           </button>
         </div>
       </div>
@@ -1068,23 +1068,49 @@
       }
     }
 
+    // LOGIKA PERMINTAAN: SINKRONISASI MUTASI STOK DENGAN TAB KEUANGAN
+    // Tipe "jual" / "pakai" -> STOK BERKURANG
+    // Tipe "beli" / "tambah" -> STOK BERTAMBAH
     function applyMutasiStok(mutasiList) {
-      if (!Array.isArray(mutasiList) || mutasiList.length === 0) return;
+      if (!Array.isArray(mutasiList) || mutasiList.length === 0) return [];
+
+      let logMutasi = [];
 
       mutasiList.forEach(m => {
         if (!m.namaHerbal || !m.jumlahGram) return;
-        let targetName = m.namaHerbal.toLowerCase();
+        let targetName = m.namaHerbal.toLowerCase().trim();
+        let qty = Math.abs(parseInt(m.jumlahGram));
+        let hppVal = m.hpp ? parseInt(m.hpp) : 200;
+
         let index = stokHerbal.findIndex(s => s.nama.toLowerCase().includes(targetName) || targetName.includes(s.nama.toLowerCase()));
 
         if (m.tipe === "jual" || m.tipe === "pakai") {
+          // TERJUAL: BERKURANGSESUAI GRAM
           if (index !== -1) {
-            stokHerbal[index].jumlah = Math.max(0, stokHerbal[index].jumlah - Math.abs(parseInt(m.jumlahGram)));
+            stokHerbal[index].jumlah = Math.max(0, stokHerbal[index].jumlah - qty);
+            logMutasi.push(`- ${stokHerbal[index].nama}: Berkurang ${qty}g (Sisa: ${stokHerbal[index].jumlah}g)`);
+          }
+        } else if (m.tipe === "beli" || m.tipe === "tambah") {
+          // MEMBELI: BERTAMBAH SESUAI GRAM
+          if (index !== -1) {
+            stokHerbal[index].jumlah += qty;
+            if (m.hpp) stokHerbal[index].hpp = hppVal;
+            logMutasi.push(`+ ${stokHerbal[index].nama}: Bertambah ${qty}g (Total: ${stokHerbal[index].jumlah}g)`);
+          } else {
+            // Jika Herba Baru Belum Terdaftar
+            stokHerbal.push({
+              nama: m.namaHerbal,
+              jumlah: qty,
+              hpp: hppVal
+            });
+            logMutasi.push(`+ ${m.namaHerbal} (Baru): Bertambah ${qty}g (Total: ${qty}g)`);
           }
         }
       });
 
       saveStokToStorage();
       renderStokTable();
+      return logMutasi;
     }
 
     async function callDeepSeekAPI(promptText, customSystemPrompt = null) {
@@ -1378,9 +1404,10 @@
       saveJurnalToStorage();
       syncTransaksiToGDrive(trxData);
 
-      // 2. Kurangi Data Stok Herbal RSI
+      // 2. OTOMATIS KURANGI DATA STOK HERBAL RSI KARENA TERJUAL
+      let logPengurangan = [];
       if (lastAIFormulasiStok && lastAIFormulasiStok.length > 0) {
-        applyMutasiStok(lastAIFormulasiStok);
+        logPengurangan = applyMutasiStok(lastAIFormulasiStok);
       }
 
       // 3. Olah Jurnal Keuangan Sistem
@@ -1410,7 +1437,7 @@
       }
 
       toggleKeuanganModal('modal-uang-masuk');
-      alert("Transaksi berhasil disimpan! Stok telah terpotong dan jurnal kas diperbarui.");
+      alert(`Transaksi berhasil disimpan!\n\nPembaruan Stok Herba Terjual:\n${logPengurangan.length > 0 ? logPengurangan.join('\n') : 'Tidak ada mutasi stok.'}`);
     }
 
     async function prosesUangKeluar() {
@@ -1423,10 +1450,32 @@
 
       let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
+      // AI menganalisis pengeluaran & jika ada pembelian stok herbal, maka stok akan bertambah
+      const promptBelanjaStok = `
+        Analisis teks belanja/pengeluaran berikut: "${teksBebas}".
+        Jika ada pembelian/belanja bahan stok herbal, ekstraksi dalam JSON mutasi stok bertambah.
+        Sajikan output JSON mutasi SAJA di dalam tag:
+        ---MUTASI_BELI---
+        [{"namaHerbal": "Nama Herbal", "jumlahGram": 500, "hpp": 300, "tipe": "beli"}]
+        ---AKHIR_MUTASI_BELI---
+      `;
+
+      let logPenambahan = [];
+      try {
+        const resBelanja = await callDeepSeekAPI(promptBelanjaStok);
+        const matchBeli = resBelanja.match(/---MUTASI_BELI---([\s\S]*?)---AKHIR_MUTASI_BELI---/);
+        if (matchBeli && matchBeli[1]) {
+          let listBeli = JSON.parse(matchBeli[1].trim());
+          if (Array.isArray(listBeli) && listBeli.length > 0) {
+            logPenambahan = applyMutasiStok(listBeli);
+          }
+        }
+      } catch(e) { console.error("Error parse mutasi beli:", e); }
+
       let trxData = {
         waktu: wktStr,
         jenis: "KELUAR",
-        subjek: "Operasional",
+        subjek: "Operasional / Belanja Stok",
         wa: "-",
         keterangan: teksBebas,
         nominal: 0
@@ -1444,6 +1493,12 @@
       await olahSingleJurnalAI("UANG KELUAR", "Operational", teksBebas, 0);
       document.getElementById('keluar-teks-bebas').value = '';
       toggleKeuanganModal('modal-uang-keluar');
+
+      if (logPenambahan.length > 0) {
+        alert(`Pengeluaran berhasil dicatat!\n\nStok Herba Otomatis Bertambah:\n${logPenambahan.join('\n')}`);
+      } else {
+        alert("Pengeluaran operasional berhasil dicatat.");
+      }
     }
 
     async function olahSingleJurnalAI(tipe, subjek, narasi, nominal) {
