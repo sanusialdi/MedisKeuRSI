@@ -421,7 +421,7 @@
         <div class="flex justify-between items-center">
           <div>
             <h2 class="text-lg font-bold text-orange-400"><i class="fa-solid fa-warehouse text-orange-500"></i> Inventaris Stok Herbal RSI</h2>
-            <p class="text-xs text-zinc-400">Pencarian ketersediaan dan manajemen bahan stok herbal RSI.</p>
+            <p class="text-xs text-zinc-400">Pencarian ketersediaan dan manajemen bahan stok herbal RSI (Tersinkronisasi Otomatis dengan Keuangan).</p>
           </div>
           <div class="flex gap-2">
             <button onclick="bukaChatModal('stok')" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
@@ -481,7 +481,7 @@
         <button onclick="toggleKeuanganModal('modal-uang-masuk')" class="bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 p-5 rounded-xl text-left flex items-center justify-between transition shadow-lg group">
           <div>
             <span class="block font-extrabold text-base text-emerald-400 group-hover:text-emerald-300"><i class="fa-solid fa-circle-arrow-down mr-2"></i> + Catat Uang Masuk / Transaksi Pasien</span>
-            <span class="text-xs text-zinc-400">Penerimaan kas, penentuan racikan, cetak/share struk & potongan stok</span>
+            <span class="text-xs text-zinc-400">Penerimaan kas, racikan herbal, cetak/share struk & potongan stok otomatis</span>
           </div>
           <i class="fa-solid fa-plus-circle text-2xl text-emerald-500"></i>
         </button>
@@ -1068,7 +1068,8 @@
       }
     }
 
-    // LOGIKA PERMINTAAN: SINKRONISASI MUTASI STOK DENGAN TAB KEUANGAN
+    // FUNGSI UTAMA SINKRONISASI AI:
+    // Menerima array mutasi stok hasil olahan AI DeepSeek
     // Tipe "jual" / "pakai" -> STOK BERKURANG
     // Tipe "beli" / "tambah" -> STOK BERTAMBAH
     function applyMutasiStok(mutasiList) {
@@ -1085,19 +1086,19 @@
         let index = stokHerbal.findIndex(s => s.nama.toLowerCase().includes(targetName) || targetName.includes(s.nama.toLowerCase()));
 
         if (m.tipe === "jual" || m.tipe === "pakai") {
-          // TERJUAL: BERKURANGSESUAI GRAM
+          // HERBA TERJUAL: BERKURANG SESUAI GRAM
           if (index !== -1) {
             stokHerbal[index].jumlah = Math.max(0, stokHerbal[index].jumlah - qty);
             logMutasi.push(`- ${stokHerbal[index].nama}: Berkurang ${qty}g (Sisa: ${stokHerbal[index].jumlah}g)`);
           }
         } else if (m.tipe === "beli" || m.tipe === "tambah") {
-          // MEMBELI: BERTAMBAH SESUAI GRAM
+          // BELANJA HERBA: BERTAMBAH SESUAI GRAM
           if (index !== -1) {
             stokHerbal[index].jumlah += qty;
             if (m.hpp) stokHerbal[index].hpp = hppVal;
             logMutasi.push(`+ ${stokHerbal[index].nama}: Bertambah ${qty}g (Total: ${stokHerbal[index].jumlah}g)`);
           } else {
-            // Jika Herba Baru Belum Terdaftar
+            // Jika herba belum ada di inventaris stok
             stokHerbal.push({
               nama: m.namaHerbal,
               jumlah: qty,
@@ -1297,7 +1298,7 @@
         let grandTotal = 150000 + lastAITotalHerbalCost;
         let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
-        // SIMPAN LENGKAP HASIL DIAGNOSA KE DATABASE REKAM MEDIK PASIEN
+        // SIMPAN HASIL DIAGNOSA KE REKAM MEDIK PASIEN
         if (!dbPasien[nama]) {
           dbPasien[nama] = { nama, wa, usia, kunjungan: [] };
         }
@@ -1404,7 +1405,7 @@
       saveJurnalToStorage();
       syncTransaksiToGDrive(trxData);
 
-      // 2. OTOMATIS KURANGI DATA STOK HERBAL RSI KARENA TERJUAL
+      // 2. SINKRONISASI AI: STOK HERBAL DENGAN KEUANGAN (TERJUAL -> STOK BERKURANG)
       let logPengurangan = [];
       if (lastAIFormulasiStok && lastAIFormulasiStok.length > 0) {
         logPengurangan = applyMutasiStok(lastAIFormulasiStok);
@@ -1437,7 +1438,7 @@
       }
 
       toggleKeuanganModal('modal-uang-masuk');
-      alert(`Transaksi berhasil disimpan!\n\nPembaruan Stok Herba Terjual:\n${logPengurangan.length > 0 ? logPengurangan.join('\n') : 'Tidak ada mutasi stok.'}`);
+      alert(`Transaksi Pemasukan Berhasil Disimpan!\n\nMutasi Pengurangan Stok Herba AI:\n${logPengurangan.length > 0 ? logPengurangan.join('\n') : 'Tidak ada mutasi stok.'}`);
     }
 
     async function prosesUangKeluar() {
@@ -1450,10 +1451,10 @@
 
       let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
-      // AI menganalisis pengeluaran & jika ada pembelian stok herbal, maka stok akan bertambah
+      // 1. SINKRONISASI AI: KERJA AI MEMINDAI TEKS BELANJA DAN MENAMBAHKAN STOK HERBA LOKAL
       const promptBelanjaStok = `
-        Analisis teks belanja/pengeluaran berikut: "${teksBebas}".
-        Jika ada pembelian/belanja bahan stok herbal, ekstraksi dalam JSON mutasi stok bertambah.
+        Analisis narasi belanja/pengeluaran kas berikut: "${teksBebas}".
+        Jika transaksi ini merupakan pembelian/belanja bahan stok herbal, ekstraksi gramasi dan HPP-nya ke dalam format JSON.
         Sajikan output JSON mutasi SAJA di dalam tag:
         ---MUTASI_BELI---
         [{"namaHerbal": "Nama Herbal", "jumlahGram": 500, "hpp": 300, "tipe": "beli"}]
@@ -1495,7 +1496,7 @@
       toggleKeuanganModal('modal-uang-keluar');
 
       if (logPenambahan.length > 0) {
-        alert(`Pengeluaran berhasil dicatat!\n\nStok Herba Otomatis Bertambah:\n${logPenambahan.join('\n')}`);
+        alert(`Transaksi Pengeluaran Berhasil Disimpan!\n\nMutasi Penambahan Stok Herba AI:\n${logPenambahan.join('\n')}`);
       } else {
         alert("Pengeluaran operasional berhasil dicatat.");
       }
