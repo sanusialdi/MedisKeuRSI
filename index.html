@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Rekam Medik TCM, Stok & Akuntansi RSI - DeepSeek AI</title>
+  <title>Sistem Rekam Medik TCM, Stok & Akuntansi RSI</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
@@ -176,7 +176,7 @@
           </div>
           <div class="pt-2 border-t border-zinc-800">
             <label class="block text-orange-400 font-semibold mb-1"><i class="fa-solid fa-camera text-orange-500 mr-1"></i> Upload / Tangkap Foto Wajah Pasien:</label>
-            <p class="text-xs text-zinc-400 mb-2">*Pastikan pencahayaan terang dan rona wajah/mata terlihat jelas untuk analisis biometrik AI.</p>
+            <p class="text-xs text-zinc-400 mb-2">*Pastikan pencahayaan terang dan rona wajah/mata terlihat jelas untuk analisis biometrik sistem.</p>
             <input type="file" id="pasien-img-input" accept="image/*" capture="environment" onchange="previewPasienImage(event)" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-950 file:text-orange-400 border border-zinc-800 rounded-md w-full hover:file:bg-orange-900 cursor-pointer">
             <div id="pasien-preview-container" class="mt-2 hidden">
               <img id="pasien-img-preview" src="" alt="Preview Wajah Pasien" class="h-36 object-cover rounded-md border border-orange-500/40">
@@ -220,7 +220,7 @@
           </div>
           <div class="pt-2 border-t border-zinc-800">
             <label class="block text-orange-400 font-semibold mb-1"><i class="fa-solid fa-camera text-orange-500 mr-1"></i> Upload Foto Lidah Pasien:</label>
-            <p class="text-xs text-zinc-400 mb-2">*Foto fokus pada lidah. Pastikan pencahayaan terang untuk AI membaca retakan, selaput, dan bintik merah.</p>
+            <p class="text-xs text-zinc-400 mb-2">*Foto fokus pada lidah. Pastikan pencahayaan terang untuk sistem membaca retakan, selaput, dan bintik merah.</p>
             <input type="file" id="lidah-img-input" accept="image/*" capture="environment" onchange="previewTongueImage(event)" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-950 file:text-orange-400 border border-zinc-800 rounded-md w-full hover:file:bg-orange-900 cursor-pointer">
             <div id="tongue-preview-container" class="mt-2 hidden">
               <img id="tongue-img-preview" src="" alt="Preview Lidah" class="h-36 object-cover rounded-md border border-orange-500/40">
@@ -334,7 +334,7 @@
 
       <!-- Tombol Utama "Diagnosa Holistik" -->
       <button onclick="prosesAITCM()" class="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-zinc-950 font-extrabold py-4 px-6 rounded-xl shadow-xl transition flex items-center justify-center gap-3 text-base">
-        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i> Diagnosa Biometrik & Holistik AI
+        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i> Diagnosa Biometrik & Holistik Sistem
       </button>
 
       <!-- HASIL DIAGNOSA TERBAGI DALAM TOMBOL (TAB/ACCORDION OUTPUT) -->
@@ -343,7 +343,7 @@
           <h2 class="text-lg font-bold text-orange-400 flex items-center gap-2">
             <i class="fa-solid fa-brain text-orange-500"></i> Hasil Diagnosa Medis Holistik TCM
           </h2>
-          <span id="ai-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin mr-1"></i> AI Sedang Menganalisis Biometrik...</span>
+          <span id="ai-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Sistem Sedang Menganalisis Biometrik...</span>
         </div>
 
         <!-- Tombol Pilihan Menu Hasil Diagnosa -->
@@ -425,11 +425,11 @@
       <!-- Trigger Laporan Lengkap -->
       <div class="flex justify-between items-center bg-zinc-900 p-4 rounded-xl border border-orange-500/30">
         <div>
-          <h2 class="font-bold text-orange-400 text-sm">Pencatatan Kas & Akuntansi AI RSI</h2>
+          <h2 class="font-bold text-orange-400 text-sm">Pencatatan Kas & Akuntansi Komputerisasi RSI</h2>
           <p class="text-xs text-zinc-400">Pilih menu pencatatan kas masuk atau uang keluar operasional RSI.</p>
         </div>
         <button onclick="generasiLaporanLengkapAI()" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-bold px-4 py-2 rounded-lg text-xs transition flex items-center gap-2">
-          <i class="fa-solid fa-file-invoice-dollar text-sm"></i> Laporan Keuangan Lengkap AI
+          <i class="fa-solid fa-file-invoice-dollar text-sm"></i> Laporan Keuangan Lengkap RSI
         </button>
       </div>
 
@@ -438,7 +438,7 @@
         <button onclick="toggleKeuanganModal('modal-uang-masuk')" class="bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 p-5 rounded-xl text-left flex items-center justify-between transition shadow-lg group">
           <div>
             <span class="block font-extrabold text-base text-emerald-400 group-hover:text-emerald-300"><i class="fa-solid fa-circle-arrow-down mr-2"></i> + Catat Uang Masuk / Transaksi Pasien</span>
-            <span class="text-xs text-zinc-400">Penerimaan kas, penentuan racikan AI, cetak/share struk & potongan stok</span>
+            <span class="text-xs text-zinc-400">Penerimaan kas, penentuan racikan, cetak/share struk & potongan stok</span>
           </div>
           <i class="fa-solid fa-plus-circle text-2xl text-emerald-500"></i>
         </button>
@@ -491,14 +491,14 @@
           <!-- TOMBOL FORMULASI STOK RSI -->
           <div class="p-4 bg-zinc-950 border border-orange-500/40 rounded-xl space-y-3">
             <div class="flex justify-between items-center">
-              <span class="font-bold text-xs text-orange-400"><i class="fa-solid fa-mortar-pestle mr-1"></i> Formulasi Racikan Stok RSI (Hasil Diagnosa AI)</span>
+              <span class="font-bold text-xs text-orange-400"><i class="fa-solid fa-mortar-pestle mr-1"></i> Formulasi Racikan Stok RSI (Hasil Diagnosa System)</span>
               <button onclick="muatFormulasiStokAI()" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 text-xs font-extrabold px-3 py-1.5 rounded-md transition flex items-center gap-1">
-                <i class="fa-solid fa-wand-magic-sparkles"></i> Ambil Formulasi Stok RSI (Dari AI)
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Ambil Formulasi Stok RSI
               </button>
             </div>
             
             <div id="container-racikan-stok" class="text-xs text-zinc-400 italic bg-zinc-900 p-2.5 rounded border border-zinc-800">
-              Klik tombol di atas untuk memuat racikan herbal hasil diagnosa AI terkini.
+              Klik tombol di atas untuk memuat racikan herbal hasil diagnosa sistem terkini.
             </div>
 
             <div class="flex justify-between items-center pt-2 border-t border-zinc-800 font-bold text-sm">
@@ -543,7 +543,7 @@
             <textarea id="keluar-teks-bebas" rows="4" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-rose-500 outline-none" placeholder="Tulis bebas narasi pengeluaran. Contoh: Beli Huang Qi 500 gram HPP 300 total Rp 150.000..."></textarea>
           </div>
           <button onclick="prosesUangKeluar()" class="w-full bg-rose-600 hover:bg-rose-500 text-slate-950 font-bold py-3 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-save"></i> Simpan & Olah Uang Keluar AI
+            <i class="fa-solid fa-save"></i> Simpan & Olah Uang Keluar Sistem
           </button>
         </div>
       </div>
@@ -551,7 +551,7 @@
       <!-- OUTPUT JURNAL KEUANGAN -->
       <div class="bg-zinc-900 p-6 rounded-xl shadow-md border border-zinc-800">
         <h2 class="text-lg font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800 flex items-center justify-between">
-          <span><i class="fa-solid fa-file-contract text-orange-500"></i> Output Jurnal Transaksi & Laporan Akuntansi AI</span>
+          <span><i class="fa-solid fa-file-contract text-orange-500"></i> Output Jurnal Transaksi & Laporan Akuntansi Sistem</span>
           <span id="ai-fin-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin"></i> Mengolah...</span>
         </h2>
 
@@ -611,7 +611,7 @@
     let base64TongueImg = "";
     let base64PasienImg = "";
     
-    // Transaksi AI Terkini
+    // Transaksi Sistem Terkini
     let lastAIFormulasiStok = [];
     let lastAITotalHerbalCost = 0;
 
@@ -1086,7 +1086,7 @@
         document.getElementById('nota-total-badge').innerText = "ESTIMASI: " + formatRp(grandTotal);
 
       } catch (err) {
-        alert("Error AI: " + err.message);
+        alert("Error Sistem: " + err.message);
       } finally {
         loadingEl.classList.add('hidden');
       }
@@ -1095,7 +1095,7 @@
     function muatFormulasiStokAI() {
       const container = document.getElementById('container-racikan-stok');
       if (!lastAIFormulasiStok || lastAIFormulasiStok.length === 0) {
-        container.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Belum ada formulasi racikan AI. Lakukan Diagnosa Holistik di Tab 1 terlebih dahulu.</span>`;
+        container.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Belum ada formulasi racikan sistem. Lakukan Diagnosa Holistik di Tab 1 terlebih dahulu.</span>`;
         return;
       }
 
@@ -1179,7 +1179,7 @@
         applyMutasiStok(lastAIFormulasiStok);
       }
 
-      // 3. Olah Jurnal AI Keuangan
+      // 3. Olah Jurnal Keuangan Sistem
       await olahSingleJurnalAI("UANG MASUK", nama, ket, grandTotal);
 
       // 4. Eksekusi Print atau Share WA
