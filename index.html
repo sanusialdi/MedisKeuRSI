@@ -180,7 +180,7 @@
           </div>
           <div class="pt-2 border-t border-zinc-800">
             <label class="block text-orange-400 font-semibold mb-1"><i class="fa-solid fa-camera text-orange-500 mr-1"></i> Upload / Tangkap Foto Wajah Pasien:</label>
-            <p class="text-xs text-zinc-400 mb-2">*Pastikan pencahayaan terang dan pencahayaan wajah jelas untuk pembacaan analisis AI.</p>
+            <p class="text-xs text-zinc-400 mb-2">*Pastikan pencahayaan terang dan rona wajah/mata terlihat jelas untuk analisis biometrik AI.</p>
             <input type="file" id="pasien-img-input" accept="image/*" capture="environment" onchange="previewPasienImage(event)" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-950 file:text-orange-400 border border-zinc-800 rounded-md w-full hover:file:bg-orange-900 cursor-pointer">
             <div id="pasien-preview-container" class="mt-2 hidden">
               <img id="pasien-img-preview" src="" alt="Preview Wajah Pasien" class="h-36 object-cover rounded-md border border-orange-500/40">
@@ -189,40 +189,42 @@
         </div>
       </div>
 
-      <!-- C. Pemeriksaan Lidah -->
+      <!-- C. Pemeriksaan Lidah (She Zhen) -->
       <div id="sec-lidah" class="form-accordion-content hidden bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-md">
         <h3 class="text-md font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800"><i class="fa-solid fa-eye mr-2"></i> Pemeriksaan Lidah (She Zhen) & Foto Lidah</h3>
         <div class="space-y-4 text-sm">
           <div>
-            <span class="font-semibold text-orange-300 block mb-1">Warna Badan Lidah:</span>
+            <span class="font-semibold text-orange-300 block mb-1">Warna Badan Lidah (She Zhi):</span>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Pucat (Dan Bai)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Pucat</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Merah (Hong)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Merah</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Merah Tua (Jiang)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Merah Tua</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Ungu (An Zi)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Ungu/Sianosis</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Pucat (Dan Bai)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Pucat (Dan Bai)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Merah (Hong)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Merah (Hong)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Merah Tua (Jiang)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Merah Tua (Jiang)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Ungu/Kehitaman (An Zi)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Ungu/Sianosis (An Zi)</label>
             </div>
           </div>
           <div>
-            <span class="font-semibold text-orange-300 block mb-1">Bentuk & Tekstur Lidah:</span>
+            <span class="font-semibold text-orange-300 block mb-1">Bentuk, Tepi & Tekstur Biometrik Lidah:</span>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Gemuk (Pang Da)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Gemuk/Pang Da</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Bekas Gigi (Chi Hen)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Bekas Gigi</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Tipis (Shou Xiao)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Tipis/Kurus</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Retak (Lie Wen)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Retak/Fissured</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Gemuk (Pang Da)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Gemuk (Pang Da)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Bekas Gigi / Tooth Marks (Chi Hen)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Bekas Gigi (Chi Hen)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Retak / Fissures (Lie Wen)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Retakan (Lie Wen)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Bintik Merah / Red Dots (Hong Dian)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Bintik Merah (Hong Dian)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Tipis / Kurus (Shou Xiao)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Tipis/Kurus (Shou Xiao)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Kaku (Jiang)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Kaku (Jiang)</label>
             </div>
           </div>
           <div>
-            <span class="font-semibold text-orange-300 block mb-1">Selaput Lidah (She Tai):</span>
+            <span class="font-semibold text-orange-300 block mb-1">Selaput Lidah Biometrik (She Tai):</span>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Putih Tipis (Bai Bo)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Putih Tipis</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Putih Tebal (Bai Ni)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Putih Tebal/Ni</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Kuning Tebal (Huang Ni)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Kuning Tebal</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Tanpa Selaput (Bo Tai)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Tanpa Selaput</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Putih Tipis (Bai Bo)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Putih Tipis (Bai Bo)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Putih Tebal/Lengket (Bai Ni)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Putih Tebal (Bai Ni)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Kuning Tebal/Lengket (Huang Ni)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Kuning Tebal (Huang Ni)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Tanpa Selaput/Kupas (Bo Tai)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Tanpa Selaput/Kupas</label>
             </div>
           </div>
           <div class="pt-2 border-t border-zinc-800">
             <label class="block text-orange-400 font-semibold mb-1"><i class="fa-solid fa-camera text-orange-500 mr-1"></i> Upload Foto Lidah Pasien:</label>
-            <p class="text-xs text-zinc-400 mb-2">*Foto fokus pada lidah. Bila buram/kurang fokus, mohon ambil kembali.</p>
+            <p class="text-xs text-zinc-400 mb-2">*Foto fokus pada lidah. Pastikan pencahayaan terang untuk AI membaca retakan, selaput, dan bintik merah.</p>
             <input type="file" id="lidah-img-input" accept="image/*" capture="environment" onchange="previewTongueImage(event)" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-950 file:text-orange-400 border border-zinc-800 rounded-md w-full hover:file:bg-orange-900 cursor-pointer">
             <div id="tongue-preview-container" class="mt-2 hidden">
               <img id="tongue-img-preview" src="" alt="Preview Lidah" class="h-36 object-cover rounded-md border border-orange-500/40">
@@ -336,7 +338,7 @@
 
       <!-- Tombol Utama "Diagnosa Holistik" -->
       <button onclick="prosesAITCM()" class="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-zinc-950 font-extrabold py-4 px-6 rounded-xl shadow-xl transition flex items-center justify-center gap-3 text-base">
-        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i> Diagnosa Holistik (Olah Data AI)
+        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i> Diagnosa Biometrik & Holistik AI
       </button>
 
       <!-- HASIL DIAGNOSA TERBAGI DALAM TOMBOL (TAB/ACCORDION OUTPUT) -->
@@ -345,7 +347,7 @@
           <h2 class="text-lg font-bold text-orange-400 flex items-center gap-2">
             <i class="fa-solid fa-brain text-orange-500"></i> Hasil Diagnosa Medis Holistik TCM
           </h2>
-          <span id="ai-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin mr-1"></i> AI Sedang Menganalisis...</span>
+          <span id="ai-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin mr-1"></i> AI Sedang Menganalisis Biometrik...</span>
         </div>
 
         <!-- Tombol Pilihan Menu Hasil Diagnosa -->
@@ -368,7 +370,7 @@
           <div id="diag-preparasi" class="diag-tab-content hidden space-y-4">
             <div id="preparasi-text" class="prose"></div>
             
-            <!-- Modul Struk & Tombol Murni Cetak/Share (Tanpa Otomatis Jurnal) -->
+            <!-- Modul Struk & Tombol Cetak/Share -->
             <div class="p-4 bg-zinc-900 border border-orange-500/40 rounded-lg space-y-3">
               <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
                 <span class="font-bold text-xs text-orange-400"><i class="fa-solid fa-receipt mr-1"></i> Struk Transaksi Terapi & Herbal Pasien</span>
@@ -376,7 +378,7 @@
               </div>
               <div id="nota-details-content" class="text-xs text-zinc-300 font-mono space-y-1"></div>
               
-              <!-- Tombol Eksekusi Cetak & Share (Murni tanpa Jurnal Otomatis) -->
+              <!-- Tombol Eksekusi Cetak & Share -->
               <div class="grid grid-cols-2 gap-2 pt-2 border-t border-zinc-800">
                 <button onclick="cetakNotaBluetooth()" class="bg-zinc-800 hover:bg-zinc-700 text-orange-400 border border-orange-500/40 text-xs font-bold py-2.5 px-3 rounded-md transition flex items-center justify-center gap-1.5">
                   <i class="fa-solid fa-print"></i> Print Struk Bluetooth
@@ -854,7 +856,7 @@
         body: JSON.stringify({
           model: "deepseek-chat",
           messages: [
-            { role: "system", content: "Anda adalah Pakar Senior Traditional Chinese Medicine (TCM) & Akuntan Publik Profesional RSI Padang." },
+            { role: "system", content: "Anda adalah Pakar Senior Traditional Chinese Medicine (TCM), Ahli Diagnosa Biometrik Visual Lidah & Wajah (She Zhen & Wang Zhen), serta Akuntan Publik Profesional RSI Padang." },
             { role: "user", content: promptText }
           ],
           temperature: 0.1
@@ -886,7 +888,7 @@
       let bentukLidah = Array.from(document.querySelectorAll('input[name="lidah_bentuk"]:checked')).map(e => e.value);
       let taiLidah = Array.from(document.querySelectorAll('input[name="lidah_tai"]:checked')).map(e => e.value);
 
-      // Pengumpulan Data Nadi Kiri & Kanan (Cun, Guan, Chi)
+      // Nadi Kanan & Kiri
       let nadiKananCun = Array.from(document.querySelectorAll('input[name="nadi_kanan_cun"]:checked')).map(e => e.value);
       let nadiKananGuan = Array.from(document.querySelectorAll('input[name="nadi_kanan_guan"]:checked')).map(e => e.value);
       let nadiKananChi = Array.from(document.querySelectorAll('input[name="nadi_kanan_chi"]:checked')).map(e => e.value);
@@ -897,29 +899,56 @@
 
       let strNadiLengkap = `Tangan Kanan [Cun: ${nadiKananCun.join(', ') || '-'}, Guan: ${nadiKananGuan.join(', ') || '-'}, Chi: ${nadiKananChi.join(', ') || '-'}], Tangan Kiri [Cun: ${nadiKiriCun.join(', ') || '-'}, Guan: ${nadiKiriGuan.join(', ') || '-'}, Chi: ${nadiKiriChi.join(', ') || '-'}]`;
 
+      let hasFotoLidah = base64TongueImg ? "Tersedia foto lidah pasien" : "Tidak ada upload foto lidah";
+      let hasFotoWajah = base64PasienImg ? "Tersedia foto visual wajah pasien" : "Tidak ada upload foto wajah";
+
       let listStokTxt = stokHerbal.map(s => `${s.nama} (Stok: ${s.jumlah}g, HPP: Rp${s.hpp}/g)`).join('; ');
 
       const prompt = `
-        Olah Diagnosa Patologis TCM Lengkap untuk Rumah Sehat Insani (RSI) Padang:
+        Olah Diagnosa Patologis Biometrik & Holistik TCM Lengkap untuk Rumah Sehat Insani (RSI) Padang:
         Pasien: ${nama} (${usia}), WA: ${wa}
         Keluhan Utama: ${keluhan}
-        Pemeriksaan Lidah: Warna [${warnaLidah.join(', ')}], Bentuk [${bentukLidah.join(', ')}], Selaput [${taiLidah.join(', ')}]
-        Pemeriksaan Nadi Lengkap: ${strNadiLengkap}
-        Ketersediaan Stok Herbal RSI: ${listStokTxt}
+        
+        DATA VISUAL WAJAH & LIDAH:
+        - Status Foto Wajah: ${hasFotoWajah}
+        - Status Foto Lidah: ${hasFotoLidah}
+        - Indikator Warna Badan Lidah: [${warnaLidah.join(', ')}]
+        - Indikator Bentuk/Tepi/Retakan Lidah: [${bentukLidah.join(', ')}]
+        - Indikator Selaput Lidah: [${taiLidah.join(', ')}]
+        
+        DATA PALPASI NADI (MAI ZHEN):
+        - Palpasi Nadi: ${strNadiLengkap}
+        
+        STOK HERBAL RSI: ${listStokTxt}
 
-        Sajikan respon WAJIB terpisah per tag berikut secara rinci:
+        Sajikan respon WAJIB terpisah per tag berikut secara terstruktur:
+
         ---MUTASI_STOK---
         [{"namaHerbal": "Nama Herbal Digunakan", "jumlahGram": 30, "tipe": "jual"}]
         ---AKHIR_MUTASI---
 
         ---TAB_SYNDROM---
-        3. <h3>Analisis Patologi Sindrom (Bian Zheng)</h3>
-        <p>Penjelasan mendalam perjalanan penyakit, mekanisme Zang-Fu, Qi, Blood, Yin-Yang, dan patogen berdasarkan keluhan, lidah, dan nadi Cun Guan Chi.</p>
+        <h3>1. Analisis Biometrik Visual Lidah (She Zhen)</h3>
+        <ul>
+          <li><strong>Warna Badan Lidah:</strong> Evaluasi presisi rona/warna badan lidah dan implikasi klinisnya.</li>
+          <li><strong>Retakan (Fissures / Lie Wen):</strong> Deteksi lokasi retakan (tengah, akar, atau menyeluruh) dan pemetaan defisiensi Yin/Fluid.</li>
+          <li><strong>Selaput Lidah (She Tai):</strong> Evaluasi ketebalan, warna (kuning/putih), tekstur (lengket/ni/kering), serta proporsi luas distribusinya.</li>
+          <li><strong>Bintik Merah (Red Dots / Hong Dian) & Tepi Lidah (Tooth Marks / Chi Hen):</strong> Deteksi gerigi tepi (Stagnasi Damp/Defisiensi Qi Limpa) & bintik merah (Panas Organ Zang-Fu).</li>
+        </ul>
+
+        <h3>2. Analisis Visual Biometrik Wajah (Wang Zhen)</h3>
+        <ul>
+          <li><strong>Rona & Vitalitas Wajah (Shen & Sheng Se):</strong> Evaluasi rona (pucat, kusam, kemerahan, kehitaman) dan kilau ekspresi.</li>
+          <li><strong>Pemetaan Zona Zang-Fu Wajah:</strong> Analisis zona Dahi (Jantung), Pipi Kanan (Paru), Pipi Kiri (Hati), Hidung (Limpa/Lambung), Dagu/Bawah Mata (Ginjal).</li>
+        </ul>
+
+        <h3>3. Pemetaan Patologi Sindrom TCM (Bian Zheng)</h3>
+        <p>Sintesis komprehensif perjalanan penyakit, Zang-Fu, Qi, Blood, Fluid, Yin-Yang, dan Patogen dominan berdasarkan gabungan biometrik lidah, rona wajah, keluhan, dan nadi Cun Guan Chi.</p>
         ---AKHIR_TAB---
 
         ---TAB_AKUPUNTUR---
         3. <h3>Rekomendasi Titik Akupuntur & Akupresur</h3>
-        <ul><li>Titik utama beserta lokasi dan indikasi khusus apakah perlu Tonifikasi (Bu) atau Sedasi (Xie).</li></ul>
+        <ul><li>Titik utama beserta lokasi presisi dan indikasi khusus Tonifikasi (Bu) atau Sedasi (Xie).</li></ul>
         ---AKHIR_TAB---
 
         ---TAB_MOKSI---
