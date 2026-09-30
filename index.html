@@ -67,8 +67,8 @@
         <button id="btn-install-pwa" onclick="installPWA()" class="hidden text-xs bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition shadow">
           <i class="fa-solid fa-download"></i> Install App
         </button>
-        <span class="text-xs bg-zinc-800 px-3 py-1 rounded-full text-orange-400 border border-orange-500/40 flex items-center">
-          <i class="fa-brands fa-google-drive text-blue-400 mr-1.5"></i> GDrive Sync Active
+        <span id="gdrive-status-badge" class="text-xs bg-zinc-800 px-3 py-1 rounded-full text-orange-400 border border-orange-500/40 flex items-center">
+          <i class="fa-brands fa-google-drive text-blue-400 mr-1.5"></i> Connecting GDrive...
         </span>
       </div>
     </div>
@@ -430,7 +430,7 @@
               <i class="fa-solid fa-comments"></i> Diskusi Stok
             </button>
             <button onclick="syncToGDrive()" class="text-xs bg-zinc-800 text-orange-400 hover:bg-zinc-700 border border-orange-500/40 font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition">
-              <i class="fa-brands fa-google-drive"></i> Sync GDrive
+              <i class="fa-brands fa-google-drive"></i> Force Sync GDrive
             </button>
           </div>
         </div>
@@ -938,24 +938,56 @@
       syncToGDrive();
     }
 
-    function savePasienToStorage() {
+    function savePasienToStorage(namaPasien) {
       localStorage.setItem('rsi_pasien_v12', JSON.stringify(dbPasien));
       renderKeuanganDropdownPasien();
-      syncRekamMedisToGDrive(); // OTOMATIS SINKRONISASI TEKS REKAM MEDIS KE GOOGLE DRIVE
+      if (namaPasien && dbPasien[namaPasien]) {
+        syncSinglePasienToGDrive(dbPasien[namaPasien]);
+      }
     }
 
     function saveJurnalToStorage() {
       localStorage.setItem('rsi_jurnal_v12', JSON.stringify(dbJurnalKas));
     }
 
-    // OTOMATIS SYNC SELURUH REKAM MEDIS PASIEN DALAM BENTUK TXT KE DRIVE
-    async function syncRekamMedisToGDrive() {
+    // MEMUAT SELURUH DATA LENGKAP DARI GOOGLE DRIVE SAAT APLIKASI DIBUKA
+    async function loadCloudDataFromGDrive() {
       if (!GAS_WEBAPP_URL) return;
+      
+      const badge = document.getElementById('gdrive-status-badge');
+      if (badge) badge.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400 mr-1.5"></i> Syncing GDrive...`;
+
+      try {
+        const res = await fetch(GAS_WEBAPP_URL);
+        if (!res.ok) throw new Error("Gagal terhubung ke GDrive");
+        const data = await res.json();
+        
+        if (data.stok && data.stok.length > 0) stokHerbal = data.stok;
+        if (data.jurnal && data.jurnal.length > 0) dbJurnalKas = data.jurnal;
+        if (data.pasien && Object.keys(data.pasien).length > 0) dbPasien = data.pasien;
+
+        localStorage.setItem('rsi_stok_v12', JSON.stringify(stokHerbal));
+        localStorage.setItem('rsi_pasien_v12', JSON.stringify(dbPasien));
+        localStorage.setItem('rsi_jurnal_v12', JSON.stringify(dbJurnalKas));
+
+        renderStokTable();
+        renderKeuanganDropdownPasien();
+
+        if (badge) badge.innerHTML = `<i class="fa-brands fa-google-drive text-blue-400 mr-1.5"></i> GDrive Sync Active`;
+      } catch (err) {
+        console.error("Gagal load data dari Drive:", err);
+        if (badge) badge.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-500 mr-1.5"></i> Offline Mode`;
+      }
+    }
+
+    // MENYIMPAN TEKS REKAM MEDIS & SHEET PASIEN KE GOOGLE DRIVE
+    async function syncSinglePasienToGDrive(pasienObj) {
+      if (!GAS_WEBAPP_URL || !pasienObj) return;
       try {
         await fetch(GAS_WEBAPP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: "saveRekamMedis", pasienData: dbPasien })
+          body: JSON.stringify({ action: "saveRekamMedis", pasienSingle: pasienObj })
         });
       } catch (err) { console.error("Gagal sync rekam medis ke Drive:", err); }
     }
@@ -1193,7 +1225,7 @@
       let hasFotoLidah = base64TongueImg ? "Tersedia foto lidah pasien" : "Tidak ada upload foto lidah";
       let hasFotoWajah = base64PasienImg ? "Tersedia foto visual wajah pasien" : "Tidak ada upload foto wajah";
 
-      // MENARIK RIWAYAT SEBELUMNYA UNTUK COMPARATIVE EVALUATION
+      // AMBIL RIWAYAT SEBELUMNYA UNTUK DIBANDINGKAN DENGAN DIAGNOSA SEKARANG
       let riwayatSebelumnyaTxt = "Pasien Baru - Belum ada riwayat kunjungan medis sebelumnya.";
       if (dbPasien[nama] && dbPasien[nama].kunjungan && dbPasien[nama].kunjungan.length > 0) {
         riwayatSebelumnyaTxt = JSON.stringify(dbPasien[nama].kunjungan);
@@ -1337,7 +1369,7 @@
         let grandTotal = 150000 + lastAITotalHerbalCost;
         let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
-        // SIMPAN HASIL DIAGNOSA KE REKAM MEDIK PASIEN
+        // SIMPAN HASIL DIAGNOSA LENGKAP KE STORAGE LOKAL & SINKRON FILE DRIVE
         if (!dbPasien[nama]) {
           dbPasien[nama] = { nama, wa, usia, kunjungan: [] };
         }
@@ -1353,7 +1385,7 @@
           preparasi: strPreparasi
         });
         
-        savePasienToStorage(); // DISIMPAN LOKAL + SINKRON TEKS KE GOOGLE DRIVE AUTOMATIS
+        savePasienToStorage(nama); // OMTOMATIS SINKRONISASI FILE TXT REKAM MEDIS KE GOOGLE DRIVE
 
         document.getElementById('nota-details-content').innerHTML = itemsNotaHtml;
         document.getElementById('nota-total-badge').innerText = "ESTIMASI: " + formatRp(grandTotal);
@@ -1733,6 +1765,7 @@
     window.onload = function() {
       renderStokTable();
       renderKeuanganDropdownPasien();
+      loadCloudDataFromGDrive(); // OTOMATIS LOAD DATA GOOGLE DRIVE SAAT PERTAMA KALI DIBUKA
     };
   </script>
 </body>
