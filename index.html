@@ -68,7 +68,7 @@
           <i class="fa-solid fa-download"></i> Install App
         </button>
         <span class="text-xs bg-zinc-800 px-3 py-1 rounded-full text-orange-400 border border-orange-500/40 flex items-center">
-          <i class="fa-brands fa-google-drive text-blue-400 mr-1.5"></i> GDrive Sync
+          <i class="fa-brands fa-google-drive text-blue-400 mr-1.5"></i> GDrive Sync Active
         </span>
       </div>
     </div>
@@ -96,7 +96,7 @@
       <div class="flex justify-between items-center bg-zinc-900 p-4 rounded-xl border border-orange-500/30">
         <div>
           <h2 class="font-bold text-orange-400 text-sm"><i class="fa-solid fa-user-doctor mr-1"></i> Modul Diagnosa Biometrik & Rekam Medik Pasien</h2>
-          <p class="text-xs text-zinc-400">Pemeriksaan fisik, lidah, nadi, dan rekam medis klinis pasien RSI.</p>
+          <p class="text-xs text-zinc-400">Pemeriksaan fisik, lidah, nadi, perbandingan perkembangan, dan rekam medis klinis RSI.</p>
         </div>
         <button onclick="bukaChatModal('tcm')" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3.5 py-2 rounded-lg text-xs transition flex items-center gap-2 shadow">
           <i class="fa-solid fa-comments text-sm"></i> Diskusi Diagnosa
@@ -367,31 +367,33 @@
 
       <!-- Tombol Utama "Diagnosa Holistik" -->
       <button onclick="prosesAITCM()" class="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-zinc-950 font-extrabold py-4 px-6 rounded-xl shadow-xl transition flex items-center justify-center gap-3 text-base">
-        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i> Diagnosa Biometrik & Holistik Sistem
+        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i> Diagnosa Biometrik & Holistik Komparatif Sistem
       </button>
 
       <!-- HASIL DIAGNOSA TERBAGI DALAM TOMBOL (TAB/ACCORDION OUTPUT) -->
       <div id="result-wrapper" class="hidden bg-zinc-900 p-6 rounded-xl border border-orange-500/30 shadow-xl space-y-4">
         <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
           <h2 class="text-lg font-bold text-orange-400 flex items-center gap-2">
-            <i class="fa-solid fa-brain text-orange-500"></i> Hasil Diagnosa Medis Holistik TCM
+            <i class="fa-solid fa-brain text-orange-500"></i> Hasil Diagnosa & Evaluasi Perkembangan Pasien
           </h2>
-          <span id="ai-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Menganalisis Biometrik...</span>
+          <span id="ai-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Menganalisis Biometrik & Sync GDrive...</span>
         </div>
 
         <!-- Tombol Pilihan Menu Hasil Diagnosa -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
-          <button onclick="showDiagTab('diag-syndrom')" class="diag-nav-btn text-xs font-bold py-2 px-3 rounded-lg bg-orange-600 text-zinc-950 border border-orange-500">a. Patologi Sindrom</button>
-          <button onclick="showDiagTab('diag-akupuntur')" class="diag-nav-btn text-xs font-bold py-2 px-3 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">b. Akupuntur/Akupresur</button>
-          <button onclick="showDiagTab('diag-moksi')" class="diag-nav-btn text-xs font-bold py-2 px-3 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">c. Moksibusi</button>
-          <button onclick="showDiagTab('diag-klasik')" class="diag-nav-btn text-xs font-bold py-2 px-3 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">d. Formula Klasik</button>
-          <button onclick="showDiagTab('diag-stok')" class="diag-nav-btn text-xs font-bold py-2 px-3 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">e. Formula Stok RSI</button>
-          <button onclick="showDiagTab('diag-preparasi')" class="diag-nav-btn text-xs font-bold py-2 px-3 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">f. Cara Olah & Struk</button>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2">
+          <button onclick="showDiagTab('diag-perkembangan')" class="diag-nav-btn text-xs font-bold py-2 px-2 rounded-lg bg-emerald-600 text-zinc-950 border border-emerald-500">1. Evaluasi Perkembangan</button>
+          <button onclick="showDiagTab('diag-syndrom')" class="diag-nav-btn text-xs font-bold py-2 px-2 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">2. Patologi Sindrom</button>
+          <button onclick="showDiagTab('diag-akupuntur')" class="diag-nav-btn text-xs font-bold py-2 px-2 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">3. Akupuntur</button>
+          <button onclick="showDiagTab('diag-moksi')" class="diag-nav-btn text-xs font-bold py-2 px-2 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">4. Moksibusi</button>
+          <button onclick="showDiagTab('diag-klasik')" class="diag-nav-btn text-xs font-bold py-2 px-2 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">5. Formula Klasik</button>
+          <button onclick="showDiagTab('diag-stok')" class="diag-nav-btn text-xs font-bold py-2 px-2 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">6. Stok RSI</button>
+          <button onclick="showDiagTab('diag-preparasi')" class="diag-nav-btn text-xs font-bold py-2 px-2 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">7. Cara Rebus & Struk</button>
         </div>
 
         <!-- Container Tampilan Masing-masing Hasil -->
         <div class="p-4 bg-zinc-950 rounded-lg border border-zinc-800 text-sm text-zinc-300">
-          <div id="diag-syndrom" class="diag-tab-content block prose"></div>
+          <div id="diag-perkembangan" class="diag-tab-content block prose"></div>
+          <div id="diag-syndrom" class="diag-tab-content hidden prose"></div>
           <div id="diag-akupuntur" class="diag-tab-content hidden prose"></div>
           <div id="diag-moksi" class="diag-tab-content hidden prose"></div>
           <div id="diag-klasik" class="diag-tab-content hidden prose"></div>
@@ -685,7 +687,7 @@
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzqchGuNSv4FIFFdIbuXpDJvUURhBa_VmUhoq71VfudPiG85ZS4V6-ZxcxUoWwtokHl/exec";
 
     // Storage Database lokal
-    let stokHerbal = JSON.parse(localStorage.getItem('rsi_stok_v11')) || [
+    let stokHerbal = JSON.parse(localStorage.getItem('rsi_stok_v12')) || [
       { nama: "Huang Qi (Astragalus)", jumlah: 500, hpp: 300 },
       { nama: "Dang Shen (Codonopsis)", jumlah: 350, hpp: 400 },
       { nama: "Bai Zhu (Atractylodes)", jumlah: 400, hpp: 350 },
@@ -693,8 +695,8 @@
       { nama: "Jahe Merah Powder", jumlah: 1000, hpp: 100 }
     ];
 
-    let dbPasien = JSON.parse(localStorage.getItem('rsi_pasien_v11')) || {};
-    let dbJurnalKas = JSON.parse(localStorage.getItem('rsi_jurnal_v11')) || [];
+    let dbPasien = JSON.parse(localStorage.getItem('rsi_pasien_v12')) || {};
+    let dbJurnalKas = JSON.parse(localStorage.getItem('rsi_jurnal_v12')) || [];
     
     let selectedPasienLamaKey = null;
     let base64TongueImg = "";
@@ -833,6 +835,11 @@
               </div>
               
               <div class="space-y-2 prose max-w-none text-zinc-300">
+                <details open class="bg-zinc-900 p-2.5 rounded border border-emerald-500/30">
+                  <summary class="font-bold text-emerald-400 cursor-pointer text-xs">Evaluasi Perkembangan Pasien</summary>
+                  <div class="mt-2 text-xs">${k.perkembangan || 'Kunjungan Pertama.'}</div>
+                </details>
+
                 <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
                   <summary class="font-bold text-orange-400 cursor-pointer text-xs">a. Patologi Sindrom & Biometrik</summary>
                   <div class="mt-2 text-xs">${k.syndrom || 'Tidak ada data.'}</div>
@@ -912,27 +919,45 @@
     function showDiagTab(tabId) {
       document.querySelectorAll('.diag-tab-content').forEach(el => el.classList.add('hidden'));
       document.querySelectorAll('.diag-nav-btn').forEach(el => {
-        el.classList.remove('bg-orange-600', 'text-zinc-950', 'border-orange-500');
+        el.classList.remove('bg-orange-600', 'bg-emerald-600', 'text-zinc-950', 'border-orange-500', 'border-emerald-500');
         el.classList.add('bg-zinc-800', 'text-zinc-300', 'border-zinc-700');
       });
 
       document.getElementById(tabId).classList.remove('hidden');
-      event.currentTarget.classList.remove('bg-zinc-800', 'text-zinc-300', 'border-zinc-700');
-      event.currentTarget.classList.add('bg-orange-600', 'text-zinc-950', 'border-orange-500');
+      if (tabId === 'diag-perkembangan') {
+        event.currentTarget.classList.remove('bg-zinc-800', 'text-zinc-300', 'border-zinc-700');
+        event.currentTarget.classList.add('bg-emerald-600', 'text-zinc-950', 'border-emerald-500');
+      } else {
+        event.currentTarget.classList.remove('bg-zinc-800', 'text-zinc-300', 'border-zinc-700');
+        event.currentTarget.classList.add('bg-orange-600', 'text-zinc-950', 'border-orange-500');
+      }
     }
 
     function saveStokToStorage() {
-      localStorage.setItem('rsi_stok_v11', JSON.stringify(stokHerbal));
+      localStorage.setItem('rsi_stok_v12', JSON.stringify(stokHerbal));
       syncToGDrive();
     }
 
     function savePasienToStorage() {
-      localStorage.setItem('rsi_pasien_v11', JSON.stringify(dbPasien));
+      localStorage.setItem('rsi_pasien_v12', JSON.stringify(dbPasien));
       renderKeuanganDropdownPasien();
+      syncRekamMedisToGDrive(); // OTOMATIS SINKRONISASI TEKS REKAM MEDIS KE GOOGLE DRIVE
     }
 
     function saveJurnalToStorage() {
-      localStorage.setItem('rsi_jurnal_v11', JSON.stringify(dbJurnalKas));
+      localStorage.setItem('rsi_jurnal_v12', JSON.stringify(dbJurnalKas));
+    }
+
+    // OTOMATIS SYNC SELURUH REKAM MEDIS PASIEN DALAM BENTUK TXT KE DRIVE
+    async function syncRekamMedisToGDrive() {
+      if (!GAS_WEBAPP_URL) return;
+      try {
+        await fetch(GAS_WEBAPP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({ action: "saveRekamMedis", pasienData: dbPasien })
+        });
+      } catch (err) { console.error("Gagal sync rekam medis ke Drive:", err); }
     }
 
     async function syncToGDrive() {
@@ -952,10 +977,7 @@
         await fetch(GAS_WEBAPP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({
-            action: "saveTransaksi",
-            transaksi: transaksiObj
-          })
+          body: JSON.stringify({ action: "saveTransaksi", transaksi: transaksiObj })
         });
       } catch (err) { console.error("Gagal sync transaksi ke Drive:", err); }
     }
@@ -1068,7 +1090,6 @@
       }
     }
 
-    // LOGIKA SINKRONISASI MUTASI STOK KEUANGAN DENGAN PERHITUNGAN HPP PER GRAM PRESHIS
     function applyMutasiStok(mutasiList) {
       if (!Array.isArray(mutasiList) || mutasiList.length === 0) return [];
 
@@ -1080,7 +1101,6 @@
         let qty = Math.abs(parseInt(m.jumlahGram));
         let rawHpp = m.hpp ? parseInt(m.hpp) : 200;
 
-        // Formula Perhitungan HPP per Gram: Total Pembelian / Jumlah Gram
         let hppVal = rawHpp;
         if (m.totalHarga && qty > 0) {
           hppVal = Math.round(parseInt(m.totalHarga) / qty);
@@ -1091,19 +1111,16 @@
         let index = stokHerbal.findIndex(s => s.nama.toLowerCase().includes(targetName) || targetName.includes(s.nama.toLowerCase()));
 
         if (m.tipe === "jual" || m.tipe === "pakai") {
-          // HERBA TERJUAL: BERKURANG SESUAI GRAM
           if (index !== -1) {
             stokHerbal[index].jumlah = Math.max(0, stokHerbal[index].jumlah - qty);
             logMutasi.push(`- ${stokHerbal[index].nama}: Berkurang ${qty}g (Sisa: ${stokHerbal[index].jumlah}g)`);
           }
         } else if (m.tipe === "beli" || m.tipe === "tambah") {
-          // BELANJA HERBA: BERTAMBAH SESUAI GRAM & PERBAIKAN HPP/GRAM
           if (index !== -1) {
             stokHerbal[index].jumlah += qty;
             if (hppVal > 0) stokHerbal[index].hpp = hppVal;
             logMutasi.push(`+ ${stokHerbal[index].nama}: Bertambah ${qty}g (Total: ${stokHerbal[index].jumlah}g, HPP: Rp${hppVal}/g)`);
           } else {
-            // Jika Herba Belum Terdaftar di Tabel
             stokHerbal.push({
               nama: m.namaHerbal,
               jumlah: qty,
@@ -1163,7 +1180,6 @@
       let bentukLidah = Array.from(document.querySelectorAll('input[name="lidah_bentuk"]:checked')).map(e => e.value);
       let taiLidah = Array.from(document.querySelectorAll('input[name="lidah_tai"]:checked')).map(e => e.value);
 
-      // Nadi Kanan & Kiri
       let nadiKananCun = Array.from(document.querySelectorAll('input[name="nadi_kanan_cun"]:checked')).map(e => e.value);
       let nadiKananGuan = Array.from(document.querySelectorAll('input[name="nadi_kanan_guan"]:checked')).map(e => e.value);
       let nadiKananChi = Array.from(document.querySelectorAll('input[name="nadi_kanan_chi"]:checked')).map(e => e.value);
@@ -1177,24 +1193,33 @@
       let hasFotoLidah = base64TongueImg ? "Tersedia foto lidah pasien" : "Tidak ada upload foto lidah";
       let hasFotoWajah = base64PasienImg ? "Tersedia foto visual wajah pasien" : "Tidak ada upload foto wajah";
 
+      // MENARIK RIWAYAT SEBELUMNYA UNTUK COMPARATIVE EVALUATION
+      let riwayatSebelumnyaTxt = "Pasien Baru - Belum ada riwayat kunjungan medis sebelumnya.";
+      if (dbPasien[nama] && dbPasien[nama].kunjungan && dbPasien[nama].kunjungan.length > 0) {
+        riwayatSebelumnyaTxt = JSON.stringify(dbPasien[nama].kunjungan);
+      }
+
       let listStokTxt = stokHerbal.map(s => `${s.nama} (Stok: ${s.jumlah}g, HPP: Rp${s.hpp}/g)`).join('; ');
 
       const prompt = `
-        Olah Diagnosa Patologis Biometrik & Holistik TCM Lengkap untuk Rumah Sehat Insani (RSI) Padang:
+        Olah Diagnosa Patologis Biometrik, Holistik & Perbandingan Perkembangan Pasien TCM untuk Rumah Sehat Insani (RSI) Padang:
         Pasien: ${nama} (${usia}), WA: ${wa}
-        Keluhan Utama: ${keluhan}
+        Keluhan Utama Terkini: ${keluhan}
         
-        DATA VISUAL WAJAH & LIDAH:
+        DATA VISUAL WAJAH & LIDAH TERKINI:
         - Status Foto Wajah: ${hasFotoWajah}
         - Status Foto Lidah: ${hasFotoLidah}
         - Indikator Warna Badan Lidah: [${warnaLidah.join(', ')}]
         - Indikator Bentuk/Tepi/Retakan Lidah: [${bentukLidah.join(', ')}]
         - Indikator Selaput Lidah: [${taiLidah.join(', ')}]
         
-        DATA PALPASI NADI (MAI ZHEN):
+        DATA PALPASI NADI (MAI ZHEN) TERKINI:
         - Palpasi Nadi: ${strNadiLengkap}
         
-        STOK HERBAL RSI: ${listStokTxt}
+        RIWAYAT REKAM MEDIK KUNJUNGAN SEBELUMNYA:
+        ${riwayatSebelumnyaTxt}
+
+        STOK HERBAL RSI TERSEDIA: ${listStokTxt}
 
         Sajikan respon WAJIB terpisah per tag berikut secara terstruktur:
 
@@ -1202,26 +1227,33 @@
         [{"namaHerbal": "Nama Herbal Digunakan", "jumlahGram": 30, "tipe": "jual"}]
         ---AKHIR_MUTASI---
 
+        ---TAB_PERKEMBANGAN---
+        <h3>Laporan Perkembangan Kesehatan Pasien & Perbandingan Kunjungan</h3>
+        <ul>
+          <li><strong>Status Kunjungan:</strong> Sebutkan apakah Pasien Baru atau Kunjungan Ke-N.</li>
+          <li><strong>Evaluasi Perubahan Sintom/Gejala:</strong> Bandingkan keluhan, lidah, dan nadi hari ini dengan kunjungan sebelumnya. Sebutkan perbaikan atau gejala baru yang muncul.</li>
+          <li><strong>Efektivitas Terapi Sebelumnya:</strong> Analisis keberhasilan racikan herbal/titik akupuntur kunjungan lalu.</li>
+          <li><strong>Rekomendasi Penyesuaian Terapi Hari Ini:</strong> Penjelasan alasan perubahan/pertahanan formula.</li>
+        </ul>
+        ---AKHIR_TAB---
+
         ---TAB_SYNDROM---
         <h3>1. Analisis Biometrik Visual Lidah (She Zhen)</h3>
         <ul>
           <li><strong>Warna Badan Lidah:</strong> Evaluasi presisi rona/warna badan lidah dan implikasi klinisnya.</li>
           <li><strong>Retakan (Fissures / Lie Wen):</strong> Deteksi lokasi retakan (tengah, akar, atau menyeluruh) dan pemetaan defisiensi Yin/Fluid.</li>
           <li><strong>Selaput Lidah (She Tai):</strong> Evaluasi ketebalan, warna (kuning/putih), tekstur (lengket/ni/kering), serta proporsi luas distribusinya.</li>
-          <li><strong>Bintik Merah (Red Dots / Hong Dian) & Tepi Lidah (Tooth Marks / Chi Hen):</strong> Deteksi gerigi tepi (Stagnasi Damp/Defisiensi Qi Limpa) & bintik merah (Panas Organ Zang-Fu).</li>
+          <li><strong>Bintik Merah & Tepi Lidah:</strong> Deteksi gerigi tepi & bintik merah.</li>
         </ul>
 
         <h3>2. Analisis Visual Biometrik Wajah (Wang Zhen)</h3>
-        <ul>
-          <li><strong>Rona & Vitalitas Wajah (Shen & Sheng Se):</strong> Evaluasi rona (pucat, kusam, kemerahan, kehitaman) dan kilau ekspresi.</li>
-          <li><strong>Pemetaan Zona Zang-Fu Wajah:</strong> Analisis zona Dahi (Jantung), Pipi Kanan (Paru), Pipi Kiri (Hati), Hidung (Limpa/Lambung), Dagu/Bawah Mata (Ginjal).</li>
-        </ul>
+        <p>Rona & Vitalitas Wajah serta Pemetaan Zona Zang-Fu Wajah.</p>
 
         <h3>3. Laporan Pengamatan Sintesis Nadi (Mai Zhen)</h3>
-        <p>Analisis palpasi Nadi Cun, Guan, Chi Kanan & Kiri serta korelasinya dengan organ Zang-Fu.</p>
+        <p>Analisis palpasi Nadi Cun, Guan, Chi Kanan & Kiri.</p>
 
         <h3>4. Pemetaan Patologi Sindrom TCM (Bian Zheng)</h3>
-        <p>Sintesis komprehensif perjalanan penyakit, Zang-Fu, Qi, Blood, Fluid, Yin-Yang, dan Patogen dominan berdasarkan gabungan biometrik lidah, rona wajah, keluhan, dan nadi Cun Guan Chi.</p>
+        <p>Sintesis komprehensif perjalanan penyakit, Zang-Fu, Qi, Blood, Fluid, Yin-Yang, dan Patogen dominan.</p>
         ---AKHIR_TAB---
 
         ---TAB_AKUPUNTUR---
@@ -1270,6 +1302,7 @@
           return m && m[1] ? m[1].trim() : "<p>Data tidak tersedia.</p>";
         };
 
+        const strPerkembangan = parseSection('TAB_PERKEMBANGAN');
         const strSyndrom = parseSection('TAB_SYNDROM');
         const strAkupuntur = parseSection('TAB_AKUPUNTUR');
         const strMoksi = parseSection('TAB_MOKSI');
@@ -1277,6 +1310,7 @@
         const strStok = parseSection('TAB_STOK');
         const strPreparasi = parseSection('TAB_PREPARASI');
 
+        document.getElementById('diag-perkembangan').innerHTML = strPerkembangan;
         document.getElementById('diag-syndrom').innerHTML = strSyndrom;
         document.getElementById('diag-akupuntur').innerHTML = strAkupuntur;
         document.getElementById('diag-moksi').innerHTML = strMoksi;
@@ -1309,6 +1343,8 @@
         }
         dbPasien[nama].kunjungan.push({
           tanggal: wktStr,
+          keluhan: keluhan,
+          perkembangan: strPerkembangan,
           syndrom: strSyndrom,
           akupuntur: strAkupuntur,
           moksi: strMoksi,
@@ -1316,7 +1352,8 @@
           stok: strStok,
           preparasi: strPreparasi
         });
-        savePasienToStorage();
+        
+        savePasienToStorage(); // DISIMPAN LOKAL + SINKRON TEKS KE GOOGLE DRIVE AUTOMATIS
 
         document.getElementById('nota-details-content').innerHTML = itemsNotaHtml;
         document.getElementById('nota-total-badge').innerText = "ESTIMASI: " + formatRp(grandTotal);
@@ -1391,7 +1428,6 @@
         });
       }
 
-      // 1. Simpan Transaksi Keuangan
       let trxData = {
         waktu: wktStr,
         jenis: "MASUK",
@@ -1410,16 +1446,13 @@
       saveJurnalToStorage();
       syncTransaksiToGDrive(trxData);
 
-      // 2. SINKRONISASI AI: STOK HERBAL BERKURANG KARENA TERJUAL
       let logPengurangan = [];
       if (lastAIFormulasiStok && lastAIFormulasiStok.length > 0) {
         logPengurangan = applyMutasiStok(lastAIFormulasiStok);
       }
 
-      // 3. Olah Jurnal Keuangan Sistem
       await olahSingleJurnalAI("UANG MASUK", nama, ket, grandTotal);
 
-      // 4. Eksekusi Print atau Share WA
       let formattedJadwal = jadwal ? new Date(jadwal).toLocaleString('id-ID', {dateStyle:'full', timeStyle:'short'}) : "-";
 
       if (mode === 'print') {
@@ -1456,11 +1489,9 @@
 
       let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
-      // PROMPT AI UNTUK MENGHITUNG HPP PER GRAM DENGAN FORMULA: TOTAL HARGA / JUMLAH GRAM
       const promptBelanjaStok = `
         Analisis narasi pengeluaran kas/belanja berikut: "${teksBebas}".
         Jika transaksi ini merupakan pembelian/belanja bahan stok herbal, hitung HPP PER GRAM (Total Harga Pembelian dibagi Jumlah Gram).
-        Contoh: Beli Huang Qi 100 gram harga 60.000 -> totalHarga: 60000, jumlahGram: 100, hpp: 600 (karena 60000 / 100 = 600).
         
         Sajikan output JSON mutasi SAJA di dalam tag:
         ---MUTASI_BELI---
