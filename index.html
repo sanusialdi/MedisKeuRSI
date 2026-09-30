@@ -78,13 +78,13 @@
   <main class="max-w-7xl mx-auto px-4 py-6 no-print">
     <!-- Navigation Tabs -->
     <div class="flex border-b border-zinc-800 mb-6 bg-zinc-900 rounded-t-lg shadow-sm overflow-x-auto">
-      <button onclick="switchTab('tcm')" id="tab-tcm" class="tab-btn px-6 py-3 font-semibold text-orange-500 border-b-2 border-orange-500 flex items-center gap-2 whitespace-nowrap">
+      <button onclick="switchTab('tcm')" id="tab-tcm" class="tab-btn px-6 py-3 font-semibold text-orange-500 border-b-2 border-orange-500 flex items-center gap-2 whitespace-nowrap cursor-pointer">
         <i class="fa-solid fa-user-doctor"></i> Rekam Medik & Pasien
       </button>
-      <button onclick="switchTab('stok')" id="tab-stok" class="tab-btn px-6 py-3 font-semibold text-zinc-400 hover:text-orange-400 flex items-center gap-2 whitespace-nowrap">
+      <button onclick="switchTab('stok')" id="tab-stok" class="tab-btn px-6 py-3 font-semibold text-zinc-400 hover:text-orange-400 flex items-center gap-2 whitespace-nowrap cursor-pointer">
         <i class="fa-solid fa-boxes-stacked"></i> Stok Herbal RSI
       </button>
-      <button onclick="switchTab('keuangan')" id="tab-keuangan" class="tab-btn px-6 py-3 font-semibold text-zinc-400 hover:text-orange-400 flex items-center gap-2 whitespace-nowrap">
+      <button onclick="switchTab('keuangan')" id="tab-keuangan" class="tab-btn px-6 py-3 font-semibold text-zinc-400 hover:text-orange-400 flex items-center gap-2 whitespace-nowrap cursor-pointer">
         <i class="fa-solid fa-calculator"></i> Keuangan (Masuk & Keluar)
       </button>
     </div>
@@ -739,19 +739,37 @@
       }
     }
 
+    // FUNGSI SWITCH TAB YANG SUDAH DIPERBAIKI PRESISI
     function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-      document.querySelectorAll('.tab-btn').forEach(el => {
+      // 1. Sembunyikan semua konten tab
+      const allContents = document.querySelectorAll('.tab-content');
+      allContents.forEach(el => el.classList.add('hidden'));
+
+      // 2. Reset tampilan semua tombol tab
+      const allBtns = document.querySelectorAll('.tab-btn');
+      allBtns.forEach(el => {
         el.classList.remove('text-orange-500', 'border-b-2', 'border-orange-500');
         el.classList.add('text-zinc-400');
       });
 
-      document.getElementById('section-' + tabName).classList.remove('hidden');
-      document.getElementById('tab-' + tabName).classList.add('text-orange-500', 'border-b-2', 'border-orange-500');
-      document.getElementById('tab-' + tabName).classList.remove('text-zinc-400');
+      // 3. Tampilkan section target
+      const targetSection = document.getElementById('section-' + tabName);
+      const targetTabBtn = document.getElementById('tab-' + tabName);
 
-      if(tabName === 'stok') renderStokTable();
-      if(tabName === 'keuangan') renderKeuanganDropdownPasien();
+      if (targetSection) {
+        targetSection.classList.remove('hidden');
+      }
+      if (targetTabBtn) {
+        targetTabBtn.classList.add('text-orange-500', 'border-b-2', 'border-orange-500');
+        targetTabBtn.classList.remove('text-zinc-400');
+      }
+
+      // 4. Jalankan fungsi rendering khusus jika tab stok/keuangan dibuka
+      if (tabName === 'stok') {
+        renderStokTable();
+      } else if (tabName === 'keuangan') {
+        renderKeuanganDropdownPasien();
+      }
     }
 
     function setJenisPasien(tipe) {
@@ -954,7 +972,7 @@
       localStorage.setItem('rsi_jurnal_v12', JSON.stringify(dbJurnalKas));
     }
 
-    // MEMUAT SELURUH DATA LENGKAP DARI GOOGLE DRIVE SAAT APLIKASI DIBUKA (DENGAN FIX CORS & REDIRECT)
+    // MEMUAT SELURUH DATA LENGKAP DARI GOOGLE DRIVE SAAT APLIKASI DIBUKA
     async function loadCloudDataFromGDrive() {
       if (!GAS_WEBAPP_URL) return;
       
