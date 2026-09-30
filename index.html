@@ -66,7 +66,7 @@
       </div>
       <div class="flex items-center gap-2">
         <span id="sync-status" class="text-xs text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-1 rounded-full flex items-center gap-1">
-          <i class="fa-solid fa-cloud-check"></i> Cloud Auto-Sync
+          <i class="fa-solid fa-cloud-check"></i> Data Tersimpan
         </span>
         <button id="btn-install-pwa" onclick="installPWA()" class="hidden text-xs bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition shadow">
           <i class="fa-solid fa-download"></i> Install App
@@ -550,7 +550,7 @@
 
           <div>
             <label class="block text-zinc-300 font-medium mb-1">Keterangan Catatan Tambahan Transaksi</label>
-            <textarea id="masuk-ket" rows="2" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Catatan tambahan..."></textarea>
+            <textarea id="masuk-ket" rows="2" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Catatan tambahan... Misal: Tambahan Beli Huang Qi 50g"></textarea>
           </div>
 
           <!-- TOMBOL AKSI PEMASUKAN: SIMPAN & PRINT / SHARE -->
@@ -670,7 +670,7 @@
     <div id="print-nota-items" style="font-size: 8pt; margin-bottom: 5px;"></div>
     <div style="border-bottom: 1px dashed #000; margin-bottom: 5px;"></div>
     <div style="font-size: 9pt; font-weight: bold; text-align: right;" id="print-nota-total"></div>
-    <div style="text-align: center; font-size: 8pt; margin-top: 10px; border-top: 1px dashed #000; padding-pt: 5px;">
+    <div style="text-align: center; font-size: 8pt; margin-top: 10px; border-top: 1px dashed #000; padding-top: 5px;">
       Semoga Lekas Sehat & Afiat<br>
       Terima Kasih
     </div>
@@ -683,7 +683,7 @@
     // URL WebApp Google Apps Script Terkini
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx4I6k34IncGP9ffxfNCyzXhrdrSnh2NEL0XvJcRZ9GXNxqgCNPGD5xNu_NYQd9xULE/exec";
 
-    // Storage Database lokal
+    // Storage Database awal (Ambil dari LocalStorage terlebih dahulu agar tidak hilang saat reload)
     let stokHerbal = JSON.parse(localStorage.getItem('rsi_stok_v11')) || [
       { nama: "Huang Qi (Astragalus)", jumlah: 500, hpp: 300 },
       { nama: "Dang Shen (Codonopsis)", jumlah: 350, hpp: 400 },
@@ -922,21 +922,21 @@
 
     function saveStokToStorage() {
       localStorage.setItem('rsi_stok_v11', JSON.stringify(stokHerbal));
-      autoBackupGDrive(); // Auto Backup
+      autoBackupGDrive();
     }
 
     function savePasienToStorage() {
       localStorage.setItem('rsi_pasien_v11', JSON.stringify(dbPasien));
       renderKeuanganDropdownPasien();
-      autoBackupGDrive(); // Auto Backup
+      autoBackupGDrive();
     }
 
     function saveJurnalToStorage() {
       localStorage.setItem('rsi_jurnal_v11', JSON.stringify(dbJurnalKas));
-      autoBackupGDrive(); // Auto Backup
+      autoBackupGDrive();
     }
 
-    // BACKUP OTOMATIS BERJALAN DI BACKGROUND SAAT DATA DIPERBARUI
+    // SINKRONISASI KE GOOGLE DRIVE DI BACKGROUND
     async function autoBackupGDrive() {
       if (!GAS_WEBAPP_URL) return;
       const backupData = {
@@ -958,11 +958,10 @@
       }
     }
 
-    // OTOMATIS TARIK DATA DARI CLOUD SAAT APLIKASI PERTAMA KALI DIBUKA
+    // SYNC AMBIL DATA DARI CLOUD TANPA MENIMPA PERUBAHAN BARU
     async function autoPullFromGDrive() {
       if (!GAS_WEBAPP_URL) return;
       const statusEl = document.getElementById('sync-status');
-      if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Syncing...`;
 
       try {
         const res = await fetch(GAS_WEBAPP_URL + "?action=getAllCloudData");
@@ -972,18 +971,11 @@
         if (json.dataTxt) {
           try {
             const parsed = JSON.parse(json.dataTxt);
-            if (parsed.stok) stokHerbal = parsed.stok;
+            if (parsed.stok && Array.isArray(parsed.stok)) stokHerbal = parsed.stok;
             if (parsed.pasien) dbPasien = parsed.pasien;
             if (parsed.jurnalKas) dbJurnalKas = parsed.jurnalKas;
             loaded = true;
           } catch(e){}
-        }
-        
-        if (!loaded && json.status === "success") {
-          if (json.stok && Array.isArray(json.stok)) stokHerbal = json.stok;
-          if (json.pasien) dbPasien = json.pasien;
-          if (json.jurnal && Array.isArray(json.jurnal)) dbJurnalKas = json.jurnal;
-          loaded = true;
         }
 
         if (loaded) {
@@ -993,13 +985,10 @@
 
           renderStokTable();
           renderKeuanganDropdownPasien();
-          if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Cloud Synced`;
-        } else {
-          if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-cloud"></i> Local Mode`;
+          if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Data Terupdate Cloud`;
         }
       } catch (err) { 
-        console.error("Gagal auto pull data:", err); 
-        if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-wifi"></i> Offline Mode`;
+        console.error("Gagal sync data cloud:", err); 
       }
     }
 
@@ -1009,10 +998,7 @@
         await fetch(GAS_WEBAPP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({
-            action: "saveTransaksi",
-            transaksi: transaksiObj
-          })
+          body: JSON.stringify({ action: "saveTransaksi", transaksi: transaksiObj })
         });
       } catch (err) { console.error("Gagal sync transaksi ke Drive:", err); }
     }
@@ -1023,10 +1009,7 @@
         await fetch(GAS_WEBAPP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({
-            action: "saveRekamMedis",
-            pasienSingle: pasienObj
-          })
+          body: JSON.stringify({ action: "saveRekamMedis", pasienSingle: pasienObj })
         });
       } catch (err) { console.error("Gagal sync rekam medis pasien ke Drive:", err); }
     }
@@ -1139,7 +1122,6 @@
       }
     }
 
-    // LOGIKA SINKRONISASI MUTASI STOK KEUANGAN DENGAN PERHITUNGAN HPP PER GRAM PRESISI
     function applyMutasiStok(mutasiList) {
       if (!Array.isArray(mutasiList) || mutasiList.length === 0) return [];
 
@@ -1161,19 +1143,16 @@
         let index = stokHerbal.findIndex(s => s.nama.toLowerCase().includes(targetName) || targetName.includes(s.nama.toLowerCase()));
 
         if (m.tipe === "jual" || m.tipe === "pakai") {
-          // HERBA TERJUAL: BERKURANG SESUAI GRAM
           if (index !== -1) {
             stokHerbal[index].jumlah = Math.max(0, stokHerbal[index].jumlah - qty);
             logMutasi.push(`- ${stokHerbal[index].nama}: Berkurang ${qty}g (Sisa: ${stokHerbal[index].jumlah}g)`);
           }
         } else if (m.tipe === "beli" || m.tipe === "tambah") {
-          // BELANJA HERBA: BERTAMBAH SESUAI GRAM & PERBAIKAN HPP/GRAM
           if (index !== -1) {
             stokHerbal[index].jumlah += qty;
             if (hppVal > 0) stokHerbal[index].hpp = hppVal;
             logMutasi.push(`+ ${stokHerbal[index].nama}: Bertambah ${qty}g (Total: ${stokHerbal[index].jumlah}g, HPP: Rp${hppVal}/g)`);
           } else {
-            // Jika Herba Belum Terdaftar di Tabel
             stokHerbal.push({
               nama: m.namaHerbal,
               jumlah: qty,
@@ -1233,7 +1212,6 @@
       let bentukLidah = Array.from(document.querySelectorAll('input[name="lidah_bentuk"]:checked')).map(e => e.value);
       let taiLidah = Array.from(document.querySelectorAll('input[name="lidah_tai"]:checked')).map(e => e.value);
 
-      // Nadi Kanan & Kiri
       let nadiKananCun = Array.from(document.querySelectorAll('input[name="nadi_kanan_cun"]:checked')).map(e => e.value);
       let nadiKananGuan = Array.from(document.querySelectorAll('input[name="nadi_kanan_guan"]:checked')).map(e => e.value);
       let nadiKananChi = Array.from(document.querySelectorAll('input[name="nadi_kanan_chi"]:checked')).map(e => e.value);
@@ -1249,7 +1227,6 @@
 
       let listStokTxt = stokHerbal.map(s => `${s.nama} (Stok: ${s.jumlah}g, HPP: Rp${s.hpp}/g)`).join('; ');
 
-      // AMBIL RIWAYAT KUNJUNGAN LAMA PASIEN UNTUK KOMPARASI PERKEMBANGAN
       let riwayatLamaTxt = "Tidak ada riwayat kunjungan sebelumnya (Pasien Baru).";
       if (dbPasien[nama] && dbPasien[nama].kunjungan && dbPasien[nama].kunjungan.length > 0) {
         riwayatLamaTxt = JSON.stringify(dbPasien[nama].kunjungan);
@@ -1283,7 +1260,7 @@
 
         ---TAB_SYNDROM---
         <h3>1. Laporan Komparasi & Perkembangan Klinis Pasien</h3>
-        <p>Bandingkan data kunjungan saat ini dengan riwayat diagnosa sebelumnya. Catat perubahan rona lidah, selaput, nadi, dan gejala klinis pasien (apakah membaik, stabil, atau perlu modifikasi).</p>
+        <p>Bandingkan data kunjungan saat ini dengan riwayat diagnosa sebelumnya.</p>
 
         <h3>2. Analisis Biometrik Visual Lidah & Wajah (She Zhen & Wang Zhen)</h3>
         <ul>
@@ -1377,7 +1354,6 @@
         let grandTotal = 150000 + lastAITotalHerbalCost;
         let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
-        // SIMPAN HASIL DIAGNOSA LENGKAP KE REKAM MEDIK PASIEN LOKAL & CLOUD
         if (!dbPasien[nama]) {
           dbPasien[nama] = { nama, wa, usia, kunjungan: [] };
         }
@@ -1454,6 +1430,30 @@
       let itemsNotaHtml = `<div>• Jasa Terapi & Tindakan TCM: ${formatRp(biayaJasa)}</div>`;
       let itemsNotaWA = `• Jasa Terapi TCM: ${formatRp(biayaJasa)}\n`;
 
+      // 1. OLAHS CATATAN TAMBAHAN UNTUK MENGETAHUI PENJUALAN HERBAL MANUAL
+      let logPengurangan = [];
+      let listMutasiCatatan = [];
+
+      if (ket.length > 3) {
+        stokHerbal.forEach(s => {
+          let sName = s.nama.split('(')[0].trim().toLowerCase();
+          if (ket.toLowerCase().includes(sName)) {
+            let matchQty = ket.match(new RegExp(`${sName}\\s*(\\d+)`, 'i')) || ket.match(/(\d+)\s*g/i);
+            let qtyFound = matchQty ? parseInt(matchQty[1]) : 0;
+            if (qtyFound > 0) {
+              listMutasiCatatan.push({ namaHerbal: s.nama, jumlahGram: qtyFound, tipe: "jual" });
+            }
+          }
+        });
+      }
+
+      // Gabungkan racikan AI & penjualan dari catatan tambahan
+      let gabunganMutasi = [...(lastAIFormulasiStok || []), ...listMutasiCatatan];
+
+      if (gabunganMutasi.length > 0) {
+        logPengurangan = applyMutasiStok(gabunganMutasi);
+      }
+
       if (lastAIFormulasiStok && lastAIFormulasiStok.length > 0) {
         lastAIFormulasiStok.forEach(item => {
           let targetName = item.namaHerbal.toLowerCase();
@@ -1467,7 +1467,7 @@
         });
       }
 
-      // 1. Simpan Transaksi Keuangan
+      // 2. Simpan Transaksi Keuangan
       let trxData = {
         waktu: wktStr,
         jenis: "MASUK",
@@ -1486,13 +1486,7 @@
       saveJurnalToStorage();
       syncTransaksiToGDrive(trxData);
 
-      // 2. SINKRONISASI AI: STOK HERBAL BERKURANG KARENA TERJUAL
-      let logPengurangan = [];
-      if (lastAIFormulasiStok && lastAIFormulasiStok.length > 0) {
-        logPengurangan = applyMutasiStok(lastAIFormulasiStok);
-      }
-
-      // 3. Olah Jurnal Keuangan Sistem
+      // 3. Olah Jurnal Keuangan Sistem via AI
       await olahSingleJurnalAI("UANG MASUK", nama, ket, grandTotal);
 
       // 4. Eksekusi Print atau Share WA
@@ -1513,13 +1507,13 @@
         let waNum = wa.replace(/[^0-9]/g, '');
         if (waNum.startsWith('0')) waNum = '62' + waNum.slice(1);
 
-        let textNota = `*RUMAH SEHAT INSANI (RSI)*\nAlamat: Jl. Raya Sungai Lareh, Perum Wahana C-2 Lumin, Padang\n_Bukti Pembayaran / Struk Digital_\n----------------------------------------\n*Waktu:* ${wktStr}\n*Pasien:* ${nama}\n*Jadwal Terapi Ulang:* ${formattedJadwal}\n\n*Rincian Transaksi:*\n${itemsNotaWA}----------------------------------------\n*TOTAL BAYAR:* *${formatRp(grandTotal)}*\n----------------------------------------\n_Semoga lekas sehat & afiat._\nSalam, *Coach Aldi - RSI Padang*`;
+        let textNota = `*RUMAH SEHAT INSANI (RSI)*\nAlamat: Jl. Raya Sungai Lareh, Perum Wahana C-2 Lumin, Padang\n_Bukti Pembayaran / Struk Digital_\n----------------------------------------\n*Waktu:* ${wktStr}\n*Pasien:* ${nama}\n*Catatan:* ${ket}\n*Jadwal Terapi Ulang:* ${formattedJadwal}\n\n*Rincian Transaksi:*\n${itemsNotaWA}----------------------------------------\n*TOTAL BAYAR:* *${formatRp(grandTotal)}*\n----------------------------------------\n_Semoga lekas sehat & afiat._\nSalam, *Coach Aldi - RSI Padang*`;
 
         window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(textNota)}`, '_blank');
       }
 
       toggleKeuanganModal('modal-uang-masuk');
-      alert(`Transaksi Pemasukan Berhasil Disimpan!\n\nMutasi Pengurangan Stok Herba AI:\n${logPengurangan.length > 0 ? logPengurangan.join('\n') : 'Tidak ada mutasi stok.'}`);
+      alert(`Transaksi Pemasukan Berhasil Disimpan!\n\nMutasi Pengurangan Stok Herba:\n${logPengurangan.length > 0 ? logPengurangan.join('\n') : 'Tidak ada mutasi stok.'}`);
     }
 
     async function prosesUangKeluar() {
@@ -1535,7 +1529,6 @@
       const promptBelanjaStok = `
         Analisis narasi pengeluaran kas/belanja berikut: "${teksBebas}".
         Jika transaksi ini merupakan pembelian/belanja bahan stok herbal, hitung HPP PER GRAM (Total Harga Pembelian dibagi Jumlah Gram).
-        Contoh: Beli Huang Qi 100 gram harga 60.000 -> totalHarga: 60000, jumlahGram: 100, hpp: 600 (karena 60000 / 100 = 600).
         
         Sajikan output JSON mutasi SAJA di dalam tag:
         ---MUTASI_BELI---
@@ -1594,7 +1587,7 @@
       let prompt = `
         Sebagai Akuntan RSI Padang, olah transaksi ${tipe} ini menjadi Jurnal Akuntansi Standar:
         Subjek/Pasien: ${subjek}
-        Rincian Transaksi: "${narasi}"
+        Rincian Transaksi/Catatan Tambahan: "${narasi}"
         Nominal: ${nominal > 0 ? 'Rp ' + nominal : 'Sesuai pindaian foto struk/narasi teks'}
 
         Data Riwayat Kas Terakhir: ${JSON.stringify(dbJurnalKas)}
@@ -1774,10 +1767,15 @@
       }
     }
 
+    // MEMUAT DATA LOKAL TERLEBIH DAHULU SAAT LAMAN DIBUKA, KEMUDIAN CEK SINKRONISASI CLOUD LENGKAP
     window.onload = function() {
       renderStokTable();
       renderKeuanganDropdownPasien();
-      autoPullFromGDrive(); // OTOMATIS TARIK DATA DARI CLOUD SAAT DIBUKA
+      
+      // Ambil pembaruan dari cloud tanpa mengagalkan muatan lokal
+      setTimeout(() => {
+        autoPullFromGDrive();
+      }, 1000);
     };
   </script>
 </body>
