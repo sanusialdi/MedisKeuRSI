@@ -685,7 +685,8 @@
   <script>
     const DEEPSEEK_ENDPOINT = "https://api.deepseek.com/chat/completions";
     const DEEPSEEK_API_KEY = "sk-305f13e9313d4fc6b03c3e49dc9e1ce2";
-    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzqchGuNSv4FIFFdIbuXpDJvUURhBa_VmUhoq71VfudPiG85ZS4V6-ZxcxUoWwtokHl/exec";
+    // URL WebApp Google Apps Script Terkini
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx4I6k34IncGP9ffxfNCyzXhrdrSnh2NEL0XvJcRZ9GXNxqgCNPGD5xNu_NYQd9xULE/exec";
 
     // Storage Database lokal
     let stokHerbal = JSON.parse(localStorage.getItem('rsi_stok_v11')) || [
@@ -957,18 +958,32 @@
       } catch (err) { alert("Gagal mengunggah backup data ke GDrive: " + err.message); }
     }
 
-    // TARIK SELURUH DATA DARI GOOGLE DRIVE UNTUK AKSEAN MULTI-DEVICE
+    // TARIK SELURUH DATA DARI GOOGLE DRIVE UNTUK AKSES MULTI-DEVICE
     async function pullFromGDrive() {
       if (!GAS_WEBAPP_URL) return;
       try {
         const res = await fetch(GAS_WEBAPP_URL + "?action=getAllCloudData");
         const json = await res.json();
+        
+        let loaded = false;
         if (json.dataTxt) {
-          const parsed = JSON.parse(json.dataTxt);
-          if (parsed.stok) stokHerbal = parsed.stok;
-          if (parsed.pasien) dbPasien = parsed.pasien;
-          if (parsed.jurnalKas) dbJurnalKas = parsed.jurnalKas;
+          try {
+            const parsed = JSON.parse(json.dataTxt);
+            if (parsed.stok) stokHerbal = parsed.stok;
+            if (parsed.pasien) dbPasien = parsed.pasien;
+            if (parsed.jurnalKas) dbJurnalKas = parsed.jurnalKas;
+            loaded = true;
+          } catch(e){}
+        }
+        
+        if (!loaded && json.status === "success") {
+          if (json.stok && Array.isArray(json.stok)) stokHerbal = json.stok;
+          if (json.pasien) dbPasien = json.pasien;
+          if (json.jurnal && Array.isArray(json.jurnal)) dbJurnalKas = json.jurnal;
+          loaded = true;
+        }
 
+        if (loaded) {
           saveStokToStorage();
           savePasienToStorage();
           saveJurnalToStorage();
@@ -976,6 +991,8 @@
           renderStokTable();
           renderKeuanganDropdownPasien();
           alert("Seluruh data rekam medik & keuangan berhasil ditarik dari Cloud Google Drive!");
+        } else {
+          alert("Data di cloud masih kosong atau belum dibackup.");
         }
       } catch (err) { alert("Gagal menarik data dari GDrive: " + err.message); }
     }
@@ -992,6 +1009,20 @@
           })
         });
       } catch (err) { console.error("Gagal sync transaksi ke Drive:", err); }
+    }
+
+    async function syncPasienSingleToGDrive(pasienObj) {
+      if (!GAS_WEBAPP_URL) return;
+      try {
+        await fetch(GAS_WEBAPP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify({
+            action: "saveRekamMedis",
+            pasienSingle: pasienObj
+          })
+        });
+      } catch (err) { console.error("Gagal sync rekam medis pasien ke Drive:", err); }
     }
 
     async function pindaiFotoStrukOCR(event) {
@@ -1340,12 +1371,13 @@
         let grandTotal = 150000 + lastAITotalHerbalCost;
         let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
-        // SIMPAN HASIL DIAGNOSA LENGKAP KE REKAM MEDIK PASIEN
+        // SIMPAN HASIL DIAGNOSA LENGKAP KE REKAM MEDIK PASIEN LOKAL & CLOUD
         if (!dbPasien[nama]) {
           dbPasien[nama] = { nama, wa, usia, kunjungan: [] };
         }
         dbPasien[nama].kunjungan.push({
           tanggal: wktStr,
+          keluhan: keluhan,
           syndrom: strSyndrom,
           akupuntur: strAkupuntur,
           moksi: strMoksi,
@@ -1354,6 +1386,7 @@
           preparasi: strPreparasi
         });
         savePasienToStorage();
+        syncPasienSingleToGDrive(dbPasien[nama]);
 
         document.getElementById('nota-details-content').innerHTML = itemsNotaHtml;
         document.getElementById('nota-total-badge').innerText = "ESTIMASI: " + formatRp(grandTotal);
