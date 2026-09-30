@@ -684,9 +684,11 @@
   <script>
     const DEEPSEEK_ENDPOINT = "https://api.deepseek.com/chat/completions";
     const DEEPSEEK_API_KEY = "sk-305f13e9313d4fc6b03c3e49dc9e1ce2";
-    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzqchGuNSv4FIFFdIbuXpDJvUURhBa_VmUhoq71VfudPiG85ZS4V6-ZxcxUoWwtokHl/exec";
+    
+    // URL Web App Google Apps Script Terupdate
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxOnrQiqCNvetP1Al0q76X8VUA4fzM8RN7Une9DeMxtkuGJKmmDUqEysakZEX951Jjh/exec";
 
-    // Storage Database lokal
+    // Storage Database lokal (Fallback/Cache)
     let stokHerbal = JSON.parse(localStorage.getItem('rsi_stok_v12')) || [
       { nama: "Huang Qi (Astragalus)", jumlah: 500, hpp: 300 },
       { nama: "Dang Shen (Codonopsis)", jumlah: 350, hpp: 400 },
@@ -778,11 +780,11 @@
 
       Object.keys(dbPasien).forEach(key => {
         const p = dbPasien[key];
-        if (p.nama.toLowerCase().includes(q) || p.wa.includes(q)) {
+        if (p && p.nama && (p.nama.toLowerCase().includes(q) || (p.wa && p.wa.includes(q)))) {
           container.innerHTML += `
             <div onclick="pilihPasienLama('${key}')" class="p-3 bg-zinc-950 hover:bg-zinc-800 border border-zinc-800 hover:border-orange-500 rounded-lg cursor-pointer transition">
               <div class="font-bold text-xs text-orange-400">${p.nama}</div>
-              <div class="text-[11px] text-zinc-400">${p.wa} •${p.kunjungan ? p.kunjungan.length : 0} Kunjungan</div>
+              <div class="text-[11px] text-zinc-400">${p.wa \vert{}\vert{} '-'} •${p.kunjungan ? p.kunjungan.length : 0} Kunjungan</div>
             </div>
           `;
         }
@@ -792,10 +794,12 @@
     function pilihPasienLama(key) {
       selectedPasienLamaKey = key;
       const p = dbPasien[key];
+      if (!p) return;
+      
       const card = document.getElementById('card-riwayat-pasien');
 
       document.getElementById('rw-nama').innerText = p.nama;
-      document.getElementById('rw-meta').innerText = `${p.wa} (${p.usia || '-'})`;
+      document.getElementById('rw-meta').innerText = `${p.wa \vert{}\vert{} '-'} (${p.usia || '-'})`;
       document.getElementById('rw-kunjungan-count').innerText = `${p.kunjungan ? p.kunjungan.length : 0} Kunjungan`;
 
       if (p.kunjungan && p.kunjungan.length > 0) {
@@ -817,7 +821,7 @@
       const p = dbPasien[selectedPasienLamaKey];
       
       document.getElementById('modal-rw-nama').innerText = "Riwayat Kunjungan: " + p.nama;
-      document.getElementById('modal-rw-meta').innerText = `No. WA: ${p.wa} | Usia/JK: ${p.usia || '-'}`;
+      document.getElementById('modal-rw-meta').innerText = `No. WA: ${p.wa || '-'} | Usia/JK: ${p.usia || '-'}`;
       
       const container = document.getElementById('modal-rw-list-container');
       container.innerHTML = '';
@@ -887,7 +891,7 @@
       const p = dbPasien[selectedPasienLamaKey];
       
       document.getElementById('p-nama').value = p.nama;
-      document.getElementById('p-wa').value = p.wa;
+      document.getElementById('p-wa').value = p.wa || '';
       document.getElementById('p-usia').value = p.usia || '';
 
       toggleFormSection('sec-identitas');
@@ -950,7 +954,7 @@
       localStorage.setItem('rsi_jurnal_v12', JSON.stringify(dbJurnalKas));
     }
 
-    // MEMUAT SELURUH DATA LENGKAP DARI GOOGLE DRIVE SAAT APLIKASI DIBUKA
+    // MEMUAT SELURUH DATA LENGKAP DARI GOOGLE DRIVE SAAT APLIKASI DIBUKA (DENGAN FIX CORS & REDIRECT)
     async function loadCloudDataFromGDrive() {
       if (!GAS_WEBAPP_URL) return;
       
@@ -958,13 +962,18 @@
       if (badge) badge.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400 mr-1.5"></i> Syncing GDrive...`;
 
       try {
-        const res = await fetch(GAS_WEBAPP_URL);
-        if (!res.ok) throw new Error("Gagal terhubung ke GDrive");
-        const data = await res.json();
+        const response = await fetch(GAS_WEBAPP_URL + "?action=getData&t=" + new Date().getTime(), {
+          method: "GET",
+          redirect: "follow"
+        });
         
-        if (data.stok && data.stok.length > 0) stokHerbal = data.stok;
-        if (data.jurnal && data.jurnal.length > 0) dbJurnalKas = data.jurnal;
-        if (data.pasien && Object.keys(data.pasien).length > 0) dbPasien = data.pasien;
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        const data = await response.json();
+        
+        if (data.stok && Array.isArray(data.stok) && data.stok.length > 0) stokHerbal = data.stok;
+        if (data.jurnal && Array.isArray(data.jurnal) && data.jurnal.length > 0) dbJurnalKas = data.jurnal;
+        if (data.pasien && typeof data.pasien === 'object') dbPasien = data.pasien;
 
         localStorage.setItem('rsi_stok_v12', JSON.stringify(stokHerbal));
         localStorage.setItem('rsi_pasien_v12', JSON.stringify(dbPasien));
@@ -980,14 +989,15 @@
       }
     }
 
-    // MENYIMPAN TEKS REKAM MEDIS & SHEET PASIEN KE GOOGLE DRIVE
+    // MENYIMPAN TEKS REKAM MEDIS & FILE JSON PASIEN KE GOOGLE DRIVE
     async function syncSinglePasienToGDrive(pasienObj) {
       if (!GAS_WEBAPP_URL || !pasienObj) return;
       try {
         await fetch(GAS_WEBAPP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: "saveRekamMedis", pasienSingle: pasienObj })
+          body: JSON.stringify({ action: "saveRekamMedis", pasienSingle: pasienObj }),
+          redirect: "follow"
         });
       } catch (err) { console.error("Gagal sync rekam medis ke Drive:", err); }
     }
@@ -998,7 +1008,8 @@
         await fetch(GAS_WEBAPP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: "saveStok", stok: stokHerbal })
+          body: JSON.stringify({ action: "saveStok", stok: stokHerbal }),
+          redirect: "follow"
         });
       } catch (err) { console.error("Gagal sync GDrive:", err); }
     }
@@ -1009,7 +1020,8 @@
         await fetch(GAS_WEBAPP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify({ action: "saveTransaksi", transaksi: transaksiObj })
+          body: JSON.stringify({ action: "saveTransaksi", transaksi: transaksiObj }),
+          redirect: "follow"
         });
       } catch (err) { console.error("Gagal sync transaksi ke Drive:", err); }
     }
@@ -1110,7 +1122,9 @@
       select.innerHTML = '<option value="">-- Pilih Pasien Terdaftar --</option>';
       Object.keys(dbPasien).forEach(nama => {
         const p = dbPasien[nama];
-        select.innerHTML += `<option value="${nama}">${p.nama} (${p.wa})</option>`;
+        if (p && p.nama) {
+          select.innerHTML += `<option value="${nama}">${p.nama} (${p.wa || '-'})</option>`;
+        }
       });
     }
 
@@ -1118,7 +1132,7 @@
       const selected = document.getElementById('masuk-select-pasien').value;
       if (selected && dbPasien[selected]) {
         document.getElementById('masuk-nama').value = dbPasien[selected].nama;
-        document.getElementById('masuk-wa').value = dbPasien[selected].wa;
+        document.getElementById('masuk-wa').value = dbPasien[selected].wa || '';
       }
     }
 
@@ -1385,7 +1399,7 @@
           preparasi: strPreparasi
         });
         
-        savePasienToStorage(nama); // OMTOMATIS SINKRONISASI FILE TXT REKAM MEDIS KE GOOGLE DRIVE
+        savePasienToStorage(nama); // OTOMATIS SINKRONISASI FILE TXT REKAM MEDIS KE GOOGLE DRIVE
 
         document.getElementById('nota-details-content').innerHTML = itemsNotaHtml;
         document.getElementById('nota-total-badge').innerText = "ESTIMASI: " + formatRp(grandTotal);
@@ -1765,7 +1779,7 @@
     window.onload = function() {
       renderStokTable();
       renderKeuanganDropdownPasien();
-      loadCloudDataFromGDrive(); // OTOMATIS LOAD DATA GOOGLE DRIVE SAAT PERTAMA KALI DIBUKA
+      loadCloudDataFromGDrive(); // LOAD DATA DARI GOOGLE DRIVE SAAT PERTAMA KALI DIBUKA
     };
   </script>
 </body>
