@@ -18,34 +18,22 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <!-- Tesseract OCR JS Engine for Reading Struk Image -->
+  <!-- Tesseract OCR JS Engine -->
   <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
-    /* Prevent Pull-To-Refresh On Mobile Devices */
-    html, body {
-      overscroll-behavior-y: contain;
-    }
-
+    html, body { overscroll-behavior-y: contain; }
     .prose h3 { font-size: 1.1rem; font-weight: 700; color: #f97316; margin-top: 1rem; margin-bottom: 0.5rem; }
     .prose ul { list-style-type: disc; padding-left: 1.25rem; margin-bottom: 0.75rem; }
     .prose table { width: 100%; border-collapse: collapse; margin-top: 0.75rem; margin-bottom: 0.75rem; }
     .prose th, .prose td { border: 1px solid #334155; padding: 0.5rem; text-align: left; }
     .prose th { background-color: #1e293b; color: #f97316; font-weight: 600; }
 
-    /* CSS Khusus Cetak Thermal Printer Bluetooth */
     @media print {
       body * { visibility: hidden; }
       #nota-print-area, #nota-print-area * { visibility: visible; }
       #nota-print-area {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 58mm;
-        font-family: monospace;
-        font-size: 9pt;
-        color: #000;
-        background: #fff;
-        padding: 5px;
+        position: absolute; left: 0; top: 0; width: 58mm;
+        font-family: monospace; font-size: 9pt; color: #000; background: #fff; padding: 5px;
       }
       .no-print { display: none !important; }
     }
@@ -57,7 +45,6 @@
   <header class="bg-zinc-900 border-b border-orange-500/30 text-white shadow-xl sticky top-0 z-50 no-print">
     <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-3">
-        <!-- Logo Yin-Yang -->
         <i class="fa-solid fa-yin-yang text-3xl text-orange-500"></i>
         <div>
           <h1 class="font-bold text-lg leading-tight text-orange-400">Rumah Sehat Insani (RSI)</h1>
@@ -66,7 +53,7 @@
       </div>
       <div class="flex items-center gap-2">
         <span id="sync-status" class="text-xs text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-1 rounded-full flex items-center gap-1">
-          <i class="fa-solid fa-cloud-check"></i> Data Tersimpan
+          <i class="fa-solid fa-cloud-check"></i> Cloud AI Synced
         </span>
         <button id="btn-install-pwa" onclick="installPWA()" class="hidden text-xs bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition shadow">
           <i class="fa-solid fa-download"></i> Install App
@@ -92,23 +79,21 @@
 
     <!-- TAB 1: REKAM MEDIK TCM & PASIEN -->
     <div id="section-tcm" class="tab-content block space-y-6">
-      
-      <!-- HEADER TAB + TOMBOL DISKUSI CHAT -->
       <div class="flex justify-between items-center bg-zinc-900 p-4 rounded-xl border border-orange-500/30">
         <div>
-          <h2 class="font-bold text-orange-400 text-sm"><i class="fa-solid fa-user-doctor mr-1"></i> Modul Diagnosa Biometrik & Rekam Medik Pasien</h2>
-          <p class="text-xs text-zinc-400">Pemeriksaan fisik, lidah, nadi, dan komparasi rekam medis klinis pasien RSI.</p>
+          <h2 class="font-bold text-orange-400 text-sm"><i class="fa-solid fa-user-doctor mr-1"></i> Modul Diagnosa Biometrik & Rekam Medik Pasien (TCM Senior Expert)</h2>
+          <p class="text-xs text-zinc-400">Pemeriksaan fisik, lidah (She Zhen), nadi (Mai Zhen), dan analisis patologi organ Zang-Fu.</p>
         </div>
         <button onclick="bukaChatModal('tcm')" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3.5 py-2 rounded-lg text-xs transition flex items-center gap-2 shadow">
-          <i class="fa-solid fa-comments text-sm"></i> Diskusi Diagnosa
+          <i class="fa-solid fa-comments text-sm"></i> Konsultasi Klinis
         </button>
       </div>
 
-      <!-- NAVIGASI PILIHAN PASIEN BARU vs PASIEN LAMA -->
+      <!-- Pilihan Pasien Baru / Pasien Lama -->
       <div class="bg-zinc-900 p-4 rounded-xl border border-zinc-800 flex flex-col sm:flex-row gap-3 justify-between items-center">
         <div>
           <h2 class="font-bold text-orange-400 text-sm"><i class="fa-solid fa-users mr-1"></i> Data Pasien Terapi</h2>
-          <p class="text-xs text-zinc-400">Pilih registrasi pasien baru atau cari data riwayat pasien lama.</p>
+          <p class="text-xs text-zinc-400">Registrasi pasien baru atau cari data riwayat pasien lama.</p>
         </div>
         <div class="flex gap-2 w-full sm:w-auto">
           <button onclick="setJenisPasien('baru')" id="btn-p-baru" class="flex-1 sm:flex-none bg-orange-600 text-zinc-950 font-extrabold px-4 py-2 rounded-lg text-xs transition border border-orange-500">
@@ -120,17 +105,12 @@
         </div>
       </div>
 
-      <!-- AREA PENCARIAN & RIWAYAT PASIEN LAMA -->
+      <!-- Area Pasien Lama -->
       <div id="area-pasien-lama" class="hidden bg-zinc-900 p-5 rounded-xl border border-zinc-800 space-y-4">
         <h3 class="text-sm font-bold text-orange-400"><i class="fa-solid fa-magnifying-glass mr-1"></i> Cari Data Pasien Lama</h3>
-        <div class="relative">
-          <input type="text" id="input-cari-pasien" onkeyup="cariPasienLama()" placeholder="Ketik Nama atau Nomor WA Pasien..." class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none">
-        </div>
-        
-        <!-- Hasil Daftar Pasien -->
+        <input type="text" id="input-cari-pasien" onkeyup="cariPasienLama()" placeholder="Ketik Nama atau Nomor WA Pasien..." class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none">
         <div id="list-hasil-pasien" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-48 overflow-y-auto pr-1"></div>
 
-        <!-- TAMPILAN RINGKASAN REKAM MEDIK TERAKHIR PASIEN LAMA -->
         <div id="card-riwayat-pasien" class="hidden p-4 bg-zinc-950 border border-orange-500/40 rounded-lg space-y-3">
           <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
             <div>
@@ -140,7 +120,6 @@
             <span id="rw-kunjungan-count" class="text-xs bg-orange-950 text-orange-400 font-bold px-2.5 py-1 rounded border border-orange-500/30"></span>
           </div>
 
-          <!-- Ringkasan Kunjungan Terakhir -->
           <div class="space-y-2 text-xs">
             <div class="font-bold text-zinc-300"><i class="fa-solid fa-clock-rotate-left mr-1 text-orange-500"></i> Ringkasan Rekam Medik Kunjungan Terakhir:</div>
             <div id="rw-syndrom" class="p-2 bg-zinc-900 rounded border border-zinc-800 text-zinc-300"></div>
@@ -148,7 +127,6 @@
             <div id="rw-herbal" class="p-2 bg-zinc-900 rounded border border-zinc-800 text-zinc-300"></div>
           </div>
 
-          <!-- Tombol Aksi Kunjungan & Riwayat Lengkap -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
             <button onclick="bukaModalRiwayatLengkap()" class="bg-zinc-800 hover:bg-zinc-700 text-orange-400 font-bold py-2.5 px-4 rounded-lg transition border border-orange-500/40 flex items-center justify-center gap-2 text-xs">
               <i class="fa-solid fa-folder-open text-sm"></i> Lihat Riwayat Kunjungan Lengkap
@@ -160,7 +138,7 @@
         </div>
       </div>
 
-      <!-- Tombol Accordion Input Data Pasien -->
+      <!-- Accordion Form Input Pasien -->
       <div id="accordion-form-wrapper" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         <button onclick="toggleFormSection('sec-identitas')" class="bg-zinc-900 hover:bg-zinc-800 border border-orange-500/30 p-4 rounded-xl text-left flex items-center justify-between transition group">
           <span class="font-bold text-sm text-orange-400 group-hover:text-orange-300"><i class="fa-solid fa-id-card mr-2"></i> 1. Identitas & Kontak</span>
@@ -180,8 +158,7 @@
         </button>
       </div>
 
-      <!-- Content Sections (Hidden By Default) -->
-      <!-- A. Identitas dan Kontak Pasien -->
+      <!-- Sections -->
       <div id="sec-identitas" class="form-accordion-content hidden bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-md">
         <h3 class="text-md font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800"><i class="fa-solid fa-id-card mr-2"></i> Identitas & Kontak Pasien</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
@@ -200,28 +177,25 @@
         </div>
       </div>
 
-      <!-- B. Keluhan Utama & Foto Wajah Pasien -->
       <div id="sec-keluhan" class="form-accordion-content hidden bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-md">
         <h3 class="text-md font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800"><i class="fa-solid fa-notes-medical mr-2"></i> Keluhan Utama & Foto Visual Wajah Pasien</h3>
         <div class="space-y-4 text-sm">
           <div>
-            <label class="block text-zinc-300 font-medium mb-1">Keluhan Utama & Gejala (Si Zhen - Anamnesis)</label>
-            <textarea id="p-keluhan" rows="3" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Perut kembung, begah, pinggang pegal, dingin di anggota gerak..."></textarea>
+            <label class="block text-zinc-300 font-medium mb-1">Keluhan Utama & Gejala (Anamnesis TCM)</label>
+            <textarea id="p-keluhan" rows="3" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none" placeholder="Perut kembung, begah, lemas, dingin di tangan/kaki..."></textarea>
           </div>
           <div class="pt-2 border-t border-zinc-800">
-            <label class="block text-orange-400 font-semibold mb-1"><i class="fa-solid fa-camera text-orange-500 mr-1"></i> Upload / Tangkap Foto Wajah Pasien:</label>
-            <p class="text-xs text-zinc-400 mb-2">*Pastikan pencahayaan terang dan rona wajah/mata terlihat jelas untuk analisis biometrik sistem.</p>
-            <input type="file" id="pasien-img-input" accept="image/*" capture="environment" onchange="previewPasienImage(event)" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-950 file:text-orange-400 border border-zinc-800 rounded-md w-full hover:file:bg-orange-900 cursor-pointer">
+            <label class="block text-orange-400 font-semibold mb-1"><i class="fa-solid fa-camera text-orange-500 mr-1"></i> Foto Wajah Pasien (Wang Zhen):</label>
+            <input type="file" id="pasien-img-input" accept="image/*" capture="environment" onchange="previewPasienImage(event)" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-950 file:text-orange-400 border border-zinc-800 rounded-md w-full cursor-pointer">
             <div id="pasien-preview-container" class="mt-2 hidden">
-              <img id="pasien-img-preview" src="" alt="Preview Wajah Pasien" class="h-36 object-cover rounded-md border border-orange-500/40">
+              <img id="pasien-img-preview" src="" alt="Preview Wajah" class="h-36 object-cover rounded-md border border-orange-500/40">
             </div>
           </div>
         </div>
       </div>
 
-      <!-- C. Pemeriksaan Lidah (She Zhen) -->
       <div id="sec-lidah" class="form-accordion-content hidden bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-md">
-        <h3 class="text-md font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800"><i class="fa-solid fa-eye mr-2"></i> Pemeriksaan Lidah (She Zhen) & Foto Lidah</h3>
+        <h3 class="text-md font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800"><i class="fa-solid fa-eye mr-2"></i> Pemeriksaan Lidah (She Zhen)</h3>
         <div class="space-y-4 text-sm">
           <div>
             <span class="font-semibold text-orange-300 block mb-1">Warna Badan Lidah (She Zhi):</span>
@@ -229,33 +203,30 @@
               <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Pucat (Dan Bai)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Pucat (Dan Bai)</label>
               <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Merah (Hong)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Merah (Hong)</label>
               <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Merah Tua (Jiang)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Merah Tua (Jiang)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Ungu/Kehitaman (An Zi)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Ungu/Sianosis (An Zi)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_warna" value="Ungu/Kehitaman (An Zi)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Ungu (An Zi)</label>
             </div>
           </div>
           <div>
-            <span class="font-semibold text-orange-300 block mb-1">Bentuk, Tepi & Tekstur Biometrik Lidah:</span>
+            <span class="font-semibold text-orange-300 block mb-1">Bentuk & Tekstur Lidah:</span>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Gemuk (Pang Da)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Gemuk (Pang Da)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Bekas Gigi / Tooth Marks (Chi Hen)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Bekas Gigi (Chi Hen)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Retak / Fissures (Lie Wen)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Retakan (Lie Wen)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Bintik Merah / Red Dots (Hong Dian)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Bintik Merah (Hong Dian)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Tipis / Kurus (Shou Xiao)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Tipis/Kurus (Shou Xiao)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Kaku (Jiang)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Kaku (Jiang)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Bekas Gigi (Chi Hen)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Bekas Gigi (Chi Hen)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Retak (Lie Wen)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Retakan (Lie Wen)</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_bentuk" value="Bintik Merah (Hong Dian)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Bintik Merah</label>
             </div>
           </div>
           <div>
-            <span class="font-semibold text-orange-300 block mb-1">Selaput Lidah Biometrik (She Tai):</span>
+            <span class="font-semibold text-orange-300 block mb-1">Selaput Lidah (She Tai):</span>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Putih Tipis (Bai Bo)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Putih Tipis (Bai Bo)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Putih Tebal/Lengket (Bai Ni)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Putih Tebal (Bai Ni)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Kuning Tebal/Lengket (Huang Ni)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Kuning Tebal (Huang Ni)</label>
-              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Tanpa Selaput/Kupas (Bo Tai)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Tanpa Selaput/Kupas</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Putih Tipis (Bai Bo)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Putih Tipis</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Putih Tebal/Lengket (Bai Ni)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Putih Tebal</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Kuning Tebal (Huang Ni)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Kuning Tebal</label>
+              <label class="flex items-center gap-2"><input type="checkbox" name="lidah_tai" value="Tanpa Selaput (Bo Tai)" class="rounded text-orange-500 bg-zinc-950 border-zinc-700"> Tanpa Selaput</label>
             </div>
           </div>
           <div class="pt-2 border-t border-zinc-800">
-            <label class="block text-orange-400 font-semibold mb-1"><i class="fa-solid fa-camera text-orange-500 mr-1"></i> Upload Foto Lidah Pasien:</label>
-            <p class="text-xs text-zinc-400 mb-2">*Foto fokus pada lidah. Pastikan pencahayaan terang untuk sistem membaca retakan, selaput, dan bintik merah.</p>
-            <input type="file" id="lidah-img-input" accept="image/*" capture="environment" onchange="previewTongueImage(event)" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-950 file:text-orange-400 border border-zinc-800 rounded-md w-full hover:file:bg-orange-900 cursor-pointer">
+            <label class="block text-orange-400 font-semibold mb-1"><i class="fa-solid fa-camera text-orange-500 mr-1"></i> Upload Foto Lidah:</label>
+            <input type="file" id="lidah-img-input" accept="image/*" capture="environment" onchange="previewTongueImage(event)" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-orange-950 file:text-orange-400 border border-zinc-800 rounded-md w-full cursor-pointer">
             <div id="tongue-preview-container" class="mt-2 hidden">
               <img id="tongue-img-preview" src="" alt="Preview Lidah" class="h-36 object-cover rounded-md border border-orange-500/40">
             </div>
@@ -263,124 +234,74 @@
         </div>
       </div>
 
-      <!-- D. Pemeriksaan Nadi (Dibagi Kiri/Kanan & Cun-Guan-Chi) -->
       <div id="sec-nadi" class="form-accordion-content hidden bg-zinc-900 p-6 rounded-xl border border-zinc-800 shadow-md">
         <h3 class="text-md font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800"><i class="fa-solid fa-hand-holding-medical mr-2"></i> Pemeriksaan Nadi (Mai Zhen)</h3>
-        
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 text-sm">
-          
-          <!-- NADI TANGAN KANAN -->
-          <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-4">
-            <div class="font-bold text-orange-400 text-sm border-b border-zinc-800 pb-2 flex items-center justify-between">
-              <span><i class="fa-solid fa-hand-back-fist mr-1 text-orange-500"></i> Nadi Tangan Kanan (Right Pulse)</span>
-              <span class="text-[10px] text-zinc-500">Paru, Limpa, Ginjal Mingmen</span>
-            </div>
-
-            <!-- Cun Kanan -->
-            <div class="space-y-1">
-              <span class="text-xs font-bold text-orange-300">1. Cun (寸) - Paru-Paru (Fei):</span>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Fu (Mengambang)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Fu (Mengambang)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Xu (Lemah)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Shi (Kuat)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shi (Kuat)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Hua (Licin)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Hua (Licin)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_cun" value="Shuo (Cepat)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shuo (Cepat)</label>
+          <!-- Nadi Kanan -->
+          <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3">
+            <div class="font-bold text-orange-400 text-sm border-b border-zinc-800 pb-1">Nadi Tangan Kanan (Paru, Limpa, Mingmen)</div>
+            <div class="text-xs space-y-1">
+              <span class="font-bold text-orange-300">Cun (Paru-Paru):</span>
+              <div class="grid grid-cols-3 gap-1">
+                <label><input type="checkbox" name="nadi_kanan_cun" value="Fu (Mengambang)"> Fu</label>
+                <label><input type="checkbox" name="nadi_kanan_cun" value="Chen (Tenggelam)"> Chen</label>
+                <label><input type="checkbox" name="nadi_kanan_cun" value="Xu (Lemah)"> Xu</label>
               </div>
-            </div>
-
-            <!-- Guan Kanan -->
-            <div class="space-y-1 pt-2 border-t border-zinc-900">
-              <span class="text-xs font-bold text-orange-300">2. Guan (关) - Limpa & Lambung (Pi/Wei):</span>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Fu (Mengambang)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Fu (Mengambang)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Xu (Lemah)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Huan (Lambat/Sederhana)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Huan (Sederhana)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Hua (Licin/Lembab)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Hua (Licin)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_guan" value="Ru (Lembur/Tipis)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Ru (Lembut)</label>
+              <span class="font-bold text-orange-300">Guan (Limpa/Lambung):</span>
+              <div class="grid grid-cols-3 gap-1">
+                <label><input type="checkbox" name="nadi_kanan_guan" value="Fu (Mengambang)"> Fu</label>
+                <label><input type="checkbox" name="nadi_kanan_guan" value="Chen (Tenggelam)"> Chen</label>
+                <label><input type="checkbox" name="nadi_kanan_guan" value="Huan (Sederhana)"> Huan</label>
               </div>
-            </div>
-
-            <!-- Chi Kanan -->
-            <div class="space-y-1 pt-2 border-t border-zinc-900">
-              <span class="text-xs font-bold text-orange-300">3. Chi (尺) - Ginjal Yang / Mingmen (Shen Yang):</span>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Chi (Lambat/Dingin)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chi (Lambat)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Xu (Lemah/Kosong)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Wei (Sangat Kecil)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Wei (Halus/Kecil)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Fu (Mengambang)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Fu (Mengambang)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kanan_chi" value="Shi (Kuat)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shi (Kuat)</label>
+              <span class="font-bold text-orange-300">Chi (Ginjal Yang):</span>
+              <div class="grid grid-cols-3 gap-1">
+                <label><input type="checkbox" name="nadi_kanan_chi" value="Chen (Tenggelam)"> Chen</label>
+                <label><input type="checkbox" name="nadi_kanan_chi" value="Chi (Lambat)"> Chi</label>
+                <label><input type="checkbox" name="nadi_kanan_chi" value="Xu (Lemah)"> Xu</label>
               </div>
             </div>
           </div>
-
-          <!-- NADI TANGAN KIRI -->
-          <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-4">
-            <div class="font-bold text-orange-400 text-sm border-b border-zinc-800 pb-2 flex items-center justify-between">
-              <span><i class="fa-solid fa-hand-back-fist mr-1 text-orange-500"></i> Nadi Tangan Kiri (Left Pulse)</span>
-              <span class="text-[10px] text-zinc-500">Jantung, Hati, Ginjal Yin</span>
-            </div>
-
-            <!-- Cun Kiri -->
-            <div class="space-y-1">
-              <span class="text-xs font-bold text-orange-300">1. Cun (寸) - Jantung (Xin):</span>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Fu (Mengambang)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Fu (Mengambang)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Xi (Halus/Kecil)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xi (Halus)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Shuo (Cepat/Panas)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shuo (Cepat)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Se (Kasar/Stagnasi)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Se (Kasar)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_cun" value="Xu (Lemah)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
+          <!-- Nadi Kiri -->
+          <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 space-y-3">
+            <div class="font-bold text-orange-400 text-sm border-b border-zinc-800 pb-1">Nadi Tangan Kiri (Jantung, Hati, Ginjal Yin)</div>
+            <div class="text-xs space-y-1">
+              <span class="font-bold text-orange-300">Cun (Jantung):</span>
+              <div class="grid grid-cols-3 gap-1">
+                <label><input type="checkbox" name="nadi_kiri_cun" value="Fu (Mengambang)"> Fu</label>
+                <label><input type="checkbox" name="nadi_kiri_cun" value="Chen (Tenggelam)"> Chen</label>
+                <label><input type="checkbox" name="nadi_kiri_cun" value="Xi (Halus)"> Xi</label>
               </div>
-            </div>
-
-            <!-- Guan Kiri -->
-            <div class="space-y-1 pt-2 border-t border-zinc-900">
-              <span class="text-xs font-bold text-orange-300">2. Guan (关) - Hati & Empedu (Gan/Dan):</span>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Xian (Tegang/Senar)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xian (Tegang)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Shi (Kuat)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shi (Kuat)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Hua (Licin)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Hua (Licin)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Se (Kasar)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Se (Kasar)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_guan" value="Xu (Lemah)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
+              <span class="font-bold text-orange-300">Guan (Hati/Empedu):</span>
+              <div class="grid grid-cols-3 gap-1">
+                <label><input type="checkbox" name="nadi_kiri_guan" value="Xian (Tegang)"> Xian</label>
+                <label><input type="checkbox" name="nadi_kiri_guan" value="Chen (Tenggelam)"> Chen</label>
+                <label><input type="checkbox" name="nadi_kiri_guan" value="Shi (Kuat)"> Shi</label>
               </div>
-            </div>
-
-            <!-- Chi Kiri -->
-            <div class="space-y-1 pt-2 border-t border-zinc-900">
-              <span class="text-xs font-bold text-orange-300">3. Chi (尺) - Ginjal Yin / Kandung Kemih (Shen Yin):</span>
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-1.5 text-xs">
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Chen (Tenggelam)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Chen (Tenggelam)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Xi (Halus/Tipis)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xi (Halus)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Shuo (Cepat/Defis.Yin)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Shuo (Cepat)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Xu (Lemah)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Xu (Lemah)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Wei (Sangat Halus)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Wei (Sangat Halus)</label>
-                <label class="flex items-center gap-1.5"><input type="checkbox" name="nadi_kiri_chi" value="Fu (Mengambang)" class="rounded text-orange-500 bg-zinc-900 border-zinc-700"> Fu (Mengambang)</label>
+              <span class="font-bold text-orange-300">Chi (Ginjal Yin):</span>
+              <div class="grid grid-cols-3 gap-1">
+                <label><input type="checkbox" name="nadi_kiri_chi" value="Chen (Tenggelam)"> Chen</label>
+                <label><input type="checkbox" name="nadi_kiri_chi" value="Xi (Halus)"> Xi</label>
+                <label><input type="checkbox" name="nadi_kiri_chi" value="Shuo (Cepat)"> Shuo</label>
               </div>
             </div>
           </div>
-
         </div>
       </div>
 
-      <!-- Tombol Utama "Diagnosa Holistik" -->
+      <!-- Tombol Diagnosa AI -->
       <button onclick="prosesAITCM()" class="w-full bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-zinc-950 font-extrabold py-4 px-6 rounded-xl shadow-xl transition flex items-center justify-center gap-3 text-base">
-        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i> Diagnosa Biometrik & Holistik Sistem
+        <i class="fa-solid fa-wand-magic-sparkles text-xl"></i> Diagnosa Biometrik & Holistik Pakar TCM AI
       </button>
 
-      <!-- HASIL DIAGNOSA TERBAGI DALAM TOMBOL (TAB/ACCORDION OUTPUT) -->
+      <!-- Output Diagnosa -->
       <div id="result-wrapper" class="hidden bg-zinc-900 p-6 rounded-xl border border-orange-500/30 shadow-xl space-y-4">
         <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
           <h2 class="text-lg font-bold text-orange-400 flex items-center gap-2">
-            <i class="fa-solid fa-brain text-orange-500"></i> Hasil Diagnosa Medis Holistik TCM
+            <i class="fa-solid fa-brain text-orange-500"></i> Hasil Analisis Diagnostik TCM Professional
           </h2>
           <span id="ai-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Menganalisis Biometrik & Membandingkan Riwayat...</span>
         </div>
 
-        <!-- Tombol Pilihan Menu Hasil Diagnosa -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
           <button onclick="showDiagTab('diag-syndrom')" class="diag-nav-btn text-xs font-bold py-2 px-3 rounded-lg bg-orange-600 text-zinc-950 border border-orange-500">a. Patologi Sindrom</button>
           <button onclick="showDiagTab('diag-akupuntur')" class="diag-nav-btn text-xs font-bold py-2 px-3 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">b. Akupuntur/Akupresur</button>
@@ -390,7 +311,6 @@
           <button onclick="showDiagTab('diag-preparasi')" class="diag-nav-btn text-xs font-bold py-2 px-3 rounded-lg bg-zinc-800 text-zinc-300 hover:text-orange-400 border border-zinc-700">f. Cara Olah & Struk</button>
         </div>
 
-        <!-- Container Tampilan Masing-masing Hasil -->
         <div class="p-4 bg-zinc-950 rounded-lg border border-zinc-800 text-sm text-zinc-300">
           <div id="diag-syndrom" class="diag-tab-content block prose"></div>
           <div id="diag-akupuntur" class="diag-tab-content hidden prose"></div>
@@ -399,21 +319,16 @@
           <div id="diag-stok" class="diag-tab-content hidden prose"></div>
           <div id="diag-preparasi" class="diag-tab-content hidden space-y-4">
             <div id="preparasi-text" class="prose"></div>
-            
-            <!-- Modul Struk Preview Ringkas -->
             <div class="p-4 bg-zinc-900 border border-orange-500/40 rounded-lg space-y-3">
               <div class="flex items-center justify-between border-b border-zinc-800 pb-2">
-                <span class="font-bold text-xs text-orange-400"><i class="fa-solid fa-receipt mr-1"></i> Preview Estimasi Biaya & Racikan Stok RSI</span>
+                <span class="font-bold text-xs text-orange-400"><i class="fa-solid fa-receipt mr-1"></i> Preview Estimasi Biaya Racikan Stok RSI</span>
                 <span id="nota-total-badge" class="text-xs font-bold bg-orange-950 text-orange-400 px-2 py-0.5 rounded border border-orange-500/30">Rp 0</span>
               </div>
               <div id="nota-details-content" class="text-xs text-zinc-300 font-mono space-y-1"></div>
-              <p class="text-[11px] text-zinc-400 italic">*Untuk memproses transaksi, cetak struk, mengurangi stok, dan menjadwalkan kunjungan, silakan beralih ke Tab Keuangan (Uang Masuk).</p>
             </div>
           </div>
         </div>
-
       </div>
-
     </div>
 
     <!-- TAB 2: STOK HERBAL RSI -->
@@ -422,16 +337,13 @@
         <div class="flex justify-between items-center">
           <div>
             <h2 class="text-lg font-bold text-orange-400"><i class="fa-solid fa-warehouse text-orange-500"></i> Inventaris Stok Herbal RSI</h2>
-            <p class="text-xs text-zinc-400">Pencarian ketersediaan dan manajemen bahan stok herbal RSI (Tersinkronisasi Otomatis HPP/Gram).</p>
+            <p class="text-xs text-zinc-400">Pencarian ketersediaan dan manajemen bahan stok herbal RSI (Auto Synced Cloud & HPP/Gram).</p>
           </div>
-          <div class="flex gap-2">
-            <button onclick="bukaChatModal('stok')" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
-              <i class="fa-solid fa-comments"></i> Diskusi Stok
-            </button>
-          </div>
+          <button onclick="bukaChatModal('stok')" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-1.5 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
+            <i class="fa-solid fa-comments"></i> Konsultasi Stok
+          </button>
         </div>
 
-        <!-- Tombol Pencarian Stok Herbal -->
         <div class="relative">
           <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-zinc-500 text-sm"></i>
           <input type="text" id="cari-stok" onkeyup="filterStokTable()" placeholder="Cari nama herbal (misal: Huang Qi, Gan Cao...)" class="w-full pl-9 p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-sm text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none">
@@ -447,39 +359,34 @@
                 <th class="p-3 text-center">Aksi</th>
               </tr>
             </thead>
-            <tbody id="tabel-stok-body">
-              <!-- Item Stok -->
-            </tbody>
+            <tbody id="tabel-stok-body"></tbody>
           </table>
         </div>
       </div>
     </div>
 
-    <!-- TAB 3: KEUANGAN (PEMASUKAN & PENGELUARAN) -->
+    <!-- TAB 3: KEUANGAN -->
     <div id="section-keuangan" class="tab-content hidden space-y-6">
-      
-      <!-- Trigger Laporan Lengkap + TOMBOL DISKUSI -->
       <div class="flex justify-between items-center bg-zinc-900 p-4 rounded-xl border border-orange-500/30">
         <div>
-          <h2 class="font-bold text-orange-400 text-sm">Pencatatan Kas & Akuntansi Komputerisasi RSI</h2>
-          <p class="text-xs text-zinc-400">Pencatatan kas masuk, belanja stok, dan jurnal laporan keuangan RSI.</p>
+          <h2 class="font-bold text-orange-400 text-sm">Pencatatan Kas & Akuntansi Komputerisasi RSI (AI Integrated)</h2>
+          <p class="text-xs text-zinc-400">Otomatisasi Jurnal Laba Rugi, Penyesuaian HPP, dan Pengurangan Stok Herbal Terjual.</p>
         </div>
         <div class="flex gap-2">
           <button onclick="bukaChatModal('keuangan')" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-2 rounded-lg text-xs transition flex items-center gap-1.5 shadow">
-            <i class="fa-solid fa-comments"></i> Diskusi Keuangan
+            <i class="fa-solid fa-comments"></i> Konsultasi Akuntansi
           </button>
           <button onclick="generasiLaporanLengkapAI()" class="bg-zinc-800 hover:bg-zinc-700 text-orange-400 border border-orange-500/50 font-bold px-3 py-2 rounded-lg text-xs transition flex items-center gap-1.5">
-            <i class="fa-solid fa-file-invoice-dollar"></i> Laporan Keuangan
+            <i class="fa-solid fa-file-invoice-dollar"></i> Laporan Laba Rugi & Jurnal AI
           </button>
         </div>
       </div>
 
-      <!-- TOMBOL INTERAKSI TRANSAKSI KEUANGAN -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <button onclick="toggleKeuanganModal('modal-uang-masuk')" class="bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 p-5 rounded-xl text-left flex items-center justify-between transition shadow-lg group">
           <div>
             <span class="block font-extrabold text-base text-emerald-400 group-hover:text-emerald-300"><i class="fa-solid fa-circle-arrow-down mr-2"></i> + Catat Uang Masuk / Transaksi Pasien</span>
-            <span class="text-xs text-zinc-400">Penerimaan kas, racikan herbal, cetak/share struk & potongan stok otomatis</span>
+            <span class="text-xs text-zinc-400">Otomatisasi Pengurangan Stok, Jurnal HPP, Laba Bersih & Cetak Struk</span>
           </div>
           <i class="fa-solid fa-plus-circle text-2xl text-emerald-500"></i>
         </button>
@@ -487,13 +394,13 @@
         <button onclick="toggleKeuanganModal('modal-uang-keluar')" class="bg-rose-950/60 hover:bg-rose-900/80 border border-rose-500/40 p-5 rounded-xl text-left flex items-center justify-between transition shadow-lg group">
           <div>
             <span class="block font-extrabold text-base text-rose-400 group-hover:text-rose-300"><i class="fa-solid fa-circle-arrow-up mr-2"></i> - Catat Uang Keluar / Belanja Stok</span>
-            <span class="text-xs text-zinc-400">Pengeluaran operasional & foto OCR struk (Stok Bertambah Otomatis & HPP Diperbarui)</span>
+            <span class="text-xs text-zinc-400">Pengeluaran Operasional & OCR Struk Belanja (Stok Bertambah & HPP Diperbarui)</span>
           </div>
           <i class="fa-solid fa-minus-circle text-2xl text-rose-500"></i>
         </button>
       </div>
 
-      <!-- FORM POPUP / ACCORDION UANG MASUK (PEMASUKAN) -->
+      <!-- Form Uang Masuk -->
       <div id="modal-uang-masuk" class="keuangan-form-container hidden bg-zinc-900 p-6 rounded-xl shadow-md border border-emerald-500/30 space-y-4">
         <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
           <h3 class="text-md font-bold text-emerald-400"><i class="fa-solid fa-circle-arrow-down mr-2"></i> Form Uang Masuk & Transaksi Pasien Terapi</h3>
@@ -501,7 +408,7 @@
         </div>
         <div class="space-y-4 text-sm">
           <div>
-            <label class="block text-emerald-400 font-bold mb-1"><i class="fa-solid fa-user-check mr-1"></i> Pilih Pasien Terdaftar (Tab 1):</label>
+            <label class="block text-emerald-400 font-bold mb-1"><i class="fa-solid fa-user-check mr-1"></i> Pilih Pasien Terdaftar:</label>
             <select id="masuk-select-pasien" onchange="autoFillUangMasuk()" class="w-full p-2.5 bg-zinc-950 border border-zinc-700 rounded-md text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none">
               <option value="">-- Pilih Pasien Terdaftar --</option>
             </select>
@@ -517,31 +424,26 @@
             </div>
           </div>
 
-          <!-- KOLOM JADWAL TERAPI SELANJUTNYA -->
           <div class="p-3 bg-zinc-950 border border-zinc-800 rounded-lg">
-            <label class="block text-orange-400 font-bold mb-1"><i class="fa-solid fa-calendar-days mr-1"></i> Jadwal Terapi / Kunjungan Selanjutnya Pasien:</label>
+            <label class="block text-orange-400 font-bold mb-1"><i class="fa-solid fa-calendar-days mr-1"></i> Jadwal Terapi Ulang Pasien:</label>
             <input type="datetime-local" id="masuk-jadwal" class="w-full p-2 bg-zinc-900 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none text-xs">
           </div>
 
-          <!-- BIAYA JASA TERAPI -->
           <div>
             <label class="block text-zinc-300 font-medium mb-1">Biaya Jasa Terapi & Tindakan TCM (Rp)</label>
             <input type="number" id="masuk-biaya-jasa" value="150000" onchange="kalkulasiTotalPemasukan()" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none">
           </div>
 
-          <!-- TOMBOL FORMULASI STOK RSI -->
           <div class="p-4 bg-zinc-950 border border-orange-500/40 rounded-xl space-y-3">
             <div class="flex justify-between items-center">
-              <span class="font-bold text-xs text-orange-400"><i class="fa-solid fa-mortar-pestle mr-1"></i> Formulasi Racikan Stok RSI (Hasil Diagnosa System)</span>
+              <span class="font-bold text-xs text-orange-400"><i class="fa-solid fa-mortar-pestle mr-1"></i> Formulasi Racikan Stok RSI (Hasil AI Diagnosa)</span>
               <button onclick="muatFormulasiStokAI()" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 text-xs font-extrabold px-3 py-1.5 rounded-md transition flex items-center gap-1">
                 <i class="fa-solid fa-wand-magic-sparkles"></i> Ambil Formulasi Stok RSI
               </button>
             </div>
-            
             <div id="container-racikan-stok" class="text-xs text-zinc-400 italic bg-zinc-900 p-2.5 rounded border border-zinc-800">
               Klik tombol di atas untuk memuat racikan herbal hasil diagnosa sistem terkini.
             </div>
-
             <div class="flex justify-between items-center pt-2 border-t border-zinc-800 font-bold text-sm">
               <span class="text-zinc-300">TOTAL PEMBAYARAN:</span>
               <span id="masuk-total-display" class="text-emerald-400">Rp 150.000</span>
@@ -550,10 +452,9 @@
 
           <div>
             <label class="block text-zinc-300 font-medium mb-1">Keterangan Catatan Tambahan Transaksi</label>
-            <textarea id="masuk-ket" rows="2" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Catatan tambahan... Misal: Tambahan Beli Huang Qi 50g"></textarea>
+            <textarea id="masuk-ket" rows="2" class="w-full p-2 bg-zinc-950 border border-zinc-800 rounded-md text-slate-100 focus:ring-2 focus:ring-emerald-500 outline-none" placeholder="Catatan tambahan... Misal: Beli Huang Qi 50g, Gan Cao 20g"></textarea>
           </div>
 
-          <!-- TOMBOL AKSI PEMASUKAN: SIMPAN & PRINT / SHARE -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
             <button onclick="prosesSimpanUangMasuk('print')" class="bg-zinc-800 hover:bg-zinc-700 text-orange-400 border border-orange-500/50 font-bold py-3 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
               <i class="fa-solid fa-print"></i> Simpan, Print Struk & Potong Stok
@@ -565,7 +466,7 @@
         </div>
       </div>
 
-      <!-- FORM POPUP / ACCORDION UANG KELUAR -->
+      <!-- Form Uang Keluar -->
       <div id="modal-uang-keluar" class="keuangan-form-container hidden bg-zinc-900 p-6 rounded-xl shadow-md border border-rose-500/30 space-y-4">
         <div class="flex justify-between items-center pb-2 border-b border-zinc-800">
           <h3 class="text-md font-bold text-rose-400"><i class="fa-solid fa-circle-arrow-up mr-2"></i> Form Uang Keluar (Pengeluaran Operasional & Belanja Stok Herbal)</h3>
@@ -573,8 +474,8 @@
         </div>
         <div class="space-y-3 text-sm">
           <div class="p-3 bg-zinc-950 border border-rose-500/30 rounded-lg">
-            <label class="block text-rose-400 font-bold mb-1"><i class="fa-solid fa-camera mr-1"></i> Upload / Foto Struk Belanja (Dibaca Otomatis OCR):</label>
-            <input type="file" id="struk-img-input" accept="image/*" capture="environment" onchange="pindaiFotoStrukOCR(event)" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-rose-950 file:text-rose-400 border border-zinc-800 rounded-md w-full cursor-pointer hover:file:bg-rose-900">
+            <label class="block text-rose-400 font-bold mb-1"><i class="fa-solid fa-camera mr-1"></i> Upload / Foto Struk Belanja (OCR Reading):</label>
+            <input type="file" id="struk-img-input" accept="image/*" capture="environment" onchange="pindaiFotoStrukOCR(event)" class="text-xs text-zinc-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-rose-950 file:text-rose-400 border border-zinc-800 rounded-md w-full cursor-pointer">
             <div id="ocr-status" class="hidden text-xs text-amber-400 mt-2 font-medium">
               <i class="fa-solid fa-spinner fa-spin mr-1"></i> Memindai dan membaca teks dari foto struk...
             </div>
@@ -589,46 +490,36 @@
         </div>
       </div>
 
-      <!-- OUTPUT JURNAL KEUANGAN -->
+      <!-- Output Jurnal AI -->
       <div class="bg-zinc-900 p-6 rounded-xl shadow-md border border-zinc-800">
         <h2 class="text-lg font-bold text-orange-400 mb-4 pb-2 border-b border-zinc-800 flex items-center justify-between">
-          <span><i class="fa-solid fa-file-contract text-orange-500"></i> Output Jurnal Transaksi & Laporan Akuntansi Sistem</span>
-          <span id="ai-fin-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin"></i> Mengolah...</span>
+          <span><i class="fa-solid fa-file-contract text-orange-500"></i> Output Jurnal Transaksi & Laporan Akuntansi Standar AI</span>
+          <span id="ai-fin-loading" class="hidden text-xs text-amber-400 font-normal"><i class="fa-solid fa-spinner fa-spin"></i> Mengolah Jurnal AI...</span>
         </h2>
-
         <div id="ai-output-keuangan" class="text-sm text-zinc-300 space-y-4 min-h-[150px]">
           <div class="text-center py-8 text-zinc-500">
             <i class="fa-solid fa-calculator text-4xl mb-3 block text-zinc-700"></i>
-            Hasil jurnal transaksi terkini dan Laporan Keuangan Standar Akuntansi akan ditampilkan di sini.
+            Hasil jurnal transaksi, analisis HPP, Laba Bersih, dan Laporan Keuangan Standar Akuntansi akan ditampilkan di sini.
           </div>
         </div>
       </div>
-
     </div>
-
   </main>
 
-  <!-- MODAL POPUP CHAT INTERAKTIF PER TAB -->
+  <!-- Modal Chat Interaktif -->
   <div id="modal-chat-tab" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 no-print">
     <div class="bg-zinc-900 border border-orange-500/40 rounded-xl w-full max-w-2xl h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-      <!-- Header Chat -->
       <div class="p-4 bg-zinc-950 border-b border-zinc-800 flex justify-between items-center">
         <div class="flex items-center gap-2">
           <i id="chat-header-icon" class="fa-solid fa-comments text-orange-500 text-lg"></i>
           <div>
-            <h3 id="chat-header-title" class="font-bold text-sm text-orange-400">Diskusi & Konsultasi Sistem</h3>
+            <h3 id="chat-header-title" class="font-bold text-sm text-orange-400">Diskusi & Konsultasi AI System</h3>
             <p id="chat-header-subtitle" class="text-[11px] text-zinc-400">Diskusi langsung terkait data pada tab aktif.</p>
           </div>
         </div>
         <button onclick="tutupChatModal()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-
-      <!-- Content Area Chat -->
-      <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs text-zinc-300">
-        <!-- Pesan Chat -->
-      </div>
-
-      <!-- Footer Input Chat -->
+      <div id="chat-messages-container" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs text-zinc-300"></div>
       <div class="p-3 bg-zinc-950 border-t border-zinc-800 flex gap-2">
         <input type="text" id="chat-input-text" onkeypress="handleChatKeyPress(event)" placeholder="Ketik pertanyaan atau instruksi..." class="flex-1 p-2.5 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-slate-100 focus:ring-2 focus:ring-orange-500 outline-none">
         <button onclick="kirimPesanChatTab()" class="bg-orange-600 hover:bg-orange-500 text-zinc-950 font-bold px-4 py-2.5 rounded-lg text-xs transition flex items-center gap-1.5">
@@ -638,7 +529,7 @@
     </div>
   </div>
 
-  <!-- MODAL POPUP RIWAYAT KUNJUNGAN LENGKAP PASIEN -->
+  <!-- Modal Riwayat Lengkap -->
   <div id="modal-riwayat-lengkap" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 no-print">
     <div class="bg-zinc-900 border border-orange-500/40 rounded-xl w-full max-w-3xl h-[85vh] flex flex-col shadow-2xl overflow-hidden">
       <div class="p-4 bg-zinc-950 border-b border-zinc-800 flex justify-between items-center">
@@ -648,13 +539,11 @@
         </div>
         <button onclick="tutupModalRiwayatLengkap()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
-      <div id="modal-rw-list-container" class="flex-1 p-4 overflow-y-auto space-y-4 text-xs">
-        <!-- List Kunjungan Pasien -->
-      </div>
+      <div id="modal-rw-list-container" class="flex-1 p-4 overflow-y-auto space-y-4 text-xs"></div>
     </div>
   </div>
 
-  <!-- AREA CETAK THERMAL PRINTER BLUETOOTH -->
+  <!-- Area Print Thermal Bluetooth -->
   <div id="nota-print-area" class="hidden">
     <div style="text-align: center; border-bottom: 1px dashed #000; padding-bottom: 5px; margin-bottom: 5px;">
       <strong style="font-size: 11pt;">RUMAH SEHAT INSANI</strong><br>
@@ -671,19 +560,15 @@
     <div style="border-bottom: 1px dashed #000; margin-bottom: 5px;"></div>
     <div style="font-size: 9pt; font-weight: bold; text-align: right;" id="print-nota-total"></div>
     <div style="text-align: center; font-size: 8pt; margin-top: 10px; border-top: 1px dashed #000; padding-top: 5px;">
-      Semoga Lekas Sehat & Afiat<br>
-      Terima Kasih
+      Semoga Lekas Sehat & Afiat<br>Terima Kasih
     </div>
   </div>
 
-  <!-- Script Application Logic & PWA Installer -->
   <script>
     const DEEPSEEK_ENDPOINT = "https://api.deepseek.com/chat/completions";
     const DEEPSEEK_API_KEY = "sk-305f13e9313d4fc6b03c3e49dc9e1ce2";
-    // URL WebApp Google Apps Script Terkini
     const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx4I6k34IncGP9ffxfNCyzXhrdrSnh2NEL0XvJcRZ9GXNxqgCNPGD5xNu_NYQd9xULE/exec";
 
-    // Storage Database awal (Ambil dari LocalStorage terlebih dahulu agar tidak hilang saat reload)
     let stokHerbal = JSON.parse(localStorage.getItem('rsi_stok_v11')) || [
       { nama: "Huang Qi (Astragalus)", jumlah: 500, hpp: 300 },
       { nama: "Dang Shen (Codonopsis)", jumlah: 350, hpp: 400 },
@@ -698,26 +583,18 @@
     let selectedPasienLamaKey = null;
     let base64TongueImg = "";
     let base64PasienImg = "";
-    
-    // Transaksi & Chat State
     let lastAIFormulasiStok = [];
     let lastAITotalHerbalCost = 0;
     let currentActiveChatTab = "tcm";
-    let chatHistories = {
-      tcm: [],
-      stok: [],
-      keuangan: []
-    };
+    let chatHistories = { tcm: [], stok: [], keuangan: [] };
 
-    // Registrasi PWA Service Worker
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(err => console.log('SW Fail', err));
     }
 
     let deferredPrompt;
     window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
+      e.preventDefault(); deferredPrompt = e;
       const btnInstall = document.getElementById('btn-install-pwa');
       if (btnInstall) btnInstall.classList.remove('hidden');
     });
@@ -725,10 +602,8 @@
     function installPWA() {
       if (deferredPrompt) {
         deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            document.getElementById('btn-install-pwa').classList.add('hidden');
-          }
+        deferredPrompt.userChoice.then((choice) => {
+          if (choice.outcome === 'accepted') document.getElementById('btn-install-pwa').classList.add('hidden');
           deferredPrompt = null;
         });
       }
@@ -812,7 +687,6 @@
     function bukaModalRiwayatLengkap() {
       if (!selectedPasienLamaKey || !dbPasien[selectedPasienLamaKey]) return;
       const p = dbPasien[selectedPasienLamaKey];
-      
       document.getElementById('modal-rw-nama').innerText = "Riwayat Kunjungan: " + p.nama;
       document.getElementById('modal-rw-meta').innerText = `No. WA: ${p.wa} | Usia/JK: ${p.usia || '-'}`;
       
@@ -830,58 +704,28 @@
                 <span class="font-bold text-orange-400 text-sm"><i class="fa-solid fa-calendar-check mr-1"></i> Kunjungan ke-${numKunjungan} (${k.tanggal})</span>
                 <span class="text-[11px] bg-orange-950 text-orange-300 px-2 py-0.5 rounded border border-orange-500/30">Rekam Medis Tersimpan</span>
               </div>
-              
               <div class="space-y-2 prose max-w-none text-zinc-300">
-                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
-                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">a. Patologi Sindrom & Biometrik</summary>
-                  <div class="mt-2 text-xs">${k.syndrom || 'Tidak ada data.'}</div>
-                </details>
-                
-                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
-                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">b. Rekomendasi Titik Akupuntur & Akupresur</summary>
-                  <div class="mt-2 text-xs">${k.akupuntur || 'Tidak ada data.'}</div>
-                </details>
-
-                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
-                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">c. Rekomendasi Titik Moksibusi</summary>
-                  <div class="mt-2 text-xs">${k.moksi || 'Tidak ada data.'}</div>
-                </details>
-
-                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
-                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">d. Formulasi Ramuan Klasik</summary>
-                  <div class="mt-2 text-xs">${k.klasik || 'Tidak ada data.'}</div>
-                </details>
-
-                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
-                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">e. Formulasi Modifikasi Stok RSI</summary>
-                  <div class="mt-2 text-xs">${k.stok || 'Tidak ada data.'}</div>
-                </details>
-
-                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800">
-                  <summary class="font-bold text-orange-400 cursor-pointer text-xs">f. Cara Mengolah & Rebusan Herba</summary>
-                  <div class="mt-2 text-xs">${k.preparasi || 'Tidak ada data.'}</div>
-                </details>
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800"><summary class="font-bold text-orange-400 cursor-pointer text-xs">a. Patologi Sindrom & Biometrik</summary><div class="mt-2 text-xs">${k.syndrom || 'Tidak ada data.'}</div></details>
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800"><summary class="font-bold text-orange-400 cursor-pointer text-xs">b. Titik Akupuntur & Akupresur</summary><div class="mt-2 text-xs">${k.akupuntur || 'Tidak ada data.'}</div></details>
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800"><summary class="font-bold text-orange-400 cursor-pointer text-xs">c. Titik Moksibusi</summary><div class="mt-2 text-xs">${k.moksi || 'Tidak ada data.'}</div></details>
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800"><summary class="font-bold text-orange-400 cursor-pointer text-xs">d. Formulasi Ramuan Klasik</summary><div class="mt-2 text-xs">${k.klasik || 'Tidak ada data.'}</div></details>
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800"><summary class="font-bold text-orange-400 cursor-pointer text-xs">e. Modifikasi Stok RSI</summary><div class="mt-2 text-xs">${k.stok || 'Tidak ada data.'}</div></details>
+                <details class="bg-zinc-900 p-2.5 rounded border border-zinc-800"><summary class="font-bold text-orange-400 cursor-pointer text-xs">f. Cara Mengolah & Rebusan</summary><div class="mt-2 text-xs">${k.preparasi || 'Tidak ada data.'}</div></details>
               </div>
             </div>
           `;
         });
       }
-
       document.getElementById('modal-riwayat-lengkap').classList.remove('hidden');
     }
 
-    function tutupModalRiwayatLengkap() {
-      document.getElementById('modal-riwayat-lengkap').classList.add('hidden');
-    }
-
+    function tutupModalRiwayatLengkap() { document.getElementById('modal-riwayat-lengkap').classList.add('hidden'); }
     function bukaDiagnosaKunjunganHariIni() {
       if (!selectedPasienLamaKey || !dbPasien[selectedPasienLamaKey]) return;
       const p = dbPasien[selectedPasienLamaKey];
-      
       document.getElementById('p-nama').value = p.nama;
       document.getElementById('p-wa').value = p.wa;
       document.getElementById('p-usia').value = p.usia || '';
-
       toggleFormSection('sec-identitas');
     }
 
@@ -914,59 +758,33 @@
         el.classList.remove('bg-orange-600', 'text-zinc-950', 'border-orange-500');
         el.classList.add('bg-zinc-800', 'text-zinc-300', 'border-zinc-700');
       });
-
       document.getElementById(tabId).classList.remove('hidden');
       event.currentTarget.classList.remove('bg-zinc-800', 'text-zinc-300', 'border-zinc-700');
       event.currentTarget.classList.add('bg-orange-600', 'text-zinc-950', 'border-orange-500');
     }
 
-    function saveStokToStorage() {
-      localStorage.setItem('rsi_stok_v11', JSON.stringify(stokHerbal));
-      autoBackupGDrive();
-    }
+    function saveStokToStorage() { localStorage.setItem('rsi_stok_v11', JSON.stringify(stokHerbal)); autoBackupGDrive(); }
+    function savePasienToStorage() { localStorage.setItem('rsi_pasien_v11', JSON.stringify(dbPasien)); renderKeuanganDropdownPasien(); autoBackupGDrive(); }
+    function saveJurnalToStorage() { localStorage.setItem('rsi_jurnal_v11', JSON.stringify(dbJurnalKas)); autoBackupGDrive(); }
 
-    function savePasienToStorage() {
-      localStorage.setItem('rsi_pasien_v11', JSON.stringify(dbPasien));
-      renderKeuanganDropdownPasien();
-      autoBackupGDrive();
-    }
-
-    function saveJurnalToStorage() {
-      localStorage.setItem('rsi_jurnal_v11', JSON.stringify(dbJurnalKas));
-      autoBackupGDrive();
-    }
-
-    // SINKRONISASI KE GOOGLE DRIVE DI BACKGROUND
     async function autoBackupGDrive() {
       if (!GAS_WEBAPP_URL) return;
-      const backupData = {
-        waktuBackup: new Date().toLocaleString('id-ID'),
-        stok: stokHerbal,
-        pasien: dbPasien,
-        jurnalKas: dbJurnalKas
-      };
-
+      const backupData = { waktuBackup: new Date().toLocaleString('id-ID'), stok: stokHerbal, pasien: dbPasien, jurnalKas: dbJurnalKas };
       try {
         await fetch(GAS_WEBAPP_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ action: "saveAllCloudData", dataTxt: JSON.stringify(backupData, null, 2) })
         });
-        console.log("Auto-backup GDrive Berhasil");
-      } catch (err) { 
-        console.error("Auto-backup GDrive Gagal:", err); 
-      }
+      } catch (err) { console.error("Auto-backup GDrive Gagal:", err); }
     }
 
-    // SYNC AMBIL DATA DARI CLOUD TANPA MENIMPA PERUBAHAN BARU
     async function autoPullFromGDrive() {
       if (!GAS_WEBAPP_URL) return;
       const statusEl = document.getElementById('sync-status');
-
       try {
         const res = await fetch(GAS_WEBAPP_URL + "?action=getAllCloudData");
         const json = await res.json();
-        
         let loaded = false;
         if (json.dataTxt) {
           try {
@@ -982,22 +800,18 @@
           localStorage.setItem('rsi_stok_v11', JSON.stringify(stokHerbal));
           localStorage.setItem('rsi_pasien_v11', JSON.stringify(dbPasien));
           localStorage.setItem('rsi_jurnal_v11', JSON.stringify(dbJurnalKas));
-
           renderStokTable();
           renderKeuanganDropdownPasien();
-          if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Data Terupdate Cloud`;
+          if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Cloud AI Synced`;
         }
-      } catch (err) { 
-        console.error("Gagal sync data cloud:", err); 
-      }
+      } catch (err) { console.error("Gagal sync data cloud:", err); }
     }
 
     async function syncTransaksiToGDrive(transaksiObj) {
       if (!GAS_WEBAPP_URL) return;
       try {
         await fetch(GAS_WEBAPP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
+          method: 'POST', headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ action: "saveTransaksi", transaksi: transaksiObj })
         });
       } catch (err) { console.error("Gagal sync transaksi ke Drive:", err); }
@@ -1007,8 +821,7 @@
       if (!GAS_WEBAPP_URL) return;
       try {
         await fetch(GAS_WEBAPP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
+          method: 'POST', headers: { 'Content-Type': 'text/plain' },
           body: JSON.stringify({ action: "saveRekamMedis", pasienSingle: pasienObj })
         });
       } catch (err) { console.error("Gagal sync rekam medis pasien ke Drive:", err); }
@@ -1018,23 +831,17 @@
       const file = event.target.files[0];
       const statusEl = document.getElementById('ocr-status');
       const textareaEl = document.getElementById('keluar-teks-bebas');
-
       if (!file) return;
       statusEl.classList.remove('hidden');
       textareaEl.value = "Sedang membaca teks dari foto struk...";
-
       try {
         const worker = await Tesseract.createWorker('ind');
         const ret = await worker.recognize(file);
         await worker.terminate();
-
-        const extractedText = ret.data.text.trim();
-        textareaEl.value = "Hasil Pembacaan Struk:\n" + (extractedText || "Teks tidak terbaca jelas. Silakan sesuaikan narasi manual.");
+        textareaEl.value = "Hasil Pembacaan Struk:\n" + (ret.data.text.trim() || "Teks tidak terbaca jelas.");
       } catch (err) {
-        textareaEl.value = "Gagal membaca gambar secara otomatis. Silakan tuliskan narasi pengeluaran secara manual.";
-      } finally {
-        statusEl.classList.add('hidden');
-      }
+        textareaEl.value = "Gagal membaca gambar. Silakan tulis manual.";
+      } finally { statusEl.classList.add('hidden'); }
     }
 
     function previewTongueImage(event) {
@@ -1063,9 +870,7 @@
       }
     }
 
-    function formatRp(val) {
-      return "Rp " + Number(val).toLocaleString('id-ID');
-    }
+    function formatRp(val) { return "Rp " + Number(val).toLocaleString('id-ID'); }
 
     function renderStokTable() {
       const tbody = document.getElementById('tabel-stok-body');
@@ -1088,7 +893,7 @@
     }
 
     function hapusStokHerbal(index) {
-      if (confirm(`Apakah Anda yakin ingin menghapus "${stokHerbal[index].nama}" dari daftar stok?`)) {
+      if (confirm(`Hapus "${stokHerbal[index].nama}" dari stok?`)) {
         stokHerbal.splice(index, 1);
         saveStokToStorage();
         renderStokTable();
@@ -1097,10 +902,8 @@
 
     function filterStokTable() {
       const query = document.getElementById('cari-stok').value.toLowerCase();
-      const rows = document.querySelectorAll('#tabel-stok-body tr');
-      rows.forEach(row => {
-        const text = row.innerText.toLowerCase();
-        row.style.display = text.includes(query) ? '' : 'none';
+      document.querySelectorAll('#tabel-stok-body tr').forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
       });
     }
 
@@ -1122,42 +925,42 @@
       }
     }
 
+    // FUNGSI SINKRONISASI AI UNTUK PENGURANGAN STOK PRESISI DENGAN PENCATATAN HPP & LABA
     function applyMutasiStok(mutasiList) {
-      if (!Array.isArray(mutasiList) || mutasiList.length === 0) return [];
+      if (!Array.isArray(mutasiList) || mutasiList.length === 0) return { log: [], totalHPP: 0 };
 
       let logMutasi = [];
+      let totalHPP = 0;
 
       mutasiList.forEach(m => {
         if (!m.namaHerbal || !m.jumlahGram) return;
         let targetName = m.namaHerbal.toLowerCase().trim();
         let qty = Math.abs(parseInt(m.jumlahGram));
-        let rawHpp = m.hpp ? parseInt(m.hpp) : 200;
-
-        let hppVal = rawHpp;
-        if (m.totalHarga && qty > 0) {
-          hppVal = Math.round(parseInt(m.totalHarga) / qty);
-        } else if (rawHpp > 2000 && qty > 10) {
-          hppVal = Math.round(rawHpp / qty);
-        }
-
         let index = stokHerbal.findIndex(s => s.nama.toLowerCase().includes(targetName) || targetName.includes(s.nama.toLowerCase()));
 
         if (m.tipe === "jual" || m.tipe === "pakai") {
           if (index !== -1) {
+            let hppUnit = stokHerbal[index].hpp || 200;
+            let subHPP = hppUnit * qty;
+            totalHPP += subHPP;
             stokHerbal[index].jumlah = Math.max(0, stokHerbal[index].jumlah - qty);
-            logMutasi.push(`- ${stokHerbal[index].nama}: Berkurang ${qty}g (Sisa: ${stokHerbal[index].jumlah}g)`);
+            logMutasi.push(`- ${stokHerbal[index].nama}: Berkurang ${qty}g (Sisa: ${stokHerbal[index].jumlah}g, HPP: ${formatRp(subHPP)})`);
+          } else {
+            // Jika nama herba dimasukkan manual
+            let hppUnit = 200;
+            let subHPP = hppUnit * qty;
+            totalHPP += subHPP;
+            logMutasi.push(`- ${m.namaHerbal} (Luar Inventaris): Terjual/Terpakai ${qty}g (Estimasi HPP: ${formatRp(subHPP)})`);
           }
         } else if (m.tipe === "beli" || m.tipe === "tambah") {
+          let rawHpp = m.hpp ? parseInt(m.hpp) : 200;
+          let hppVal = m.totalHarga && qty > 0 ? Math.round(parseInt(m.totalHarga) / qty) : rawHpp;
           if (index !== -1) {
             stokHerbal[index].jumlah += qty;
             if (hppVal > 0) stokHerbal[index].hpp = hppVal;
             logMutasi.push(`+ ${stokHerbal[index].nama}: Bertambah ${qty}g (Total: ${stokHerbal[index].jumlah}g, HPP: Rp${hppVal}/g)`);
           } else {
-            stokHerbal.push({
-              nama: m.namaHerbal,
-              jumlah: qty,
-              hpp: hppVal
-            });
+            stokHerbal.push({ nama: m.namaHerbal, jumlah: qty, hpp: hppVal });
             logMutasi.push(`+ ${m.namaHerbal} (Baru): Bertambah ${qty}g (Total: ${qty}g, HPP: Rp${hppVal}/g)`);
           }
         }
@@ -1165,37 +968,29 @@
 
       saveStokToStorage();
       renderStokTable();
-      return logMutasi;
+      return { log: logMutasi, totalHPP: totalHPP };
     }
 
     async function callDeepSeekAPI(promptText, customSystemPrompt = null) {
       const systemMsg = customSystemPrompt || "Anda adalah Pakar Senior Traditional Chinese Medicine (TCM), Ahli Diagnosa Biometrik Visual Lidah & Wajah (She Zhen & Wang Zhen), serta Akuntan Publik Profesional RSI Padang.";
-      
       const res = await fetch(DEEPSEEK_ENDPOINT, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${DEEPSEEK_API_KEY}`
-        },
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${DEEPSEEK_API_KEY}` },
         body: JSON.stringify({
           model: "deepseek-chat",
-          messages: [
-            { role: "system", content: systemMsg },
-            { role: "user", content: promptText }
-          ],
+          messages: [{ role: "system", content: systemMsg }, { role: "user", content: promptText }],
           temperature: 0.2
         })
       });
-
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error?.message || `HTTP ${res.status}: ${res.statusText}`);
+        throw new Error(errData.error?.message || `HTTP ${res.status}`);
       }
-
       const data = await res.json();
       return data.choices[0].message.content;
     }
 
+    // MODUL DIAGNOSA TCM AI DENGAN KECERDASAN SENIOR EXPERT
     async function prosesAITCM() {
       const nama = document.getElementById('p-nama').value.trim();
       const wa = document.getElementById('p-wa').value.trim();
@@ -1203,7 +998,7 @@
       const keluhan = document.getElementById('p-keluhan').value || "Tidak ada keluhan";
 
       if (!nama || !wa) {
-        alert("Nama Pasien dan Nomor WA wajib diisi di bagian Identitas Pasien!");
+        alert("Nama Pasien dan Nomor WA wajib diisi!");
         toggleFormSection('sec-identitas');
         return;
       }
@@ -1222,82 +1017,55 @@
 
       let strNadiLengkap = `Tangan Kanan [Cun: ${nadiKananCun.join(', ') || '-'}, Guan: ${nadiKananGuan.join(', ') || '-'}, Chi: ${nadiKananChi.join(', ') || '-'}], Tangan Kiri [Cun: ${nadiKiriCun.join(', ') || '-'}, Guan: ${nadiKiriGuan.join(', ') || '-'}, Chi: ${nadiKiriChi.join(', ') || '-'}]`;
 
-      let hasFotoLidah = base64TongueImg ? "Tersedia foto lidah pasien" : "Tidak ada upload foto lidah";
-      let hasFotoWajah = base64PasienImg ? "Tersedia foto visual wajah pasien" : "Tidak ada upload foto wajah";
-
       let listStokTxt = stokHerbal.map(s => `${s.nama} (Stok: ${s.jumlah}g, HPP: Rp${s.hpp}/g)`).join('; ');
+      let riwayatLamaTxt = dbPasien[nama] && dbPasien[nama].kunjungan ? JSON.stringify(dbPasien[nama].kunjungan) : "Pasien Baru";
 
-      let riwayatLamaTxt = "Tidak ada riwayat kunjungan sebelumnya (Pasien Baru).";
-      if (dbPasien[nama] && dbPasien[nama].kunjungan && dbPasien[nama].kunjungan.length > 0) {
-        riwayatLamaTxt = JSON.stringify(dbPasien[nama].kunjungan);
-      }
+      const tcmSystemPrompt = "Posisikan Anda sebagai Pakar Senior Traditional Chinese Medicine (TCM) profesional berstandar akademis tinggi, berpengalaman puluhan tahun dalam Wang Zhen (Visual Wajah/Lidah), She Zhen (Pengamatan Lidah), Mai Zhen (Palpasi Nadi), dan Bian Zheng (Pemetaan Sindrom Zang-Fu).";
 
       const prompt = `
-        Olah Diagnosa Patologis Biometrik & Holistik TCM Lengkap untuk Rumah Sehat Insani (RSI) Padang:
+        Berikan Analisis Klinis Diagnostik TCM Terintegrasi Lengkap untuk Rumah Sehat Insani (RSI) Padang:
         Pasien: ${nama} (${usia}), WA: ${wa}
-        Keluhan Utama Saat Ini: ${keluhan}
-        
-        RIWAYAT KUNJUNGAN & DIAGNOSA PASIEN SEBELUMNYA:
-        ${riwayatLamaTxt}
+        Keluhan Utama: ${keluhan}
+        Riwayat Rekam Medis Lalu: ${riwayatLamaTxt}
 
-        DATA VISUAL WAJAH & LIDAH SAAT INI:
-        - Status Foto Wajah: ${hasFotoWajah}
-        - Status Foto Lidah: ${hasFotoLidah}
-        - Indikator Warna Badan Lidah: [${warnaLidah.join(', ')}]
-        - Indikator Bentuk/Tepi/Retakan Lidah: [${bentukLidah.join(', ')}]
-        - Indikator Selaput Lidah: [${taiLidah.join(', ')}]
-        
-        DATA PALPASI NADI SAAT INI (MAI ZHEN):
-        - Palpasi Nadi: ${strNadiLengkap}
-        
-        STOK HERBAL RSI TERSEDIA: ${listStokTxt}
+        DATA EXAMINATION:
+        - Lidah (She Zhen): Warna [${warnaLidah.join(', ')}], Bentuk [${bentukLidah.join(', ')}], Selaput [${taiLidah.join(', ')}]
+        - Palpasi Nadi (Mai Zhen): ${strNadiLengkap}
+        - Stok Herbal RSI Tersedia: ${listStokTxt}
 
-        Sajikan respon WAJIB terpisah per tag berikut secara terstruktur:
+        Sajikan output WAJIB terpisah per tag berikut secara terstruktur:
 
         ---MUTASI_STOK---
         [{"namaHerbal": "Nama Herbal Digunakan", "jumlahGram": 30, "tipe": "jual"}]
         ---AKHIR_MUTASI---
 
         ---TAB_SYNDROM---
-        <h3>1. Laporan Komparasi & Perkembangan Klinis Pasien</h3>
-        <p>Bandingkan data kunjungan saat ini dengan riwayat diagnosa sebelumnya.</p>
-
-        <h3>2. Analisis Biometrik Visual Lidah & Wajah (She Zhen & Wang Zhen)</h3>
-        <ul>
-          <li><strong>Lidah:</strong> Evaluasi rona, retakan, selaput, dan bintik merah.</li>
-          <li><strong>Wajah:</strong> Evaluasi rona vitalitas dan pemetaan organ Zang-Fu.</li>
-        </ul>
-
-        <h3>3. Laporan Pengamatan Nadi (Mai Zhen)</h3>
-        <p>Analisis palpasi Nadi Cun, Guan, Chi Kanan & Kiri.</p>
-
+        <h3>1. Perkembangan & Komparasi Klinis Pasien</h3><p>Bandingkan data saat ini dengan riwayat medis lalu.</p>
+        <h3>2. Analisis Biometrik Lidah & Wajah (She Zhen & Wang Zhen)</h3>
+        <h3>3. Analisis Palpasi Nadi (Mai Zhen)</h3>
         <h3>4. Pemetaan Patologi Sindrom TCM (Bian Zheng)</h3>
-        <p>Sintesis komprehensif perjalanan penyakit Zang-Fu, Qi, Blood, Fluid, Yin-Yang saat ini.</p>
         ---AKHIR_TAB---
 
         ---TAB_AKUPUNTUR---
         3. <h3>Rekomendasi Titik Akupuntur & Akupresur</h3>
-        <ul><li>Titik utama beserta lokasi presisi dan indikasi Tonifikasi (Bu) atau Sedasi (Xie).</li></ul>
+        <ul><li>Titik utama beserta fungsi Tonifikasi (Bu) / Sedasi (Xie) & lokasi anatomis.</li></ul>
         ---AKHIR_TAB---
 
         ---TAB_MOKSI---
         3. <h3>Rekomendasi Titik Moksibusi</h3>
-        <ul><li>Titik acuan moksibusi untuk menghangatkan meridian dan mengusir dingin.</li></ul>
+        <ul><li>Titik Moksibusi penghangat meridian & pengusir dingin.</li></ul>
         ---AKHIR_TAB---
 
         ---TAB_KLASIK---
-        3. <h3>Formulasi Klasik & Modifikasi Keluhan</h3>
-        <p>Formula standar ramuan TCM klasik sesuai literatur.</p>
+        3. <h3>Formulasi Ramuan Klasik</h3>
         ---AKHIR_TAB---
 
         ---TAB_STOK---
         3. <h3>Formulasi Modifikasi Berdasarkan Stok RSI</h3>
-        <p>Racikan khusus yang disesuaikan persis dengan ketersediaan stok RSI beserta gramasi.</p>
         ---AKHIR_TAB---
 
         ---TAB_PREPARASI---
-        3. <h3>Preparasi / Cara Mengolah Herba</h3>
-        <p>Instruksi perebusan herba (berapa gelas air, api kecil/besar, diminum berapa kali sehari).</p>
+        3. <h3>Cara Mengolah & Rebusan Herba</h3>
         ---AKHIR_TAB---
       `;
 
@@ -1308,7 +1076,7 @@
       loadingEl.classList.remove('hidden');
 
       try {
-        const result = await callDeepSeekAPI(prompt);
+        const result = await callDeepSeekAPI(prompt, tcmSystemPrompt);
 
         let mutasiData = [];
         const mutasiMatch = result.match(/---MUTASI_STOK---([\s\S]*?)---AKHIR_MUTASI---/);
@@ -1339,7 +1107,6 @@
         lastAITotalHerbalCost = 0;
 
         let itemsNotaHtml = `<div>• Jasa Terapi & Tindakan TCM: ${formatRp(150000)}</div>`;
-
         mutasiData.forEach(item => {
           let targetName = item.namaHerbal.toLowerCase();
           let hObj = stokHerbal.find(s => s.nama.toLowerCase().includes(targetName) || targetName.includes(s.nama.toLowerCase()));
@@ -1347,25 +1114,15 @@
           let hargaJualPerGram = Math.round(hpp * 2.5);
           let subtotal = hargaJualPerGram * Math.abs(parseInt(item.jumlahGram));
           lastAITotalHerbalCost += subtotal;
-
           itemsNotaHtml += `<div>• Herbal ${item.namaHerbal} (${item.jumlahGram}g @ ${formatRp(hargaJualPerGram)}/g): ${formatRp(subtotal)}</div>`;
         });
 
         let grandTotal = 150000 + lastAITotalHerbalCost;
         let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
-        if (!dbPasien[nama]) {
-          dbPasien[nama] = { nama, wa, usia, kunjungan: [] };
-        }
+        if (!dbPasien[nama]) dbPasien[nama] = { nama, wa, usia, kunjungan: [] };
         dbPasien[nama].kunjungan.push({
-          tanggal: wktStr,
-          keluhan: keluhan,
-          syndrom: strSyndrom,
-          akupuntur: strAkupuntur,
-          moksi: strMoksi,
-          klasik: strKlasik,
-          stok: strStok,
-          preparasi: strPreparasi
+          tanggal: wktStr, keluhan, syndrom: strSyndrom, akupuntur: strAkupuntur, moksi: strMoksi, klasik: strKlasik, stok: strStok, preparasi: strPreparasi
         });
         savePasienToStorage();
         syncPasienSingleToGDrive(dbPasien[nama]);
@@ -1386,7 +1143,6 @@
         container.innerHTML = `<span class="text-amber-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Belum ada formulasi racikan sistem. Lakukan Diagnosa Holistik di Tab 1 terlebih dahulu.</span>`;
         return;
       }
-
       let html = `<ul class="space-y-1">`;
       lastAIFormulasiStok.forEach(item => {
         let targetName = item.namaHerbal.toLowerCase();
@@ -1412,6 +1168,7 @@
       return total;
     }
 
+    // PEMROSESAN UANG MASUK TERINTEGRASI AI: SINKRONISASI PENGURANGAN STOK, HPP, & JURNAL LABA
     async function prosesSimpanUangMasuk(mode) {
       const nama = document.getElementById('masuk-nama').value.trim();
       const wa = document.getElementById('masuk-wa').value.trim();
@@ -1427,70 +1184,55 @@
       let grandTotal = kalkulasiTotalPemasukan();
       let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
-      let itemsNotaHtml = `<div>• Jasa Terapi & Tindakan TCM: ${formatRp(biayaJasa)}</div>`;
-      let itemsNotaWA = `• Jasa Terapi TCM: ${formatRp(biayaJasa)}\n`;
-
-      // 1. OLAHS CATATAN TAMBAHAN UNTUK MENGETAHUI PENJUALAN HERBAL MANUAL
-      let logPengurangan = [];
+      // 1. KECERDASAN AI DETEKSI PENJUALAN HERBAL MANUAL DARI TEKS CATATAN TAMBAHAN
       let listMutasiCatatan = [];
+      stokHerbal.forEach(s => {
+        let cleanName = s.nama.split('(')[0].trim().toLowerCase();
+        if (ket.toLowerCase().includes(cleanName)) {
+          let match = ket.match(new RegExp(`${cleanName}\\s*(\\d+)`, 'i')) || ket.match(/(\\d+)\\s*g/i);
+          let qty = match ? parseInt(match[1]) : 30; // Default 30g jika tidak tertulis angka
+          listMutasiCatatan.push({ namaHerbal: s.nama, jumlahGram: qty, tipe: "jual" });
+        }
+      });
 
-      if (ket.length > 3) {
-        stokHerbal.forEach(s => {
-          let sName = s.nama.split('(')[0].trim().toLowerCase();
-          if (ket.toLowerCase().includes(sName)) {
-            let matchQty = ket.match(new RegExp(`${sName}\\s*(\\d+)`, 'i')) || ket.match(/(\d+)\s*g/i);
-            let qtyFound = matchQty ? parseInt(matchQty[1]) : 0;
-            if (qtyFound > 0) {
-              listMutasiCatatan.push({ namaHerbal: s.nama, jumlahGram: qtyFound, tipe: "jual" });
-            }
-          }
-        });
-      }
-
-      // Gabungkan racikan AI & penjualan dari catatan tambahan
+      // Gabungkan mutasi AI Racikan Diagnosa + Penjualan Catatan Teks
       let gabunganMutasi = [...(lastAIFormulasiStok || []), ...listMutasiCatatan];
 
-      if (gabunganMutasi.length > 0) {
-        logPengurangan = applyMutasiStok(gabunganMutasi);
-      }
+      // 2. POTONG STOK & HITUNG TOTAL HPP KESELURUHAN
+      let { log: logPengurangan, totalHPP } = applyMutasiStok(gabunganMutasi);
 
-      if (lastAIFormulasiStok && lastAIFormulasiStok.length > 0) {
-        lastAIFormulasiStok.forEach(item => {
-          let targetName = item.namaHerbal.toLowerCase();
-          let hObj = stokHerbal.find(s => s.nama.toLowerCase().includes(targetName) || targetName.includes(s.nama.toLowerCase()));
-          let hpp = hObj ? hObj.hpp : 200;
-          let hargaJualPerGram = Math.round(hpp * 2.5);
-          let subtotal = hargaJualPerGram * Math.abs(parseInt(item.jumlahGram));
+      // 3. KALKULASI LABA KOTOR DARI PENJUALAN
+      let labaKotor = Math.max(0, grandTotal - totalHPP);
 
-          itemsNotaHtml += `<div>• Herbal ${item.namaHerbal} (${item.jumlahGram}g @ ${formatRp(hargaJualPerGram)}/g): ${formatRp(subtotal)}</div>`;
-          itemsNotaWA += `• Herbal ${item.namaHerbal} (${item.jumlahGram}g): ${formatRp(subtotal)}\n`;
-        });
-      }
-
-      // 2. Simpan Transaksi Keuangan
+      // 4. SIMPAN KE JURNAL KAS
       let trxData = {
-        waktu: wktStr,
-        jenis: "MASUK",
-        subjek: nama,
-        wa: wa,
-        keterangan: ket,
-        nominal: grandTotal
+        waktu: wktStr, jenis: "MASUK", subjek: nama, wa: wa, keterangan: ket, nominal: grandTotal, hpp: totalHPP, laba: labaKotor
       };
 
       dbJurnalKas.push({
-        tanggal: wktStr,
-        jenis: "MASUK",
-        ket: `${ket} (${nama})`,
-        nominal: grandTotal
+        tanggal: wktStr, jenis: "MASUK", ket: `${ket} (${nama})`, nominal: grandTotal, hpp: totalHPP, laba: labaKotor
       });
       saveJurnalToStorage();
       syncTransaksiToGDrive(trxData);
 
-      // 3. Olah Jurnal Keuangan Sistem via AI
-      await olahSingleJurnalAI("UANG MASUK", nama, ket, grandTotal);
+      // 5. OLAH JURNAL AKUNTANSI OTOMATIS BERDASARKAN STANDAR AKUNTANSI
+      await olahSingleJurnalAI("UANG MASUK", nama, ket, grandTotal, totalHPP, labaKotor);
 
-      // 4. Eksekusi Print atau Share WA
+      // 6. CETAK / SHARE WA
       let formattedJadwal = jadwal ? new Date(jadwal).toLocaleString('id-ID', {dateStyle:'full', timeStyle:'short'}) : "-";
+      let itemsNotaHtml = `<div>• Jasa Terapi & Tindakan TCM: ${formatRp(biayaJasa)}</div>`;
+      let itemsNotaWA = `• Jasa Terapi TCM: ${formatRp(biayaJasa)}\n`;
+
+      gabunganMutasi.forEach(item => {
+        let targetName = item.namaHerbal.toLowerCase();
+        let hObj = stokHerbal.find(s => s.nama.toLowerCase().includes(targetName) || targetName.includes(s.nama.toLowerCase()));
+        let hpp = hObj ? hObj.hpp : 200;
+        let hargaJualPerGram = Math.round(hpp * 2.5);
+        let subtotal = hargaJualPerGram * Math.abs(parseInt(item.jumlahGram));
+
+        itemsNotaHtml += `<div>• Herbal ${item.namaHerbal} (${item.jumlahGram}g @ ${formatRp(hargaJualPerGram)}/g): ${formatRp(subtotal)}</div>`;
+        itemsNotaWA += `• Herbal ${item.namaHerbal} (${item.jumlahGram}g): ${formatRp(subtotal)}\n`;
+      });
 
       if (mode === 'print') {
         document.getElementById('print-nota-tgl').innerText = wktStr;
@@ -1506,30 +1248,23 @@
       } else if (mode === 'wa') {
         let waNum = wa.replace(/[^0-9]/g, '');
         if (waNum.startsWith('0')) waNum = '62' + waNum.slice(1);
-
         let textNota = `*RUMAH SEHAT INSANI (RSI)*\nAlamat: Jl. Raya Sungai Lareh, Perum Wahana C-2 Lumin, Padang\n_Bukti Pembayaran / Struk Digital_\n----------------------------------------\n*Waktu:* ${wktStr}\n*Pasien:* ${nama}\n*Catatan:* ${ket}\n*Jadwal Terapi Ulang:* ${formattedJadwal}\n\n*Rincian Transaksi:*\n${itemsNotaWA}----------------------------------------\n*TOTAL BAYAR:* *${formatRp(grandTotal)}*\n----------------------------------------\n_Semoga lekas sehat & afiat._\nSalam, *Coach Aldi - RSI Padang*`;
-
         window.open(`https://wa.me/${waNum}?text=${encodeURIComponent(textNota)}`, '_blank');
       }
 
       toggleKeuanganModal('modal-uang-masuk');
-      alert(`Transaksi Pemasukan Berhasil Disimpan!\n\nMutasi Pengurangan Stok Herba:\n${logPengurangan.length > 0 ? logPengurangan.join('\n') : 'Tidak ada mutasi stok.'}`);
+      alert(`Transaksi Pemasukan Berhasil Disimpan & Tersinkronisasi!\n\n• Total Omset: ${formatRp(grandTotal)}\n• Total HPP Herbal: ${formatRp(totalHPP)}\n• Estimasi Laba Kotor: ${formatRp(labaKotor)}\n\nMutasi Stok:\n${logPengurangan.length > 0 ? logPengurangan.join('\n') : 'Tidak ada mutasi stok.'}`);
     }
 
     async function prosesUangKeluar() {
       const teksBebas = document.getElementById('keluar-teks-bebas').value.trim();
-
-      if (!teksBebas) {
-        alert("Silakan tuliskan atau foto struk uang keluar terlebih dahulu.");
-        return;
-      }
+      if (!teksBebas) { alert("Silakan isi catatan pengeluaran."); return; }
 
       let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
       const promptBelanjaStok = `
-        Analisis narasi pengeluaran kas/belanja berikut: "${teksBebas}".
-        Jika transaksi ini merupakan pembelian/belanja bahan stok herbal, hitung HPP PER GRAM (Total Harga Pembelian dibagi Jumlah Gram).
-        
+        Analisis narasi pengeluaran berikut: "${teksBebas}".
+        Jika transaksi ini merupakan pembelian/belanja bahan stok herbal, hitung HPP PER GRAM (Total Harga Pembelian / Jumlah Gram).
         Sajikan output JSON mutasi SAJA di dalam tag:
         ---MUTASI_BELI---
         [{"namaHerbal": "Huang Qi", "jumlahGram": 100, "totalHarga": 60000, "hpp": 600, "tipe": "beli"}]
@@ -1543,62 +1278,50 @@
         if (matchBeli && matchBeli[1]) {
           let listBeli = JSON.parse(matchBeli[1].trim());
           if (Array.isArray(listBeli) && listBeli.length > 0) {
-            logPenambahan = applyMutasiStok(listBeli);
+            let resMut = applyMutasiStok(listBeli);
+            logPenambahan = resMut.log;
           }
         }
       } catch(e) { console.error("Error parse mutasi beli:", e); }
 
-      let trxData = {
-        waktu: wktStr,
-        jenis: "KELUAR",
-        subjek: "Operasional / Belanja Stok",
-        wa: "-",
-        keterangan: teksBebas,
-        nominal: 0
-      };
-
-      dbJurnalKas.push({
-        tanggal: wktStr,
-        jenis: "KELUAR",
-        ket: teksBebas,
-        nominal: 0
-      });
+      let trxData = { waktu: wktStr, jenis: "KELUAR", subjek: "Operasional / Belanja Stok", wa: "-", keterangan: teksBebas, nominal: 0 };
+      dbJurnalKas.push({ tanggal: wktStr, jenis: "KELUAR", ket: teksBebas, nominal: 0 });
       saveJurnalToStorage();
       syncTransaksiToGDrive(trxData);
 
-      await olahSingleJurnalAI("UANG KELUAR", "Operational", teksBebas, 0);
+      await olahSingleJurnalAI("UANG KELUAR", "Operational", teksBebas, 0, 0, 0);
       document.getElementById('keluar-teks-bebas').value = '';
       toggleKeuanganModal('modal-uang-keluar');
 
-      if (logPenambahan.length > 0) {
-        alert(`Pengeluaran Berhasil Dicatat!\n\nStok Herba Otomatis Bertambah & HPP/Gram Diperbarui:\n${logPenambahan.join('\n')}`);
-      } else {
-        alert("Pengeluaran operasional berhasil dicatat.");
-      }
+      alert(`Pengeluaran Berhasil Dicatat!\n\n${logPenambahan.length > 0 ? 'Stok Herba Bertambah & HPP Diperbarui:\n' + logPenambahan.join('\n') : 'Pengeluaran operasional dicatat.'}`);
     }
 
-    async function olahSingleJurnalAI(tipe, subjek, narasi, nominal) {
+    // PEMBUATAN JURNAL OTOMATIS BERDASARKAN STANDAR AKUNTANSI (DEBET KAS, KREDIT PENDAPATAN, HPP & LABA)
+    async function olahSingleJurnalAI(tipe, subjek, narasi, nominal, hpp = 0, laba = 0) {
       const outputEl = document.getElementById('ai-output-keuangan');
       const loadingEl = document.getElementById('ai-fin-loading');
 
       loadingEl.classList.remove('hidden');
-      outputEl.innerHTML = `<div class="p-4 bg-orange-950/60 text-orange-400 border border-orange-500/30 rounded"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengolah Jurnal Akuntansi Transaksi...</div>`;
+      outputEl.innerHTML = `<div class="p-4 bg-orange-950/60 text-orange-400 border border-orange-500/30 rounded"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengolah Jurnal Akuntansi Standar AI...</div>`;
+
+      const finSystemPrompt = "Anda adalah Akuntan Publik Profesional Senior yang mematuhi Standar Akuntansi Keuangan (SAK) Indonesia untuk Rumah Sehat Insani (RSI) Padang.";
 
       let prompt = `
-        Sebagai Akuntan RSI Padang, olah transaksi ${tipe} ini menjadi Jurnal Akuntansi Standar:
-        Subjek/Pasien: ${subjek}
-        Rincian Transaksi/Catatan Tambahan: "${narasi}"
-        Nominal: ${nominal > 0 ? 'Rp ' + nominal : 'Sesuai pindaian foto struk/narasi teks'}
+        Buat Jurnal Akuntansi Standar Komprehensif untuk transaksi ${tipe}:
+        - Subjek/Pasien: ${subjek}
+        - Rincian Transaksi: "${narasi}"
+        - Total Penerimaan Kas (Pemasukan): Rp ${nominal}
+        - Total Harga Pokok Penjualan (HPP Herbal): Rp ${hpp}
+        - Estimasi Laba Kotor: Rp ${laba}
 
-        Data Riwayat Kas Terakhir: ${JSON.stringify(dbJurnalKas)}
-
-        Sajikan output ringkas HTML:
-        1. <h3>Jurnal Transaksi Terkini</h3> Tabel Debet/Kredit
-        2. <h3>Posisi Kas & Ringkasan</h3> Penjelasan singkat kas masuk/keluar.
+        Sajikan output HTML terstruktur:
+        1. <h3>Jurnal Umum Transaksi (Debet & Kredit Presisi)</h3>
+           Tabel: Akun (Kas, Pendapatan Jasa, Pendapatan Herbal, HPP, Persediaan Herbal), Debet (Rp), Kredit (Rp).
+        2. <h3>Analisis HPP & Margin Laba</h3> Penjelasan perhitungan HPP dan Laba Bersih transaksi.
       `;
 
       try {
-        const result = await callDeepSeekAPI(prompt);
+        const result = await callDeepSeekAPI(prompt, finSystemPrompt);
         outputEl.innerHTML = `<div class="prose text-sm leading-relaxed">${result}</div>`;
       } catch (err) {
         outputEl.innerHTML = `<div class="p-4 bg-red-950/60 text-red-400 border border-red-500/30 rounded mb-3"><i class="fa-solid fa-circle-exclamation mr-1"></i> Error: ${err.message}</div>`;
@@ -1608,32 +1331,26 @@
     }
 
     async function generasiLaporanLengkapAI() {
-      if (dbJurnalKas.length === 0) {
-        alert("Belum ada riwayat transaksi keuangan yang tercatat.");
-        return;
-      }
-
+      if (dbJurnalKas.length === 0) { alert("Belum ada riwayat transaksi keuangan."); return; }
       const outputEl = document.getElementById('ai-output-keuangan');
       const loadingEl = document.getElementById('ai-fin-loading');
 
       loadingEl.classList.remove('hidden');
       outputEl.innerHTML = `<div class="p-4 bg-orange-950/60 text-orange-400 border border-orange-500/30 rounded"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Menyusun Laporan Keuangan Standar Akuntansi Lengkap RSI...</div>`;
 
+      const finSystemPrompt = "Anda adalah Akuntan Publik Profesional Senior RSI Padang.";
       let prompt = `
-        Sebagai Akuntan Senior RSI Padang, olah seluruh riwayat transaksi berikut menjadi Laporan Keuangan Standar Akuntansi Lengkap:
-        Riwayat Transaksi: ${JSON.stringify(dbJurnalKas)}
+        Olah seluruh riwayat transaksi berikut menjadi Laporan Keuangan Standar Akuntansi Lengkap:
+        ${JSON.stringify(dbJurnalKas)}
 
         Sajikan output HTML terstruktur:
         1. <h3>1. Jurnal Umum Lengkap (General Journal)</h3>
-           Tabel: Tanggal, Keterangan, Debet (Rp), Kredit (Rp).
         2. <h3>2. Ringkasan Buku Besar (General Ledger)</h3>
-           Tabel per akun (Kas, Pendapatan Terapi, Pendapatan Herbal, Beban Operasional, HPP).
-        3. <h3>3. Laporan Laba Rugi (Income Statement)</h3>
-           Tabel Rincian Pendapatan, Total Beban, dan Laba/Rugi Bersih RSI Padang.
+        3. <h3>3. Laporan Laba Rugi (Income Statement) - Sertakan Total Pendapatan, HPP, Beban Operasional, dan Laba Bersih RSI</h3>
       `;
 
       try {
-        const result = await callDeepSeekAPI(prompt);
+        const result = await callDeepSeekAPI(prompt, finSystemPrompt);
         outputEl.innerHTML = `<div class="prose text-sm leading-relaxed">${result}</div>`;
       } catch (err) {
         outputEl.innerHTML = `<div class="p-4 bg-red-950/60 text-red-400 border border-red-500/30 rounded mb-3"><i class="fa-solid fa-circle-exclamation mr-1"></i> Error: ${err.message}</div>`;
@@ -1642,7 +1359,6 @@
       }
     }
 
-    // LOGIKA MODUL DISKUSI CHAT INTERAKTIF PER TAB
     function bukaChatModal(tabKey) {
       currentActiveChatTab = tabKey;
       const titleEl = document.getElementById('chat-header-title');
@@ -1650,16 +1366,16 @@
       const iconEl = document.getElementById('chat-header-icon');
 
       if (tabKey === 'tcm') {
-        titleEl.innerText = "Diskusi Klinis & Diagnosa Rekam Medik";
-        subtitleEl.innerText = "Konsultasi diagnosis patologi TCM, diagnosis banding, serta modifikasi herbal/titik.";
+        titleEl.innerText = "Konsultasi Klinis Pakar Senior TCM";
+        subtitleEl.innerText = "Diskusi diagnosis patologi TCM, diagnosis banding, dan formulasi herbal.";
         iconEl.className = "fa-solid fa-user-doctor text-orange-500 text-lg";
       } else if (tabKey === 'stok') {
-        titleEl.innerText = "Diskusi Inventaris & Formulasi Stok RSI";
-        subtitleEl.innerText = "Diskusi perancangan stok, herbal penganti, serta rekomendasi pengadaan.";
+        titleEl.innerText = "Konsultasi Inventaris & Formulasi Stok";
+        subtitleEl.innerText = "Diskusi substitusi bahan herbal dan HPP.";
         iconEl.className = "fa-solid fa-boxes-stacked text-orange-500 text-lg";
       } else if (tabKey === 'keuangan') {
-        titleEl.innerText = "Diskusi & Konsultasi Akuntansi RSI";
-        subtitleEl.innerText = "Konsultasi pencatatan kas, proyeksi laba-rugi, dan neraca keuangan.";
+        titleEl.innerText = "Konsultasi Akuntansi Standar RSI";
+        subtitleEl.innerText = "Konsultasi pencatatan kas, HPP, dan laporan Laba Rugi.";
         iconEl.className = "fa-solid fa-calculator text-orange-500 text-lg";
       }
 
@@ -1667,53 +1383,29 @@
       document.getElementById('modal-chat-tab').classList.remove('hidden');
     }
 
-    function tutupChatModal() {
-      document.getElementById('modal-chat-tab').classList.add('hidden');
-    }
+    function tutupChatModal() { document.getElementById('modal-chat-tab').classList.add('hidden'); }
 
     function renderChatMessages() {
       const container = document.getElementById('chat-messages-container');
       container.innerHTML = '';
-
       const history = chatHistories[currentActiveChatTab];
       if (history.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-10 text-zinc-500">
-            <i class="fa-solid fa-comments text-3xl mb-2 text-zinc-700 block"></i>
-            Silakan ketik pertanyaan atau instruksi terkait data pada tab ini.
-          </div>
-        `;
+        container.innerHTML = `<div class="text-center py-10 text-zinc-500"><i class="fa-solid fa-comments text-3xl mb-2 text-zinc-700 block"></i>Ketik pertanyaan atau instruksi terkait modul ini.</div>`;
         return;
       }
-
       history.forEach(msg => {
-        if (msg.role === 'user') {
-          container.innerHTML += `
-            <div class="flex justify-end">
-              <div class="bg-orange-600 text-zinc-950 font-medium p-3 rounded-xl rounded-tr-none max-w-[80%] shadow">
-                ${msg.content}
-              </div>
+        container.innerHTML += `
+          <div class="flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}">
+            <div class="${msg.role === 'user' ? 'bg-orange-600 text-zinc-950 font-medium' : 'bg-zinc-800 text-zinc-200 border border-zinc-700 prose prose-invert'} p-3 rounded-xl max-w-[85%] text-xs shadow">
+              ${msg.content}
             </div>
-          `;
-        } else {
-          container.innerHTML += `
-            <div class="flex justify-start">
-              <div class="bg-zinc-800 text-zinc-200 border border-zinc-700 p-3 rounded-xl rounded-tl-none max-w-[85%] prose prose-invert text-xs shadow">
-                ${msg.content}
-              </div>
-            </div>
-          `;
-        }
+          </div>
+        `;
       });
-
       container.scrollTop = container.scrollHeight;
     }
 
-    function handleChatKeyPress(event) {
-      if (event.key === 'Enter') {
-        kirimPesanChatTab();
-      }
-    }
+    function handleChatKeyPress(e) { if (e.key === 'Enter') kirimPesanChatTab(); }
 
     async function kirimPesanChatTab() {
       const inputEl = document.getElementById('chat-input-text');
@@ -1724,58 +1416,21 @@
       chatHistories[currentActiveChatTab].push({ role: 'user', content: text });
       renderChatMessages();
 
-      const container = document.getElementById('chat-messages-container');
-      container.innerHTML += `
-        <div id="chat-typing-indicator" class="flex justify-start">
-          <div class="bg-zinc-800 text-amber-400 p-2.5 rounded-xl text-xs italic">
-            <i class="fa-solid fa-circle-notch fa-spin mr-1"></i> Sedang memproses tanggapan...
-          </div>
-        </div>
-      `;
-      container.scrollTop = container.scrollHeight;
-
-      let customSysPrompt = "";
-      let contextData = "";
-
-      if (currentActiveChatTab === 'tcm') {
-        customSysPrompt = "Anda adalah Pakar Senior TCM (Traditional Chinese Medicine) & Konsultan Klinis RSI Padang.";
-        contextData = `Data Pasien Terakhir: ${JSON.stringify(dbPasien)}`;
-      } else if (currentActiveChatTab === 'stok') {
-        customSysPrompt = "Anda adalah Pakar Inventaris Herbal TCM & Formulasi Stok RSI Padang.";
-        contextData = `Stok Herbal RSI Terkini: ${JSON.stringify(stokHerbal)}`;
-      } else if (currentActiveChatTab === 'keuangan') {
-        customSysPrompt = "Anda adalah Akuntan Publik Profesional & Konsultan Keuangan RSI Padang.";
-        contextData = `Riwayat Jurnal Kas RSI: ${JSON.stringify(dbJurnalKas)}`;
-      }
-
-      const promptToAI = `
-        Konteks Data Modul (${currentActiveChatTab.toUpperCase()}):
-        ${contextData}
-
-        Pertanyaan / Diskusi Pengguna: "${text}"
-        
-        Berikan jawaban klinis/operasional yang tepat, praktis, dan profesional dalam format ringkas HTML.
-      `;
+      let customSysPrompt = currentActiveChatTab === 'tcm' ? "Anda adalah Pakar Senior TCM (Traditional Chinese Medicine) profesional." : (currentActiveChatTab === 'stok' ? "Anda adalah Pakar Inventaris Herbal TCM RSI." : "Anda adalah Akuntan Publik Profesional RSI Padang.");
+      let contextData = currentActiveChatTab === 'tcm' ? JSON.stringify(dbPasien) : (currentActiveChatTab === 'stok' ? JSON.stringify(stokHerbal) : JSON.stringify(dbJurnalKas));
 
       try {
-        const responseText = await callDeepSeekAPI(promptToAI, customSysPrompt);
+        const responseText = await callDeepSeekAPI(`Konteks Data Modul (${currentActiveChatTab.toUpperCase()}): ${contextData}\n\nPertanyaan: "${text}"\nBerikan jawaban profesional ringkas HTML.`, customSysPrompt);
         chatHistories[currentActiveChatTab].push({ role: 'assistant', content: responseText });
       } catch (err) {
-        chatHistories[currentActiveChatTab].push({ role: 'assistant', content: `<span class="text-rose-400">Gagal terhubung dengan sistem: ${err.message}</span>` });
-      } finally {
-        renderChatMessages();
-      }
+        chatHistories[currentActiveChatTab].push({ role: 'assistant', content: `<span class="text-rose-400">Error: ${err.message}</span>` });
+      } finally { renderChatMessages(); }
     }
 
-    // MEMUAT DATA LOKAL TERLEBIH DAHULU SAAT LAMAN DIBUKA, KEMUDIAN CEK SINKRONISASI CLOUD LENGKAP
     window.onload = function() {
       renderStokTable();
       renderKeuanganDropdownPasien();
-      
-      // Ambil pembaruan dari cloud tanpa mengagalkan muatan lokal
-      setTimeout(() => {
-        autoPullFromGDrive();
-      }, 1000);
+      setTimeout(() => { autoPullFromGDrive(); }, 1000);
     };
   </script>
 </body>
