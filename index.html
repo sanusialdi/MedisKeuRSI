@@ -43,7 +43,7 @@
 
   <!-- Header / Navbar -->
   <header class="bg-zinc-900 border-b border-orange-500/30 text-white shadow-xl sticky top-0 z-50 no-print">
-    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center flex-wrap gap-2">
       <div class="flex items-center space-x-3">
         <i class="fa-solid fa-yin-yang text-3xl text-orange-500"></i>
         <div>
@@ -55,6 +55,9 @@
         <span id="sync-status" class="text-xs text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-500/40 px-2.5 py-1 rounded-full flex items-center gap-1">
           <i class="fa-solid fa-cloud-check"></i> Cloud AI Synced
         </span>
+        <button onclick="bukaModalUpdateSystem()" class="text-xs bg-amber-600 hover:bg-amber-500 text-zinc-950 font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition shadow">
+          <i class="fa-solid fa-wrench"></i> Update System AI
+        </button>
         <button id="btn-install-pwa" onclick="installPWA()" class="hidden text-xs bg-orange-600 hover:bg-orange-500 text-zinc-950 font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5 transition shadow">
           <i class="fa-solid fa-download"></i> Install App
         </button>
@@ -506,6 +509,34 @@
     </div>
   </main>
 
+  <!-- MODAL POPUP UPDATE SYSTEM & PERINTAH ATURAN AI DINAMIS -->
+  <div id="modal-update-system" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4 no-print">
+    <div class="bg-zinc-900 border border-amber-500/40 rounded-xl w-full max-w-lg p-5 space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-zinc-800 pb-2">
+        <h3 class="font-bold text-amber-400 text-sm flex items-center gap-2">
+          <i class="fa-solid fa-wand-magic-sparkles"></i> Update System & Perintah Aturan AI
+        </h3>
+        <button onclick="tutupModalUpdateSystem()" class="text-zinc-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <p class="text-xs text-zinc-400">
+        Ketikkan instruksi atau aturan baru untuk AI (misal: aturan diskon, penyesuaian potong stok, atau format laporan). Perintah ini akan langsung disimpan ke Cloud dan dipatuhi oleh sistem.
+      </p>
+
+      <div>
+        <label class="block text-xs font-bold text-zinc-300 mb-1">Instruksi Tambahan AI Terkini:</label>
+        <textarea id="input-perintah-ai" rows="4" class="w-full p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg text-xs text-slate-100 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="Masukkan instruksi khusus di sini..."></textarea>
+      </div>
+
+      <div class="flex gap-2 justify-end pt-2 border-t border-zinc-800">
+        <button onclick="tutupModalUpdateSystem()" class="px-4 py-2 bg-zinc-800 text-zinc-300 text-xs rounded-lg hover:bg-zinc-700">Batal</button>
+        <button onclick="simpanPerintahDanSyncAI()" class="px-4 py-2 bg-amber-600 hover:bg-amber-500 text-zinc-950 font-extrabold text-xs rounded-lg transition">
+          <i class="fa-solid fa-floppy-disk mr-1"></i> Simpan & Perbarui Sistem Cloud
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal Chat Interaktif -->
   <div id="modal-chat-tab" class="hidden fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-3 no-print">
     <div class="bg-zinc-900 border border-orange-500/40 rounded-xl w-full max-w-2xl h-[85vh] flex flex-col shadow-2xl overflow-hidden">
@@ -567,7 +598,8 @@
   <script>
     const DEEPSEEK_ENDPOINT = "https://api.deepseek.com/chat/completions";
     const DEEPSEEK_API_KEY = "sk-305f13e9313d4fc6b03c3e49dc9e1ce2";
-    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbx4I6k34IncGP9ffxfNCyzXhrdrSnh2NEL0XvJcRZ9GXNxqgCNPGD5xNu_NYQd9xULE/exec";
+    // URL WebApp Google Apps Script Terkini
+    const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbyod9agZGhuNGU4hi7cRYgQ5vepehrddaLMX2tzQ4tFJKpsHtbkrMgKWfMa8VmmaUa2/exec";
 
     let stokHerbal = JSON.parse(localStorage.getItem('rsi_stok_v11')) || [
       { nama: "Huang Qi (Astragalus)", jumlah: 500, hpp: 300 },
@@ -586,6 +618,7 @@
     let lastAIFormulasiStok = [];
     let lastAITotalHerbalCost = 0;
     let currentActiveChatTab = "tcm";
+    let customAIPromptCloud = "";
     let chatHistories = { tcm: [], stok: [], keuangan: [] };
 
     if ('serviceWorker' in navigator) {
@@ -767,6 +800,47 @@
     function savePasienToStorage() { localStorage.setItem('rsi_pasien_v11', JSON.stringify(dbPasien)); renderKeuanganDropdownPasien(); autoBackupGDrive(); }
     function saveJurnalToStorage() { localStorage.setItem('rsi_jurnal_v11', JSON.stringify(dbJurnalKas)); autoBackupGDrive(); }
 
+    // FUNGSI MODAL UPDATE SYSTEM & SIMPAN ATURAN CLOUD
+    function bukaModalUpdateSystem() {
+      document.getElementById('input-perintah-ai').value = customAIPromptCloud || "";
+      document.getElementById('modal-update-system').classList.remove('hidden');
+    }
+
+    function tutupModalUpdateSystem() {
+      document.getElementById('modal-update-system').classList.add('hidden');
+    }
+
+    async function simpanPerintahDanSyncAI() {
+      const instruksiBaru = document.getElementById('input-perintah-ai').value.trim();
+      const statusEl = document.getElementById('sync-status');
+
+      if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400"></i> Mengirim Instruksi ke Cloud...`;
+
+      try {
+        if (GAS_WEBAPP_URL) {
+          await fetch(GAS_WEBAPP_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify({ action: "saveCustomPrompt", promptText: instruksiBaru })
+          });
+        }
+
+        customAIPromptCloud = instruksiBaru;
+
+        // Jalankan pembersihan & sync data
+        await autoPullFromGDrive();
+        renderStokTable();
+        renderKeuanganDropdownPasien();
+
+        tutupModalUpdateSystem();
+        alert("Sistem AI Berhasil Diperbarui!\n\nInstruksi baru Coach telah disimpan ke Cloud dan langsung diterapkan pada seluruh pemrosesan otomatis.");
+        if (statusEl) statusEl.innerHTML = `<i class="fa-solid fa-cloud-check"></i> Cloud AI Synced`;
+
+      } catch (err) {
+        alert("Gagal memperbarui instruksi: " + err.message);
+      }
+    }
+
     async function autoBackupGDrive() {
       if (!GAS_WEBAPP_URL) return;
       const backupData = { waktuBackup: new Date().toLocaleString('id-ID'), stok: stokHerbal, pasien: dbPasien, jurnalKas: dbJurnalKas };
@@ -786,6 +860,11 @@
         const res = await fetch(GAS_WEBAPP_URL + "?action=getAllCloudData");
         const json = await res.json();
         let loaded = false;
+        
+        if (json.customPrompt) {
+          customAIPromptCloud = json.customPrompt;
+        }
+
         if (json.dataTxt) {
           try {
             const parsed = JSON.parse(json.dataTxt);
@@ -925,7 +1004,7 @@
       }
     }
 
-    // FUNGSI SINKRONISASI AI UNTUK PENGURANGAN STOK PRESISI DENGAN PENCATATAN HPP & LABA
+    // FUNGSI MUTASI STOK PRESISI & HPP
     function applyMutasiStok(mutasiList) {
       if (!Array.isArray(mutasiList) || mutasiList.length === 0) return { log: [], totalHPP: 0 };
 
@@ -946,7 +1025,6 @@
             stokHerbal[index].jumlah = Math.max(0, stokHerbal[index].jumlah - qty);
             logMutasi.push(`- ${stokHerbal[index].nama}: Berkurang ${qty}g (Sisa: ${stokHerbal[index].jumlah}g, HPP: ${formatRp(subHPP)})`);
           } else {
-            // Jika nama herba dimasukkan manual
             let hppUnit = 200;
             let subHPP = hppUnit * qty;
             totalHPP += subHPP;
@@ -972,7 +1050,12 @@
     }
 
     async function callDeepSeekAPI(promptText, customSystemPrompt = null) {
-      const systemMsg = customSystemPrompt || "Anda adalah Pakar Senior Traditional Chinese Medicine (TCM), Ahli Diagnosa Biometrik Visual Lidah & Wajah (She Zhen & Wang Zhen), serta Akuntan Publik Profesional RSI Padang.";
+      let systemMsg = customSystemPrompt || "Anda adalah Pakar Senior Traditional Chinese Medicine (TCM), Ahli Diagnosa Biometrik Visual Lidah & Wajah (She Zhen & Wang Zhen), serta Akuntan Publik Profesional RSI Padang.";
+      
+      if (customAIPromptCloud) {
+        systemMsg += `\n\nATURAN KHUSUS TAMBAHAN CLOUD DARI COACH ALDI:\n${customAIPromptCloud}`;
+      }
+
       const res = await fetch(DEEPSEEK_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${DEEPSEEK_API_KEY}` },
@@ -990,7 +1073,7 @@
       return data.choices[0].message.content;
     }
 
-    // MODUL DIAGNOSA TCM AI DENGAN KECERDASAN SENIOR EXPERT
+    // DIAGNOSA TCM AI
     async function prosesAITCM() {
       const nama = document.getElementById('p-nama').value.trim();
       const wa = document.getElementById('p-wa').value.trim();
@@ -1040,7 +1123,7 @@
         ---AKHIR_MUTASI---
 
         ---TAB_SYNDROM---
-        <h3>1. Perkembangan & Komparasi Klinis Pasien</h3><p>Bandingkan data saat ini dengan riwayat medis lalu.</p>
+        3. <h3>1. Perkembangan & Komparasi Klinis Pasien</h3><p>Bandingkan data saat ini dengan riwayat medis lalu.</p>
         <h3>2. Analisis Biometrik Lidah & Wajah (She Zhen & Wang Zhen)</h3>
         <h3>3. Analisis Palpasi Nadi (Mai Zhen)</h3>
         <h3>4. Pemetaan Patologi Sindrom TCM (Bian Zheng)</h3>
@@ -1168,7 +1251,7 @@
       return total;
     }
 
-    // PEMROSESAN UANG MASUK TERINTEGRASI AI: SINKRONISASI PENGURANGAN STOK, HPP, & JURNAL LABA
+    // PROSES UANG MASUK TERINTEGRASI
     async function prosesSimpanUangMasuk(mode) {
       const nama = document.getElementById('masuk-nama').value.trim();
       const wa = document.getElementById('masuk-wa').value.trim();
@@ -1184,27 +1267,20 @@
       let grandTotal = kalkulasiTotalPemasukan();
       let wktStr = new Date().toLocaleDateString('id-ID') + ", " + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}) + " WIB";
 
-      // 1. KECERDASAN AI DETEKSI PENJUALAN HERBAL MANUAL DARI TEKS CATATAN TAMBAHAN
       let listMutasiCatatan = [];
       stokHerbal.forEach(s => {
         let cleanName = s.nama.split('(')[0].trim().toLowerCase();
         if (ket.toLowerCase().includes(cleanName)) {
           let match = ket.match(new RegExp(`${cleanName}\\s*(\\d+)`, 'i')) || ket.match(/(\\d+)\\s*g/i);
-          let qty = match ? parseInt(match[1]) : 30; // Default 30g jika tidak tertulis angka
+          let qty = match ? parseInt(match[1]) : 30;
           listMutasiCatatan.push({ namaHerbal: s.nama, jumlahGram: qty, tipe: "jual" });
         }
       });
 
-      // Gabungkan mutasi AI Racikan Diagnosa + Penjualan Catatan Teks
       let gabunganMutasi = [...(lastAIFormulasiStok || []), ...listMutasiCatatan];
-
-      // 2. POTONG STOK & HITUNG TOTAL HPP KESELURUHAN
       let { log: logPengurangan, totalHPP } = applyMutasiStok(gabunganMutasi);
-
-      // 3. KALKULASI LABA KOTOR DARI PENJUALAN
       let labaKotor = Math.max(0, grandTotal - totalHPP);
 
-      // 4. SIMPAN KE JURNAL KAS
       let trxData = {
         waktu: wktStr, jenis: "MASUK", subjek: nama, wa: wa, keterangan: ket, nominal: grandTotal, hpp: totalHPP, laba: labaKotor
       };
@@ -1215,10 +1291,8 @@
       saveJurnalToStorage();
       syncTransaksiToGDrive(trxData);
 
-      // 5. OLAH JURNAL AKUNTANSI OTOMATIS BERDASARKAN STANDAR AKUNTANSI
       await olahSingleJurnalAI("UANG MASUK", nama, ket, grandTotal, totalHPP, labaKotor);
 
-      // 6. CETAK / SHARE WA
       let formattedJadwal = jadwal ? new Date(jadwal).toLocaleString('id-ID', {dateStyle:'full', timeStyle:'short'}) : "-";
       let itemsNotaHtml = `<div>• Jasa Terapi & Tindakan TCM: ${formatRp(biayaJasa)}</div>`;
       let itemsNotaWA = `• Jasa Terapi TCM: ${formatRp(biayaJasa)}\n`;
@@ -1296,7 +1370,6 @@
       alert(`Pengeluaran Berhasil Dicatat!\n\n${logPenambahan.length > 0 ? 'Stok Herba Bertambah & HPP Diperbarui:\n' + logPenambahan.join('\n') : 'Pengeluaran operasional dicatat.'}`);
     }
 
-    // PEMBUATAN JURNAL OTOMATIS BERDASARKAN STANDAR AKUNTANSI (DEBET KAS, KREDIT PENDAPATAN, HPP & LABA)
     async function olahSingleJurnalAI(tipe, subjek, narasi, nominal, hpp = 0, laba = 0) {
       const outputEl = document.getElementById('ai-output-keuangan');
       const loadingEl = document.getElementById('ai-fin-loading');
